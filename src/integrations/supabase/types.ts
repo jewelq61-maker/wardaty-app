@@ -46,10 +46,12 @@ export type Database = {
           completed: boolean
           completed_at: string | null
           created_at: string
+          frequency: string | null
           id: string
           notes: string | null
           phase: string
           scheduled_at: string | null
+          time_of_day: string | null
           title: string
           updated_at: string
           user_id: string
@@ -58,10 +60,12 @@ export type Database = {
           completed?: boolean
           completed_at?: string | null
           created_at?: string
+          frequency?: string | null
           id?: string
           notes?: string | null
           phase: string
           scheduled_at?: string | null
+          time_of_day?: string | null
           title: string
           updated_at?: string
           user_id: string
@@ -70,10 +74,12 @@ export type Database = {
           completed?: boolean
           completed_at?: string | null
           created_at?: string
+          frequency?: string | null
           id?: string
           notes?: string | null
           phase?: string
           scheduled_at?: string | null
+          time_of_day?: string | null
           title?: string
           updated_at?: string
           user_id?: string

@@ -282,6 +282,21 @@ const resources = {
         phaseStats: 'إحصائيات المراحل',
         actionCompleted: 'تم تحديد العناية كمنجزة',
         actionUncompleted: 'تم إلغاء إنجاز العناية',
+        add: 'إضافة',
+        frequency: 'التكرار',
+        timeOfDay: 'وقت اليوم',
+        freq: {
+          once: 'مرة واحدة',
+          daily: 'يومياً',
+          weekly: 'أسبوعياً',
+          monthly: 'شهرياً'
+        },
+        time: {
+          morning: 'صباحاً',
+          afternoon: 'ظهراً',
+          evening: 'مساءً',
+          night: 'ليلاً'
+        },
         phase: {
           menstrual: 'مرحلة الحيض',
           follicular: 'المرحلة الجريبية',
@@ -608,6 +623,21 @@ const resources = {
         phaseStats: 'Phase Statistics',
         actionCompleted: 'Action marked as completed',
         actionUncompleted: 'Action marked as incomplete',
+        add: 'Add',
+        frequency: 'Frequency',
+        timeOfDay: 'Time of Day',
+        freq: {
+          once: 'Once',
+          daily: 'Daily',
+          weekly: 'Weekly',
+          monthly: 'Monthly'
+        },
+        time: {
+          morning: 'Morning',
+          afternoon: 'Afternoon',
+          evening: 'Evening',
+          night: 'Night'
+        },
         phase: {
           menstrual: 'Menstrual Phase',
           follicular: 'Follicular Phase',
