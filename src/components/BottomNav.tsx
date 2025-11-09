@@ -21,7 +21,7 @@ export default function BottomNav() {
       <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-background via-background/80 to-transparent pointer-events-none" />
       
       <nav className="relative max-w-lg mx-auto px-6 pb-6">
-        <div className="flex items-center justify-center gap-2 p-2 bg-background/60 backdrop-blur-2xl border border-border/40 rounded-full shadow-2xl">
+        <div className="flex items-center justify-center gap-1 p-2 bg-background/60 backdrop-blur-2xl border border-border/40 rounded-full shadow-2xl">
           {tabs.map((tab) => {
             const IconComponent = tab.icon;
             const isActive = location.pathname === tab.path;
@@ -30,9 +30,10 @@ export default function BottomNav() {
               <button
                 key={tab.id}
                 onClick={() => navigate(tab.path)}
-                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-full transition-all duration-500 ${
+                aria-label={tab.label}
+                className={`relative flex items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
                   isActive 
-                    ? 'bg-primary text-primary-foreground shadow-lg scale-105' 
+                    ? 'bg-primary text-primary-foreground shadow-lg scale-110' 
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 active:scale-95'
                 }`}
               >
@@ -42,22 +43,9 @@ export default function BottomNav() {
                 )}
                 
                 <IconComponent
-                  className={`relative w-5 h-5 transition-all duration-300 ${
-                    isActive ? 'scale-110' : 'scale-100'
-                  }`}
+                  className="relative w-5 h-5 transition-transform duration-300"
                   strokeWidth={isActive ? 2.5 : 2}
                 />
-                
-                {/* Label with smooth expansion */}
-                <span
-                  className={`relative text-sm font-medium whitespace-nowrap overflow-hidden transition-all duration-500 ${
-                    isActive 
-                      ? 'max-w-24 opacity-100' 
-                      : 'max-w-0 opacity-0'
-                  }`}
-                >
-                  {tab.label}
-                </span>
                 
                 {/* Active indicator dot */}
                 {isActive && (
