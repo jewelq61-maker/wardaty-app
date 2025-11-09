@@ -279,36 +279,36 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => navigate('/calendar')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-all duration-300 border border-primary/20 hover:border-primary/30 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-primary/10 hover:bg-primary/15 transition-all duration-300 border-2 border-primary/30 hover:border-primary/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
               <CalendarDays className="w-8 h-8 text-primary mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('logToday')}</p>
             </button>
             
             <button
               onClick={() => navigate('/beauty')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-secondary/10 to-secondary/5 hover:from-secondary/20 hover:to-secondary/10 transition-all duration-300 border border-secondary/20 hover:border-secondary/30 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-secondary/10 hover:bg-secondary/15 transition-all duration-300 border-2 border-secondary/30 hover:border-secondary/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
               <Sparkles className="w-8 h-8 text-secondary mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('beautyPlanner')}</p>
             </button>
             
             <button
               onClick={() => navigate('/fasting-qada')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-fasting/10 to-fasting/5 hover:from-fasting/20 hover:to-fasting/10 transition-all duration-300 border border-fasting/20 hover:border-fasting/30 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-fasting/10 hover:bg-fasting/15 transition-all duration-300 border-2 border-fasting/30 hover:border-fasting/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-fasting/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-fasting/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
               <Moon className="w-8 h-8 text-fasting mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('fastingQada.title')}</p>
             </button>
 
             <button
               onClick={() => navigate('/stats')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-success/10 to-success/5 hover:from-success/20 hover:to-success/10 transition-all duration-300 border border-success/20 hover:border-success/30 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-success/10 hover:bg-success/15 transition-all duration-300 border-2 border-success/30 hover:border-success/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-success/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-success/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
               <TrendingUp className="w-8 h-8 text-success mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('stats')}</p>
             </button>
