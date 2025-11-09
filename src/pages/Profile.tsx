@@ -7,6 +7,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,6 +56,7 @@ export default function Profile() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { locale, setLocale, dir } = useI18n();
+  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -98,6 +100,7 @@ export default function Profile() {
         theme: data.theme || 'light',
       });
       setTempName(data.name || '');
+      // No need to set theme here as ThemeContext handles it
     }
   };
 
@@ -153,6 +156,10 @@ export default function Profile() {
       
       if (field === 'locale' && (value === 'ar' || value === 'en')) {
         setLocale(value);
+      }
+      
+      if (field === 'theme' && (value === 'light' || value === 'dark')) {
+        setTheme(value);
       }
 
       toast({
@@ -401,10 +408,10 @@ export default function Profile() {
 
             <Separator />
 
-            {/* Theme (placeholder - requires theme implementation) */}
+            {/* Theme */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                {profile.theme === 'dark' ? (
+                {theme === 'dark' ? (
                   <Moon className="w-5 h-5 text-muted-foreground" />
                 ) : (
                   <Sun className="w-5 h-5 text-muted-foreground" />
@@ -412,7 +419,7 @@ export default function Profile() {
                 <Label>{t('profilePage.darkMode')}</Label>
               </div>
               <Switch
-                checked={profile.theme === 'dark'}
+                checked={theme === 'dark'}
                 onCheckedChange={(checked) => updateProfile('theme', checked ? 'dark' : 'light')}
                 disabled={loading}
               />

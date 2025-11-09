@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { I18nProvider } from "@/contexts/I18nContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import '@/lib/i18n';
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
@@ -43,28 +44,30 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <I18nProvider>
-        <AuthProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/onboarding/welcome" element={<Welcome />} />
-              <Route path="/onboarding/persona" element={<Persona />} />
-              <Route path="/onboarding/language" element={<Language />} />
-              <Route path="/onboarding/cycle-setup" element={<CycleSetup />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-              <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
-              <Route path="/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
-              <Route path="/articles" element={<ProtectedRoute><Articles /></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-              <Route path="/fasting-qada" element={<ProtectedRoute><FastingQada /></ProtectedRoute>} />
-              <Route path="/beauty" element={<ProtectedRoute><BeautyPlanner /></ProtectedRoute>} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </AuthProvider>
-      </I18nProvider>
+      <ThemeProvider>
+        <I18nProvider>
+          <AuthProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/onboarding/welcome" element={<Welcome />} />
+                <Route path="/onboarding/persona" element={<Persona />} />
+                <Route path="/onboarding/language" element={<Language />} />
+                <Route path="/onboarding/cycle-setup" element={<CycleSetup />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+                <Route path="/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
+                <Route path="/articles" element={<ProtectedRoute><Articles /></ProtectedRoute>} />
+                <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/fasting-qada" element={<ProtectedRoute><FastingQada /></ProtectedRoute>} />
+                <Route path="/beauty" element={<ProtectedRoute><BeautyPlanner /></ProtectedRoute>} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
+        </I18nProvider>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
