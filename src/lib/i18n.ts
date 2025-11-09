@@ -159,6 +159,13 @@ const resources = {
         allCleared: 'تم حذف جميع الأيام',
         confirmClearAll: 'حذف جميع الأيام',
         confirmClearAllDesc: 'هل أنت متأكدة من حذف جميع أيام القضاء المسجلة؟ لا يمكن التراجع عن هذا الإجراء.',
+        reminderTitle: 'تذكير بالصيام',
+        reminderDesc: 'احصلي على تذكير يومي لإكمال أيام القضاء',
+        reminderBody: 'لديك {{count}} يوم متبقي من صيام القضاء',
+        enable: 'تفعيل',
+        enabled: 'مفعّل',
+        notificationsEnabled: 'تم تفعيل التذكيرات بنجاح',
+        calculationError: 'حدث خطأ في حساب الأيام. حاولي مرة أخرى.',
       },
       
       // Beauty Planner
@@ -383,6 +390,13 @@ const resources = {
         allCleared: 'All days cleared',
         confirmClearAll: 'Clear All Days',
         confirmClearAllDesc: 'Are you sure you want to delete all recorded fasting days? This action cannot be undone.',
+        reminderTitle: 'Fasting Reminder',
+        reminderDesc: 'Get daily reminders to complete your fasting days',
+        reminderBody: 'You have {{count}} fasting days remaining',
+        enable: 'Enable',
+        enabled: 'Enabled',
+        notificationsEnabled: 'Reminders enabled successfully',
+        calculationError: 'Error calculating days. Please try again.',
       },
       
       // Beauty Planner

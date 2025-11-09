@@ -49,6 +49,8 @@ export default function FastingQada() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [clearAllDialogOpen, setClearAllDialogOpen] = useState(false);
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
+  const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
   
   const dateLocale = locale === 'ar' ? ar : enUS;
   const BackIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
@@ -60,8 +62,69 @@ export default function FastingQada() {
   useEffect(() => {
     if (user) {
       loadData();
+      checkNotificationPermission();
+      checkReminders();
     }
   }, [user]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('fastingReminderEnabled');
+    setReminderEnabled(saved === 'true');
+  }, []);
+
+  const checkNotificationPermission = () => {
+    if ('Notification' in window) {
+      setNotificationPermission(Notification.permission);
+    }
+  };
+
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationPermission(permission);
+      if (permission === 'granted') {
+        toast({
+          title: t('fastingQada.success'),
+          description: t('fastingQada.notificationsEnabled'),
+        });
+      }
+    }
+  };
+
+  const toggleReminder = async (enabled: boolean) => {
+    if (enabled && notificationPermission !== 'granted') {
+      await requestNotificationPermission();
+      if (Notification.permission !== 'granted') {
+        return;
+      }
+    }
+    setReminderEnabled(enabled);
+    localStorage.setItem('fastingReminderEnabled', enabled.toString());
+    
+    if (enabled && remaining > 0) {
+      showReminderNotification();
+    }
+  };
+
+  const showReminderNotification = () => {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(t('fastingQada.reminderTitle'), {
+        body: t('fastingQada.reminderBody', { count: remaining }),
+        icon: '/favicon.ico',
+        badge: '/favicon.ico',
+      });
+    }
+  };
+
+  const checkReminders = () => {
+    const lastCheck = localStorage.getItem('lastFastingReminderCheck');
+    const today = format(new Date(), 'yyyy-MM-dd');
+    
+    if (lastCheck !== today && reminderEnabled && remaining > 0) {
+      showReminderNotification();
+      localStorage.setItem('lastFastingReminderCheck', today);
+    }
+  };
 
   const loadData = async () => {
     setInitialLoading(true);
@@ -72,30 +135,52 @@ export default function FastingQada() {
   const calculateMissedDays = async () => {
     if (!user) return;
 
-    // Get Ramadan period for current and previous years
-    const currentYear = new Date().getFullYear();
-    const ramadanPeriods = [
-      getRamadanPeriod(currentYear),
-      getRamadanPeriod(currentYear - 1),
-    ];
-
-    let totalMissed = 0;
-
-    for (const period of ramadanPeriods) {
-      const { data: cycleDays } = await supabase
+    try {
+      // Get the earliest cycle day to determine how far back to check
+      const { data: earliestCycleDay } = await supabase
         .from('cycle_days')
-        .select('date, flow')
+        .select('date')
         .eq('user_id', user.id)
-        .gte('date', format(period.start, 'yyyy-MM-dd'))
-        .lte('date', format(period.end, 'yyyy-MM-dd'))
-        .not('flow', 'is', null);
+        .order('date', { ascending: true })
+        .limit(1)
+        .maybeSingle();
 
-      if (cycleDays) {
-        totalMissed += cycleDays.length;
+      if (!earliestCycleDay) {
+        setMissedDays(0);
+        return;
       }
-    }
 
-    setMissedDays(totalMissed);
+      const earliestYear = new Date(earliestCycleDay.date).getFullYear();
+      const currentYear = new Date().getFullYear();
+
+      let totalMissed = 0;
+
+      // Check all Ramadan periods from earliest data year to current year
+      for (let year = earliestYear; year <= currentYear; year++) {
+        const period = getRamadanPeriod(year);
+        
+        const { data: cycleDays } = await supabase
+          .from('cycle_days')
+          .select('date, flow')
+          .eq('user_id', user.id)
+          .gte('date', format(period.start, 'yyyy-MM-dd'))
+          .lte('date', format(period.end, 'yyyy-MM-dd'))
+          .not('flow', 'is', null);
+
+        if (cycleDays) {
+          totalMissed += cycleDays.length;
+        }
+      }
+
+      setMissedDays(totalMissed);
+    } catch (error) {
+      console.error('Error calculating missed days:', error);
+      toast({
+        title: t('fastingQada.error'),
+        description: t('fastingQada.calculationError'),
+        variant: 'destructive',
+      });
+    }
   };
 
   const fetchCompletedEntries = async () => {
@@ -295,6 +380,29 @@ export default function FastingQada() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Reminder Settings */}
+          {remaining > 0 && (
+            <Card className="glass shadow-elegant">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="font-medium">{t('fastingQada.reminderTitle')}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {t('fastingQada.reminderDesc')}
+                    </p>
+                  </div>
+                  <Button
+                    variant={reminderEnabled ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => toggleReminder(!reminderEnabled)}
+                  >
+                    {reminderEnabled ? t('fastingQada.enabled') : t('fastingQada.enable')}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Mark Completion */}
           <Card className="glass shadow-elegant">
