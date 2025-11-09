@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { format, differenceInDays, startOfDay, isWithinInterval } from 'date-fns';
-import { CalendarIcon, Plus, Sparkles, Trash2, Filter } from 'lucide-react';
+import { CalendarIcon, Plus, Sparkles, Trash2, Filter, Droplets, Wind, Zap, Heart, Scissors, Eye, Flower2, Leaf, FlaskConical, Palette } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BottomNav from '@/components/BottomNav';
 
@@ -32,22 +32,48 @@ interface BeautyAction {
 
 type CyclePhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
 
-const beautyRecommendations: Record<CyclePhase, { title: string; items: string[] }> = {
+interface TreatmentItem {
+  key: string;
+  icon: any;
+}
+
+const beautyRecommendations: Record<CyclePhase, { title: string; items: TreatmentItem[] }> = {
   menstrual: {
     title: 'Menstrual Phase',
-    items: ['Gentle facial', 'Hair oiling', 'Hydrating masks', 'Light massage']
+    items: [
+      { key: 'gentle_facial', icon: Droplets },
+      { key: 'hair_oiling', icon: Leaf },
+      { key: 'hydrating_masks', icon: Heart },
+      { key: 'light_massage', icon: Wind }
+    ]
   },
   follicular: {
     title: 'Follicular Phase',
-    items: ['Waxing', 'Threading', 'Exfoliation', 'Face masks', 'Hair treatments']
+    items: [
+      { key: 'waxing', icon: Scissors },
+      { key: 'threading', icon: Eye },
+      { key: 'exfoliation', icon: Sparkles },
+      { key: 'face_masks', icon: Heart },
+      { key: 'hair_treatments', icon: Flower2 }
+    ]
   },
   ovulation: {
     title: 'Ovulation Phase',
-    items: ['Laser hair removal', 'Deep facial', 'Chemical peels', 'Salon treatments']
+    items: [
+      { key: 'laser_hair_removal', icon: Zap },
+      { key: 'deep_facial', icon: Droplets },
+      { key: 'chemical_peels', icon: FlaskConical },
+      { key: 'salon_treatments', icon: Palette }
+    ]
   },
   luteal: {
     title: 'Luteal Phase',
-    items: ['Moisturizing treatments', 'Hair masks', 'Gentle skincare', 'Aromatherapy']
+    items: [
+      { key: 'moisturizing_treatments', icon: Droplets },
+      { key: 'hair_masks', icon: Flower2 },
+      { key: 'gentle_skincare', icon: Heart },
+      { key: 'aromatherapy', icon: Wind }
+    ]
   }
 };
 
@@ -57,6 +83,7 @@ export default function BeautyPlanner() {
   const [currentPhase, setCurrentPhase] = useState<CyclePhase>('follicular');
   const [beautyActions, setBeautyActions] = useState<BeautyAction[]>([]);
   const [isAddingAction, setIsAddingAction] = useState(false);
+  const [selectedTreatment, setSelectedTreatment] = useState<string>('');
   const [newAction, setNewAction] = useState({ title: '', notes: '', scheduled_at: undefined as Date | undefined });
   const [filterPhase, setFilterPhase] = useState<CyclePhase | 'all'>('all');
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
@@ -128,6 +155,14 @@ export default function BeautyPlanner() {
     setBeautyActions(data || []);
   };
 
+  const handleSelectTreatment = (treatmentKey: string) => {
+    setSelectedTreatment(treatmentKey);
+    setNewAction({ 
+      ...newAction, 
+      title: t(`beauty.treatment.${treatmentKey}`)
+    });
+  };
+
   const handleAddAction = async () => {
     if (!user || !newAction.title.trim()) {
       toast({
@@ -163,6 +198,7 @@ export default function BeautyPlanner() {
     });
 
     setNewAction({ title: '', notes: '', scheduled_at: undefined });
+    setSelectedTreatment('');
     setIsAddingAction(false);
     fetchBeautyActions();
   };
@@ -260,57 +296,111 @@ export default function BeautyPlanner() {
               </h2>
             </div>
             
-            <p className="text-sm text-muted-foreground mb-4">{t('beauty.recommended')}:</p>
+            <p className="text-sm text-muted-foreground mb-3">{t('beauty.recommended')}:</p>
             
-            <div className="grid grid-cols-2 gap-2">
-              {recommendations.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background/50 backdrop-blur-sm"
-                >
-                  <div className={cn(
-                    'w-2 h-2 rounded-full',
-                    currentPhase === 'menstrual' && 'bg-period',
-                    currentPhase === 'follicular' && 'bg-success',
-                    currentPhase === 'ovulation' && 'bg-fertile',
-                    currentPhase === 'luteal' && 'bg-fasting'
-                  )} />
-                  <span className="text-xs font-medium text-foreground">
-                    {t(`beauty.treatment.${item.toLowerCase().replace(/\s+/g, '_')}`)}
-                  </span>
-                </div>
-              ))}
+            <div className="grid grid-cols-2 gap-2.5">
+              {recommendations.items.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      handleSelectTreatment(item.key);
+                      setIsAddingAction(true);
+                    }}
+                    className="group flex items-center gap-2.5 px-3 py-3 rounded-xl bg-background/50 backdrop-blur-sm border border-border/50 hover:border-primary/30 hover:bg-background/80 transition-all duration-200 active:scale-95"
+                  >
+                    <div className={cn(
+                      'w-8 h-8 rounded-lg flex items-center justify-center transition-colors',
+                      currentPhase === 'menstrual' && 'bg-period/10 text-period group-hover:bg-period/20',
+                      currentPhase === 'follicular' && 'bg-success/10 text-success group-hover:bg-success/20',
+                      currentPhase === 'ovulation' && 'bg-fertile/10 text-fertile group-hover:bg-fertile/20',
+                      currentPhase === 'luteal' && 'bg-fasting/10 text-fasting group-hover:bg-fasting/20'
+                    )}>
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <span className="text-xs font-medium text-foreground flex-1 text-left">
+                      {t(`beauty.treatment.${item.key}`)}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
 
-        {/* Add Action Button */}
-        <Sheet open={isAddingAction} onOpenChange={setIsAddingAction}>
-          <SheetTrigger asChild>
-            <button className="w-full group relative overflow-hidden rounded-2xl p-4 bg-gradient-to-br from-secondary/20 to-secondary/10 border-2 border-secondary/30 hover:border-secondary/50 transition-all duration-300 hover:shadow-lg active:scale-95">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <div className="relative flex items-center justify-center gap-2">
-                <Plus className="w-5 h-5 text-secondary" />
-                <span className="font-semibold text-foreground">{t('beauty.addAction')}</span>
-              </div>
-            </button>
-          </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
-            <SheetHeader className="pb-6">
-              <SheetTitle className="text-xl">{t('beauty.scheduleAction')}</SheetTitle>
+        {/* Add Action Sheet */}
+        <Sheet open={isAddingAction} onOpenChange={(open) => {
+          setIsAddingAction(open);
+          if (!open) {
+            setSelectedTreatment('');
+            setNewAction({ title: '', notes: '', scheduled_at: undefined });
+          }
+        }}>
+          <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl">
+            <SheetHeader className="pb-6 border-b border-border/50">
+              <SheetTitle className="text-xl flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-secondary" />
+                {t('beauty.scheduleAction')}
+              </SheetTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                {t(`beauty.phase.${currentPhase}`)} - {t('beauty.recommended')}
+              </p>
             </SheetHeader>
-            <div className="space-y-5">
+            
+            <div className="space-y-6 mt-6 overflow-y-auto max-h-[calc(90vh-200px)] pb-24">
+              {/* Quick Select Treatments */}
+              <div>
+                <label className="text-sm font-semibold mb-3 block text-foreground">
+                  {t('beauty.quickSelect')}
+                </label>
+                <div className="grid grid-cols-2 gap-2.5">
+                  {recommendations.items.map((item) => {
+                    const Icon = item.icon;
+                    const isSelected = selectedTreatment === item.key;
+                    return (
+                      <button
+                        key={item.key}
+                        onClick={() => handleSelectTreatment(item.key)}
+                        className={cn(
+                          "flex items-center gap-2.5 px-3 py-3 rounded-xl border-2 transition-all duration-200",
+                          isSelected 
+                            ? "border-secondary bg-secondary/10" 
+                            : "border-border/50 bg-background hover:border-primary/30"
+                        )}
+                      >
+                        <div className={cn(
+                          'w-8 h-8 rounded-lg flex items-center justify-center',
+                          isSelected ? 'bg-secondary/20 text-secondary' : 'bg-muted text-muted-foreground'
+                        )}>
+                          <Icon className="w-4 h-4" />
+                        </div>
+                        <span className="text-xs font-medium text-foreground flex-1 text-left">
+                          {t(`beauty.treatment.${item.key}`)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Custom Title */}
               <div>
                 <label className="text-sm font-semibold mb-2 block text-foreground">
                   {t('beauty.actionTitle')}
                 </label>
                 <Input
                   value={newAction.title}
-                  onChange={(e) => setNewAction({ ...newAction, title: e.target.value })}
+                  onChange={(e) => {
+                    setNewAction({ ...newAction, title: e.target.value });
+                    setSelectedTreatment('');
+                  }}
                   placeholder={t('beauty.actionTitlePlaceholder')}
                   className="h-12"
                 />
               </div>
+
+              {/* Notes */}
               <div>
                 <label className="text-sm font-semibold mb-2 block text-foreground">
                   {t('beauty.notes')}
@@ -323,6 +413,8 @@ export default function BeautyPlanner() {
                   className="resize-none"
                 />
               </div>
+
+              {/* Schedule Date */}
               <div>
                 <label className="text-sm font-semibold mb-2 block text-foreground">
                   {t('beauty.scheduleDate')}
@@ -350,7 +442,12 @@ export default function BeautyPlanner() {
                   </PopoverContent>
                 </Popover>
               </div>
+            </div>
+
+            {/* Fixed Bottom Button */}
+            <div className="absolute bottom-0 left-0 right-0 p-6 bg-background border-t border-border/50">
               <Button onClick={handleAddAction} className="w-full h-12" size="lg">
+                <Plus className="w-4 h-4 mr-2" />
                 {t('beauty.save')}
               </Button>
             </div>

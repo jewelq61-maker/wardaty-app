@@ -278,6 +278,7 @@ const resources = {
         endDate: 'تاريخ النهاية',
         clearDateFilter: 'مسح فلتر التاريخ',
         actions: 'عناية',
+        quickSelect: 'اختيار سريع',
         phase: {
           menstrual: 'مرحلة الحيض',
           follicular: 'المرحلة الجريبية',
@@ -600,6 +601,7 @@ const resources = {
         endDate: 'End Date',
         clearDateFilter: 'Clear Date Filter',
         actions: 'actions',
+        quickSelect: 'Quick Select',
         phase: {
           menstrual: 'Menstrual Phase',
           follicular: 'Follicular Phase',
