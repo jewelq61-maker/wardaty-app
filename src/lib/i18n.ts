@@ -75,6 +75,16 @@ const resources = {
       beautyPlanner: 'مخطط الجمال',
       
       // Cycle
+      cycle: {
+        predictions: 'توقعات الدورة',
+        nextPeriod: 'الدورة القادمة',
+        fertileWindow: 'نافذة الخصوبة',
+        ovulationDate: 'موعد التبويض',
+        inDays: 'بعد {{days}} يوم',
+        now: 'الآن',
+        today: 'اليوم',
+        noCycleData: 'لا توجد بيانات للدورة الشهرية بعد',
+      },
       fertile: 'خصبة',
       mood: 'المزاج',
       symptoms: 'الأعراض',
@@ -260,6 +270,16 @@ const resources = {
       beautyPlanner: 'Beauty Planner',
       
       // Cycle
+      cycle: {
+        predictions: 'Cycle Predictions',
+        nextPeriod: 'Next Period',
+        fertileWindow: 'Fertile Window',
+        ovulationDate: 'Ovulation Date',
+        inDays: 'in {{days}} days',
+        now: 'Now',
+        today: 'Today',
+        noCycleData: 'No cycle data available yet',
+      },
       fertile: 'Fertile',
       mood: 'Mood',
       symptoms: 'Symptoms',

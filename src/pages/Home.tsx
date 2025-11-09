@@ -7,6 +7,7 @@ import { CalendarDays, Sparkles, Moon, Bell } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import BottomNav from '@/components/BottomNav';
 import UpcomingBeautyWidget from '@/components/UpcomingBeautyWidget';
+import CyclePredictionsWidget from '@/components/CyclePredictionsWidget';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -87,6 +88,9 @@ export default function Home() {
           <span>{t('fastingQada')}</span>
         </Button>
       </div>
+
+      {/* Cycle Predictions Widget */}
+      <CyclePredictionsWidget />
 
       {/* Upcoming Beauty Actions Widget */}
       <UpcomingBeautyWidget />
