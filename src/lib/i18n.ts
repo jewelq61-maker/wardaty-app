@@ -107,23 +107,74 @@ const resources = {
       medium: 'متوسط',
       heavy: 'ثقيل',
       
-      // Fasting
-      totalMissed: 'المجموع الفائت',
-      completed: 'مكتمل',
-      remaining: 'المتبقي',
-      markCompleted: 'وضع علامة مكتمل',
-      selectDate: 'اختر تاريخ الإكمال',
-      completedDays: 'الأيام المكتملة',
-      completedOn: 'مكتمل في',
+      // Fasting Qada
+      fastingQada: {
+        title: 'صيام القضاء',
+        subtitle: 'تتبعي أيام القضاء من رمضان',
+        missedDays: 'أيام الإفطار في رمضان',
+        completed: 'تم قضاؤها',
+        remaining: 'متبقية',
+        markCompleted: 'تحديد يوم القضاء',
+        selectDate: 'اختاري تاريخ يوم القضاء',
+        markAsCompleted: 'تأكيد القضاء',
+        completedDays: 'الأيام المقضية',
+        calculating: 'جاري الحساب...',
+        ramadanDays: 'أيام رمضان',
+        periodDays: 'أيام الدورة',
+        error: 'خطأ',
+        success: 'تم بنجاح',
+        dayMarked: 'تم تسجيل يوم القضاء',
+        dayRemoved: 'تم حذف يوم القضاء',
+        noCompletedDays: 'لم تقومي بقضاء أي أيام بعد'
+      },
       
-      // Beauty
-      waxing: 'إزالة الشعر',
-      facial: 'تنظيف البشرة',
-      peel: 'تقشير',
-      laser: 'ليزر',
-      hairOiling: 'حمام زيت',
-      hydrating: 'ترطيب',
-      calming: 'تهدئة',
+      // Beauty Planner
+      beauty: {
+        nav: 'الجمال',
+        title: 'مخطط الجمال',
+        subtitle: 'العناية بجمالك حسب مراحل الدورة',
+        currentPhase: 'المرحلة الحالية من دورتك',
+        recommended: 'العناية الموصى بها',
+        addAction: 'إضافة عناية جديدة',
+        scheduleAction: 'جدولة عناية جمالية',
+        actionTitle: 'نوع العناية',
+        actionTitlePlaceholder: 'مثل: إزالة الشعر بالشمع',
+        notes: 'ملاحظات',
+        notesPlaceholder: 'أي تفاصيل إضافية...',
+        scheduleDate: 'تحديد الموعد',
+        pickDate: 'اختر التاريخ',
+        save: 'حفظ',
+        scheduledActions: 'العناية المجدولة',
+        noActions: 'لم تقومي بجدولة أي عناية بعد',
+        fillTitle: 'يرجى إدخال نوع العناية',
+        actionAdded: 'تم إضافة العناية بنجاح',
+        actionDeleted: 'تم حذف العناية',
+        phase: {
+          menstrual: 'مرحلة الحيض',
+          follicular: 'المرحلة الجريبية',
+          ovulation: 'مرحلة التبويض',
+          luteal: 'المرحلة الصفراء'
+        },
+        treatment: {
+          gentle_facial: 'عناية لطيفة بالبشرة',
+          hair_oiling: 'حمام زيت للشعر',
+          hydrating_masks: 'ماسكات مرطبة',
+          light_massage: 'تدليك خفيف',
+          waxing: 'إزالة الشعر بالشمع',
+          threading: 'نتف الحواجب',
+          exfoliation: 'تقشير البشرة',
+          face_masks: 'ماسكات الوجه',
+          hair_treatments: 'علاجات الشعر',
+          laser_hair_removal: 'إزالة الشعر بالليزر',
+          deep_facial: 'عناية عميقة بالبشرة',
+          chemical_peels: 'التقشير الكيميائي',
+          salon_treatments: 'علاجات الصالون',
+          moisturizing_treatments: 'علاجات الترطيب',
+          hair_masks: 'ماسكات الشعر',
+          gentle_skincare: 'عناية لطيفة بالبشرة',
+          aromatherapy: 'العلاج بالروائح'
+        }
+      },
       
       // Articles
       categories: {
@@ -240,23 +291,74 @@ const resources = {
       medium: 'Medium',
       heavy: 'Heavy',
       
-      // Fasting
-      totalMissed: 'Total Missed',
-      completed: 'Completed',
-      remaining: 'Remaining',
-      markCompleted: 'Mark Completed',
-      selectDate: 'Select completion date',
-      completedDays: 'Completed Days',
-      completedOn: 'Completed on',
+      // Fasting Qada
+      fastingQada: {
+        title: 'Fasting Qada',
+        subtitle: 'Track your Ramadan make-up days',
+        missedDays: 'Missed Ramadan Days',
+        completed: 'Completed',
+        remaining: 'Remaining',
+        markCompleted: 'Mark Day Completed',
+        selectDate: 'Select the date you completed this fast',
+        markAsCompleted: 'Mark as Completed',
+        completedDays: 'Completed Days',
+        calculating: 'Calculating...',
+        ramadanDays: 'Ramadan Days',
+        periodDays: 'Period Days',
+        error: 'Error',
+        success: 'Success',
+        dayMarked: 'Fasting day marked as completed',
+        dayRemoved: 'Completed day removed',
+        noCompletedDays: 'No completed days yet'
+      },
       
-      // Beauty
-      waxing: 'Waxing',
-      facial: 'Facial',
-      peel: 'Peel',
-      laser: 'Laser',
-      hairOiling: 'Hair Oiling',
-      hydrating: 'Hydrating',
-      calming: 'Calming',
+      // Beauty Planner
+      beauty: {
+        nav: 'Beauty',
+        title: 'Beauty Planner',
+        subtitle: 'Personalized care based on your cycle',
+        currentPhase: 'Your current cycle phase',
+        recommended: 'Recommended treatments',
+        addAction: 'Add Beauty Action',
+        scheduleAction: 'Schedule Beauty Action',
+        actionTitle: 'Treatment Type',
+        actionTitlePlaceholder: 'e.g., Waxing',
+        notes: 'Notes',
+        notesPlaceholder: 'Any additional details...',
+        scheduleDate: 'Schedule Date',
+        pickDate: 'Pick a date',
+        save: 'Save',
+        scheduledActions: 'Scheduled Actions',
+        noActions: 'No scheduled beauty actions yet',
+        fillTitle: 'Please enter a treatment type',
+        actionAdded: 'Beauty action added successfully',
+        actionDeleted: 'Beauty action deleted',
+        phase: {
+          menstrual: 'Menstrual Phase',
+          follicular: 'Follicular Phase',
+          ovulation: 'Ovulation Phase',
+          luteal: 'Luteal Phase'
+        },
+        treatment: {
+          gentle_facial: 'Gentle facial',
+          hair_oiling: 'Hair oiling',
+          hydrating_masks: 'Hydrating masks',
+          light_massage: 'Light massage',
+          waxing: 'Waxing',
+          threading: 'Threading',
+          exfoliation: 'Exfoliation',
+          face_masks: 'Face masks',
+          hair_treatments: 'Hair treatments',
+          laser_hair_removal: 'Laser hair removal',
+          deep_facial: 'Deep facial',
+          chemical_peels: 'Chemical peels',
+          salon_treatments: 'Salon treatments',
+          moisturizing_treatments: 'Moisturizing treatments',
+          hair_masks: 'Hair masks',
+          gentle_skincare: 'Gentle skincare',
+          aromatherapy: 'Aromatherapy'
+        }
+      },
       
       // Articles
       categories: {

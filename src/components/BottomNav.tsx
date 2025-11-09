@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Home, Calendar as CalendarIcon, TrendingUp, BookOpen, User } from 'lucide-react';
+import { Home, Calendar as CalendarIcon, TrendingUp, Sparkles, User } from 'lucide-react';
 
 export default function BottomNav() {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ export default function BottomNav() {
   const tabs = [
     { id: 'profile', icon: User, label: t('profile'), path: '/profile' },
     { id: 'stats', icon: TrendingUp, label: t('stats'), path: '/stats' },
-    { id: 'articles', icon: BookOpen, label: t('articles'), path: '/articles' },
+    { id: 'beauty', icon: Sparkles, label: t('beauty.nav'), path: '/beauty' },
     { id: 'calendar', icon: CalendarIcon, label: t('calendar'), path: '/calendar' },
     { id: 'home', icon: Home, label: t('home'), path: '/' },
   ];
