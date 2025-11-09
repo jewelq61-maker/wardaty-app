@@ -16,6 +16,7 @@ import CyclePredictionsWidget from '@/components/CyclePredictionsWidget';
 import DailyInsightsCard from '@/components/DailyInsightsCard';
 import StatsPreviewWidget from '@/components/StatsPreviewWidget';
 import MoodTrackerWidget from '@/components/MoodTrackerWidget';
+import SymptomTrackerWidget from '@/components/SymptomTrackerWidget';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -176,6 +177,9 @@ export default function Home() {
 
       {/* Mood Tracker */}
       <MoodTrackerWidget />
+
+      {/* Symptom Tracker */}
+      <SymptomTrackerWidget />
 
       {/* Daily Insights - AI Powered */}
       {!loading && <DailyInsightsCard phase={currentPhase} />}

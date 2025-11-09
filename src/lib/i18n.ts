@@ -104,6 +104,11 @@ const resources = {
         viewMoodHistory: 'عرض سجل المزاج',
         moodHistory: 'سجل المزاج',
         moodLegend: 'دليل الألوان',
+        trackSymptoms: 'تتبع الأعراض',
+        symptomsUpdated: 'تم تحديث الأعراض',
+        symptomsUpdatedDesc: 'تم حفظ أعراضك لهذا اليوم',
+        symptomError: 'حدث خطأ في تسجيل الأعراض',
+        symptomsSelected: '{{count}} أعراض محددة',
       },
       
       // Cycle
@@ -366,6 +371,11 @@ const resources = {
         viewMoodHistory: 'View Mood History',
         moodHistory: 'Mood History',
         moodLegend: 'Color Legend',
+        trackSymptoms: 'Track Symptoms',
+        symptomsUpdated: 'Symptoms Updated',
+        symptomsUpdatedDesc: 'Your symptoms have been saved for today',
+        symptomError: 'Error logging symptoms',
+        symptomsSelected: '{{count}} symptoms selected',
       },
       
       // Cycle
