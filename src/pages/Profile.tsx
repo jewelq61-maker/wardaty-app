@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Bell, LogOut, User, Settings, BarChart3, Moon, Sun, 
-  Globe, Download, Trash2, ChevronRight, Edit2, Check, X 
+  Globe, Download, Trash2, ChevronRight, Edit2, Check, X, Share2, Link2, UserPlus, Copy
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -29,6 +29,13 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -50,6 +57,20 @@ interface Statistics {
   trackedDays: number;
   moodsLogged: number;
   beautyActions: number;
+}
+
+interface ShareLink {
+  id: string;
+  code: string;
+  status: 'pending' | 'active';
+  connected_user_id?: string;
+  created_at: string;
+}
+
+interface PartnerProfile {
+  name: string;
+  email: string;
+  stats: Statistics;
 }
 
 export default function Profile() {
@@ -75,13 +96,21 @@ export default function Profile() {
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [shareLink, setShareLink] = useState<ShareLink | null>(null);
+  const [partnerProfile, setPartnerProfile] = useState<PartnerProfile | null>(null);
+  const [connectCode, setConnectCode] = useState('');
+  const [showConnectDialog, setShowConnectDialog] = useState(false);
 
   useEffect(() => {
     if (user) {
       loadProfile();
       loadStatistics();
+      if (profile.persona === 'married') {
+        loadShareLink();
+        loadPartnerProfile();
+      }
     }
-  }, [user]);
+  }, [user, profile.persona]);
 
   const loadProfile = async () => {
     if (!user) return;
@@ -138,6 +167,181 @@ export default function Profile() {
       moodsLogged: moodDays?.length || 0,
       beautyActions: beautyActions?.length || 0,
     });
+  };
+
+  const loadShareLink = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('share_links')
+      .select('*')
+      .eq('owner_id', user.id)
+      .eq('type', 'profile')
+      .maybeSingle();
+
+    if (data) {
+      setShareLink(data as ShareLink);
+    }
+  };
+
+  const loadPartnerProfile = async () => {
+    if (!user) return;
+
+    // Check if user is connected to someone else's profile
+    const { data: connectedLink } = await supabase
+      .from('share_links')
+      .select('*, profiles!share_links_owner_id_fkey(name, email)')
+      .eq('connected_user_id', user.id)
+      .eq('type', 'profile')
+      .eq('status', 'active')
+      .maybeSingle();
+
+    if (connectedLink) {
+      // Load partner's statistics
+      const partnerId = connectedLink.owner_id;
+      
+      const [cycles, cycleDays, moodDays, beautyActions] = await Promise.all([
+        supabase.from('cycles').select('id').eq('user_id', partnerId),
+        supabase.from('cycle_days').select('id').eq('user_id', partnerId),
+        supabase.from('cycle_days').select('id').eq('user_id', partnerId).not('mood', 'is', null),
+        supabase.from('beauty_actions').select('id').eq('user_id', partnerId),
+      ]);
+
+      setPartnerProfile({
+        name: (connectedLink.profiles as any)?.name || 'Partner',
+        email: (connectedLink.profiles as any)?.email || '',
+        stats: {
+          totalCycles: cycles.data?.length || 0,
+          trackedDays: cycleDays.data?.length || 0,
+          moodsLogged: moodDays.data?.length || 0,
+          beautyActions: beautyActions.data?.length || 0,
+        }
+      });
+    }
+  };
+
+  const generateShareLink = async () => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      // Generate random 6-character code
+      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+      const { data, error } = await supabase
+        .from('share_links')
+        .insert({
+          owner_id: user.id,
+          type: 'profile',
+          code,
+          status: 'pending',
+          scope: { stats: true }
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setShareLink(data as ShareLink);
+      toast({
+        title: t('success'),
+        description: t('profilePage.shareLinkCreated'),
+      });
+    } catch (error) {
+      toast({
+        title: t('error'),
+        description: t('profilePage.shareLinkError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const connectWithCode = async () => {
+    if (!user || !connectCode.trim()) return;
+
+    setLoading(true);
+    try {
+      // Find the share link by code
+      const { data: link, error: findError } = await supabase
+        .from('share_links')
+        .select('*')
+        .eq('code', connectCode.toUpperCase())
+        .eq('type', 'profile')
+        .eq('status', 'pending')
+        .maybeSingle();
+
+      if (findError || !link) {
+        throw new Error(t('profilePage.invalidCode'));
+      }
+
+      // Update the share link with connected user
+      const { error: updateError } = await supabase
+        .from('share_links')
+        .update({
+          connected_user_id: user.id,
+          status: 'active'
+        })
+        .eq('id', link.id);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: t('success'),
+        description: t('profilePage.connectedSuccess'),
+      });
+
+      setShowConnectDialog(false);
+      setConnectCode('');
+      loadPartnerProfile();
+    } catch (error: any) {
+      toast({
+        title: t('error'),
+        description: error.message || t('profilePage.connectError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyShareCode = () => {
+    if (shareLink) {
+      navigator.clipboard.writeText(shareLink.code);
+      toast({
+        title: t('success'),
+        description: t('profilePage.codeCopied'),
+      });
+    }
+  };
+
+  const revokeShareLink = async () => {
+    if (!shareLink) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('share_links')
+        .delete()
+        .eq('id', shareLink.id);
+
+      if (error) throw error;
+
+      setShareLink(null);
+      toast({
+        title: t('success'),
+        description: t('profilePage.shareLinkRevoked'),
+      });
+    } catch (error) {
+      toast({
+        title: t('error'),
+        description: t('profilePage.revokeError'),
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const updateProfile = async (field: keyof ProfileData, value: string) => {
@@ -354,6 +558,101 @@ export default function Profile() {
           </div>
         </div>
 
+        {/* Partner Sharing - Premium Feature for Married */}
+        {profile.persona === 'married' && (
+          <div className="rounded-3xl bg-gradient-to-br from-married-primary/10 to-married-primary/5 p-6 border-2 border-married-primary/20 shadow-lg animate-fade-in">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-married-primary/10 flex items-center justify-center">
+                <Share2 className="w-5 h-5 text-married-primary" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-foreground">{t('profilePage.partnerSharing')}</h3>
+                <Badge className="mt-1 bg-married-primary/10 text-married-primary border-married-primary/20 text-xs">
+                  {t('profilePage.premiumFeature')}
+                </Badge>
+              </div>
+            </div>
+
+            {/* Partner's Stats */}
+            {partnerProfile && (
+              <div className="mb-4 p-4 rounded-2xl bg-background/50 backdrop-blur-sm border border-border/50">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{partnerProfile.name}</p>
+                    <p className="text-xs text-muted-foreground">{t('profilePage.partnerStats')}</p>
+                  </div>
+                  <UserPlus className="w-5 h-5 text-married-primary" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="text-center p-2 rounded-lg bg-background/50">
+                    <div className="text-lg font-bold text-married-primary">{partnerProfile.stats.totalCycles}</div>
+                    <div className="text-xs text-muted-foreground">{t('statsPage.totalCycles')}</div>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-background/50">
+                    <div className="text-lg font-bold text-married-primary">{partnerProfile.stats.trackedDays}</div>
+                    <div className="text-xs text-muted-foreground">{t('statsPage.trackedDays')}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Share Link Management */}
+            <div className="space-y-3">
+              {shareLink ? (
+                <div className="p-4 rounded-2xl bg-background/50 backdrop-blur-sm border border-border/50">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs text-muted-foreground">{t('profilePage.shareCode')}</span>
+                    <Badge className="bg-success/10 text-success border-success/20">
+                      {shareLink.status === 'active' ? t('profilePage.connected') : t('profilePage.pending')}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 font-mono text-2xl font-bold tracking-wider text-foreground">
+                      {shareLink.code}
+                    </div>
+                    <Button size="icon" variant="outline" onClick={copyShareCode}>
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={revokeShareLink}
+                    className="w-full mt-3 text-destructive hover:text-destructive"
+                    disabled={loading}
+                  >
+                    {t('profilePage.revokeLink')}
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={generateShareLink}
+                  disabled={loading}
+                  className="w-full h-12 bg-married-primary hover:bg-married-primary/90"
+                >
+                  <Link2 className="w-4 h-4 mr-2" />
+                  {t('profilePage.generateShareLink')}
+                </Button>
+              )}
+
+              {!partnerProfile && (
+                <Button
+                  variant="outline"
+                  onClick={() => setShowConnectDialog(true)}
+                  className="w-full h-12 border-2"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  {t('profilePage.connectWithPartner')}
+                </Button>
+              )}
+            </div>
+
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              {t('profilePage.sharingDescription')}
+            </p>
+          </div>
+        )}
+
         {/* Preferences */}
         <div className="rounded-3xl bg-card p-6 border border-border/50 shadow-md animate-fade-in">
           <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
@@ -482,6 +781,34 @@ export default function Profile() {
           </div>
         </div>
       </main>
+
+      {/* Connect Dialog */}
+      <Dialog open={showConnectDialog} onOpenChange={setShowConnectDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t('profilePage.connectWithPartner')}</DialogTitle>
+            <DialogDescription>
+              {t('profilePage.enterPartnerCode')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <Input
+              value={connectCode}
+              onChange={(e) => setConnectCode(e.target.value.toUpperCase())}
+              placeholder="XXXXXX"
+              className="text-center text-2xl font-mono font-bold tracking-wider h-14"
+              maxLength={6}
+            />
+            <Button
+              onClick={connectWithCode}
+              disabled={loading || !connectCode.trim()}
+              className="w-full h-12"
+            >
+              {t('profilePage.connect')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <BottomNav />
     </div>
