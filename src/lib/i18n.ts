@@ -13,6 +13,7 @@ const resources = {
       edit: 'تعديل',
       user: 'المستخدم',
       error: 'خطأ',
+      success: 'نجح',
       
       // Auth
       login: 'تسجيل الدخول',
@@ -25,13 +26,38 @@ const resources = {
       loginSuccess: 'تم تسجيل الدخول بنجاح',
       accountCreated: 'تم إنشاء الحساب',
       checkEmail: 'تحقق من بريدك الإلكتروني',
-      welcomeMessage: 'مرحباً بك في تطبيق وردية لصحة المرأة',
+      
+      // Onboarding
+      onboarding: {
+        skip: 'تخطى',
+        welcome: 'مرحباً بك في وردية',
+        welcomeSubtitle: 'رفيقتك في رحلة الأنوثة والعافية\nنحن هنا لنهتم بك في كل مرحلة',
+        startJourney: 'ابدأي رحلتك',
+        choosePersona: 'اختاري شخصيتك',
+        personaSubtitle: 'اختاري الشخصية التي تناسبك لتجربة مخصصة',
+        chooseLanguage: 'اختاري اللغة',
+        languageSubtitle: 'Choose your preferred language',
+        setupCycle: 'إعداد الدورة الشهرية',
+        setupSubtitle: 'ساعدينا لنتمكن من تقديم توقعات دقيقة',
+        lastPeriodDate: 'تاريخ آخر دورة شهرية',
+        averageCycleLength: 'متوسط طول الدورة (أيام)',
+        periodDuration: 'مدة الدورة الشهرية (أيام)',
+        complete: 'إكمال',
+        next: 'التالي',
+        back: 'رجوع',
+      },
       
       // Personas
-      single: 'العزباء',
-      married: 'المتزوجة',
-      mother: 'الأم',
-      partner: 'الشريك',
+      personas: {
+        single: 'العزباء',
+        married: 'المتزوجة',
+        mother: 'الأم',
+        partner: 'الشريك',
+        singleDesc: 'تتبع دورتك الشهرية والعناية بصحتك',
+        marriedDesc: 'إدارة الخصوبة وتخطيط الأسرة',
+        motherDesc: 'متابعة صحة ابنتك ودورتها',
+        partnerDesc: 'دعم شريكة حياتك وفهم احتياجاتها',
+      },
       
       // Navigation
       home: 'الرئيسية',
@@ -42,6 +68,7 @@ const resources = {
       
       // Home
       greeting: 'مرحباً، {{name}} 💕',
+      welcomeMessage: 'نحن هنا لمساعدتك في كل خطوة',
       currentPhase: 'المرحلة الحالية',
       daysToNextPeriod: 'أيام حتى الدورة القادمة',
       logToday: 'تسجيل اليوم',
@@ -109,6 +136,7 @@ const resources = {
       edit: 'Edit',
       user: 'User',
       error: 'Error',
+      success: 'Success',
       
       // Auth
       login: 'Login',
@@ -121,13 +149,38 @@ const resources = {
       loginSuccess: 'Logged in successfully',
       accountCreated: 'Account created',
       checkEmail: 'Check your email',
-      welcomeMessage: 'Welcome to Wardiya women\'s wellness app',
+      
+      // Onboarding
+      onboarding: {
+        skip: 'Skip',
+        welcome: 'Welcome to Wardiya',
+        welcomeSubtitle: 'Your companion in femininity and wellness\nWe are here to care for you at every stage',
+        startJourney: 'Start Your Journey',
+        choosePersona: 'Choose Your Persona',
+        personaSubtitle: 'Select the persona that suits you for a personalized experience',
+        chooseLanguage: 'Choose Language',
+        languageSubtitle: 'اختاري اللغة المفضلة',
+        setupCycle: 'Setup Your Cycle',
+        setupSubtitle: 'Help us provide accurate predictions',
+        lastPeriodDate: 'Last Period Date',
+        averageCycleLength: 'Average Cycle Length (days)',
+        periodDuration: 'Period Duration (days)',
+        complete: 'Complete',
+        next: 'Next',
+        back: 'Back',
+      },
       
       // Personas
-      single: 'Single',
-      married: 'Married',
-      mother: 'Mother',
-      partner: 'Partner',
+      personas: {
+        single: 'Single',
+        married: 'Married',
+        mother: 'Mother',
+        partner: 'Partner',
+        singleDesc: 'Track your cycle and care for your health',
+        marriedDesc: 'Manage fertility and family planning',
+        motherDesc: 'Monitor your daughter\'s health and cycle',
+        partnerDesc: 'Support your partner and understand her needs',
+      },
       
       // Navigation
       home: 'Home',
@@ -138,6 +191,7 @@ const resources = {
       
       // Home
       greeting: 'Hello, {{name}} 💕',
+      welcomeMessage: 'We are here to help you every step of the way',
       currentPhase: 'Current Phase',
       daysToNextPeriod: 'Days to Next Period',
       logToday: 'Log Today',

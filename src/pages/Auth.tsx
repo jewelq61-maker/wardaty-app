@@ -52,7 +52,7 @@ export default function Auth() {
           description: t('checkEmail'),
         });
         
-        navigate('/onboarding');
+        navigate('/onboarding/welcome');
       }
     } catch (error: any) {
       toast({
