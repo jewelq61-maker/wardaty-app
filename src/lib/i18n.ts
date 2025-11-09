@@ -60,12 +60,28 @@ const resources = {
         partnerDesc: 'دعم شريكة حياتك وفهم احتياجاتها',
       },
       
-      // Navigation
-      homeNav: 'الرئيسية',
-      calendar: 'التقويم',
-      stats: 'الإحصائيات',
-      articles: 'المقالات',
+      // Profile
       profile: 'الملف الشخصي',
+      
+      profilePage: {
+        statistics: 'الإحصائيات',
+        preferences: 'التفضيلات',
+        dataPrivacy: 'البيانات والخصوصية',
+        moodsLogged: 'تسجيلات المزاج',
+        beautyScheduled: 'مواعيد الجمال',
+        darkMode: 'الوضع الليلي',
+        exportData: 'تصدير البيانات',
+        deleteAccount: 'حذف الحساب',
+        confirmDelete: 'تأكيد حذف الحساب',
+        confirmDeleteDesc: 'هل أنت متأكدة من حذف حسابك؟ سيتم حذف جميع بياناتك بشكل دائم ولا يمكن استرجاعها.',
+        updated: 'تم تحديث الملف الشخصي',
+        updateError: 'حدث خطأ في التحديث',
+        dataExported: 'تم تصدير البيانات بنجاح',
+        exportError: 'حدث خطأ في تصدير البيانات',
+        accountDeleted: 'تم حذف الحساب بنجاح',
+        deleteError: 'حدث خطأ في حذف الحساب',
+        enterName: 'أدخل اسمك',
+      },
       
       // Stats
       statsPage: {
@@ -333,6 +349,26 @@ const resources = {
       stats: 'Stats',
       articles: 'Articles',
       profile: 'Profile',
+      
+      profilePage: {
+        statistics: 'Statistics',
+        preferences: 'Preferences',
+        dataPrivacy: 'Data & Privacy',
+        moodsLogged: 'Moods Logged',
+        beautyScheduled: 'Beauty Scheduled',
+        darkMode: 'Dark Mode',
+        exportData: 'Export Data',
+        deleteAccount: 'Delete Account',
+        confirmDelete: 'Confirm Account Deletion',
+        confirmDeleteDesc: 'Are you sure you want to delete your account? All your data will be permanently deleted and cannot be recovered.',
+        updated: 'Profile updated successfully',
+        updateError: 'Error updating profile',
+        dataExported: 'Data exported successfully',
+        exportError: 'Error exporting data',
+        accountDeleted: 'Account deleted successfully',
+        deleteError: 'Error deleting account',
+        enterName: 'Enter your name',
+      },
       
       // Stats
       statsPage: {
