@@ -73,7 +73,6 @@ const resources = {
       daysToNextPeriod: 'أيام حتى الدورة القادمة',
       logToday: 'تسجيل اليوم',
       beautyPlanner: 'مخطط الجمال',
-      fastingQada: 'قضاء الصيام',
       
       // Cycle
       fertile: 'خصبة',
@@ -257,7 +256,6 @@ const resources = {
       daysToNextPeriod: 'Days to Next Period',
       logToday: 'Log Today',
       beautyPlanner: 'Beauty Planner',
-      fastingQada: 'Fasting Qada',
       
       // Cycle
       fertile: 'Fertile',
