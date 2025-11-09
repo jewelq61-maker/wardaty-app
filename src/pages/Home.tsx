@@ -2,14 +2,30 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Sparkles, Moon } from 'lucide-react';
+import { CalendarDays, Sparkles, Moon, Bell } from 'lucide-react';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import BottomNav from '@/components/BottomNav';
 
 export default function Home() {
   const { t } = useTranslation();
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen p-4 space-y-6">
+    <div className="min-h-screen p-4 space-y-6 pb-24">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <Avatar className="w-12 h-12">
+          <AvatarFallback className="bg-gradient-to-br from-single-primary to-married-primary text-white">
+            {user?.email?.[0].toUpperCase() || 'U'}
+          </AvatarFallback>
+        </Avatar>
+        
+        <button className="p-2 hover:bg-muted rounded-full transition-colors relative">
+          <Bell className="w-6 h-6" />
+          <span className="absolute top-1 right-1 w-2 h-2 bg-period rounded-full"></span>
+        </button>
+      </div>
+
       {/* Greeting Card */}
       <Card className="glass shadow-elegant">
         <CardHeader>
@@ -65,6 +81,8 @@ export default function Home() {
           <span>{t('fastingQada')}</span>
         </Button>
       </div>
+
+      <BottomNav />
     </div>
   );
 }

@@ -8,6 +8,10 @@ import { I18nProvider } from "@/contexts/I18nContext";
 import '@/lib/i18n';
 import Auth from "./pages/Auth";
 import Home from "./pages/Home";
+import Calendar from "./pages/Calendar";
+import Stats from "./pages/Stats";
+import Articles from "./pages/Articles";
+import Profile from "./pages/Profile";
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
@@ -47,6 +51,10 @@ const App = () => (
               <Route path="/onboarding/cycle-setup" element={<CycleSetup />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+              <Route path="/calendar" element={<ProtectedRoute><Calendar /></ProtectedRoute>} />
+              <Route path="/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
+              <Route path="/articles" element={<ProtectedRoute><Articles /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

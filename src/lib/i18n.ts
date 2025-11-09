@@ -75,6 +75,13 @@ const resources = {
       beautyPlanner: 'مخطط الجمال',
       fastingQada: 'قضاء الصيام',
       
+      // Cycle
+      fertile: 'خصبة',
+      mood: 'المزاج',
+      symptoms: 'الأعراض',
+      notes: 'ملاحظات',
+      flow: 'التدفق',
+      
       // Cycle Phases
       menstrual: 'الحيض',
       follicular: 'الجريبية',
@@ -197,6 +204,13 @@ const resources = {
       logToday: 'Log Today',
       beautyPlanner: 'Beauty Planner',
       fastingQada: 'Fasting Qada',
+      
+      // Cycle
+      fertile: 'Fertile',
+      mood: 'Mood',
+      symptoms: 'Symptoms',
+      notes: 'Notes',
+      flow: 'Flow',
       
       // Cycle Phases
       menstrual: 'Menstrual',
