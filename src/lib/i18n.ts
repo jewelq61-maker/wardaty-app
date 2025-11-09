@@ -61,7 +61,7 @@ const resources = {
       },
       
       // Navigation
-      home: 'الرئيسية',
+      homeNav: 'الرئيسية',
       calendar: 'التقويم',
       stats: 'الإحصائيات',
       articles: 'المقالات',
@@ -89,6 +89,15 @@ const resources = {
       daysToNextPeriod: 'أيام حتى الدورة القادمة',
       logToday: 'تسجيل اليوم',
       beautyPlanner: 'مخطط الجمال',
+      
+      home: {
+        dailyInsights: 'رؤى يومية',
+        quickStats: 'إحصائيات سريعة',
+        viewAll: 'عرض الكل',
+        notifications: 'الإشعارات',
+        notificationDesc: 'لديك {{count}} إشعار',
+        noNotifications: 'لا توجد إشعارات جديدة',
+      },
       
       // Cycle
       cycle: {
@@ -307,7 +316,7 @@ const resources = {
       },
       
       // Navigation
-      home: 'Home',
+      homeNav: 'Home',
       calendar: 'Calendar',
       stats: 'Stats',
       articles: 'Articles',
@@ -335,6 +344,15 @@ const resources = {
       daysToNextPeriod: 'Days to Next Period',
       logToday: 'Log Today',
       beautyPlanner: 'Beauty Planner',
+      
+      home: {
+        dailyInsights: 'Daily Insights',
+        quickStats: 'Quick Stats',
+        viewAll: 'View All',
+        notifications: 'Notifications',
+        notificationDesc: 'You have {{count}} notification(s)',
+        noNotifications: 'No new notifications',
+      },
       
       // Cycle
       cycle: {

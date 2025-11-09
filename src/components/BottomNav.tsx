@@ -12,7 +12,7 @@ export default function BottomNav() {
     { id: 'stats', icon: TrendingUp, label: t('stats'), path: '/stats' },
     { id: 'beauty', icon: Sparkles, label: t('beauty.nav'), path: '/beauty' },
     { id: 'calendar', icon: CalendarIcon, label: t('calendar'), path: '/calendar' },
-    { id: 'home', icon: Home, label: t('home'), path: '/' },
+    { id: 'home', icon: Home, label: t('homeNav'), path: '/' },
   ];
 
   return (
