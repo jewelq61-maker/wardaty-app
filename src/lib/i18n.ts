@@ -214,7 +214,7 @@ const resources = {
       },
       articlesPage: {
         search: 'ابحث في المقالات...',
-        noArticles: 'لا توجد مقالات في هذا القسم',
+        noResults: 'لم يتم العثور على مقالات',
       }
     }
   },
@@ -430,7 +430,7 @@ const resources = {
       },
       articlesPage: {
         search: 'Search articles...',
-        noArticles: 'No articles in this category',
+        noResults: 'No articles found',
       }
     }
   }
