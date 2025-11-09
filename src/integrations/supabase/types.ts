@@ -43,6 +43,8 @@ export type Database = {
       }
       beauty_actions: {
         Row: {
+          completed: boolean
+          completed_at: string | null
           created_at: string
           id: string
           notes: string | null
@@ -53,6 +55,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          completed?: boolean
+          completed_at?: string | null
           created_at?: string
           id?: string
           notes?: string | null
@@ -63,6 +67,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          completed?: boolean
+          completed_at?: string | null
           created_at?: string
           id?: string
           notes?: string | null

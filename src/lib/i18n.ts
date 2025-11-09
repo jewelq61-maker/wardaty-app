@@ -279,6 +279,9 @@ const resources = {
         clearDateFilter: 'مسح فلتر التاريخ',
         actions: 'عناية',
         quickSelect: 'اختيار سريع',
+        phaseStats: 'إحصائيات المراحل',
+        actionCompleted: 'تم تحديد العناية كمنجزة',
+        actionUncompleted: 'تم إلغاء إنجاز العناية',
         phase: {
           menstrual: 'مرحلة الحيض',
           follicular: 'المرحلة الجريبية',
@@ -602,6 +605,9 @@ const resources = {
         clearDateFilter: 'Clear Date Filter',
         actions: 'actions',
         quickSelect: 'Quick Select',
+        phaseStats: 'Phase Statistics',
+        actionCompleted: 'Action marked as completed',
+        actionUncompleted: 'Action marked as incomplete',
         phase: {
           menstrual: 'Menstrual Phase',
           follicular: 'Follicular Phase',

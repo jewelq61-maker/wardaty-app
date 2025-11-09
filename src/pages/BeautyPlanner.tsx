@@ -12,7 +12,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { format, differenceInDays, startOfDay, isWithinInterval } from 'date-fns';
-import { CalendarIcon, Plus, Sparkles, Trash2, Filter, Droplets, Wind, Zap, Heart, Scissors, Eye, Flower2, Leaf, FlaskConical, Palette } from 'lucide-react';
+import { CalendarIcon, Plus, Sparkles, Trash2, Filter, Droplets, Wind, Zap, Heart, Scissors, Eye, Flower2, Leaf, FlaskConical, Palette, CheckCircle2, Circle, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BottomNav from '@/components/BottomNav';
 
@@ -28,6 +28,15 @@ interface BeautyAction {
   phase: string;
   scheduled_at?: string;
   created_at: string;
+  completed: boolean;
+  completed_at?: string;
+}
+
+interface PhaseStats {
+  phase: CyclePhase;
+  total: number;
+  completed: number;
+  percentage: number;
 }
 
 type CyclePhase = 'menstrual' | 'follicular' | 'ovulation' | 'luteal';
@@ -87,6 +96,7 @@ export default function BeautyPlanner() {
   const [newAction, setNewAction] = useState({ title: '', notes: '', scheduled_at: undefined as Date | undefined });
   const [filterPhase, setFilterPhase] = useState<CyclePhase | 'all'>('all');
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
+  const [phaseStats, setPhaseStats] = useState<PhaseStats[]>([]);
 
   useEffect(() => {
     if (user) {
@@ -94,6 +104,10 @@ export default function BeautyPlanner() {
       fetchBeautyActions();
     }
   }, [user]);
+
+  useEffect(() => {
+    calculatePhaseStats();
+  }, [beautyActions]);
 
   const fetchCyclePhase = async () => {
     if (!user) return;
@@ -153,6 +167,46 @@ export default function BeautyPlanner() {
     }
 
     setBeautyActions(data || []);
+  };
+
+  const calculatePhaseStats = () => {
+    const phases: CyclePhase[] = ['menstrual', 'follicular', 'ovulation', 'luteal'];
+    const stats = phases.map(phase => {
+      const phaseActions = beautyActions.filter(action => action.phase === phase);
+      const completed = phaseActions.filter(action => action.completed).length;
+      const total = phaseActions.length;
+      const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+      
+      return { phase, total, completed, percentage };
+    });
+    
+    setPhaseStats(stats);
+  };
+
+  const handleToggleComplete = async (actionId: string, currentStatus: boolean) => {
+    const { error } = await supabase
+      .from('beauty_actions')
+      .update({
+        completed: !currentStatus,
+        completed_at: !currentStatus ? new Date().toISOString() : null
+      })
+      .eq('id', actionId);
+
+    if (error) {
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    toast({
+      title: t('success'),
+      description: !currentStatus ? t('beauty.actionCompleted') : t('beauty.actionUncompleted')
+    });
+
+    fetchBeautyActions();
   };
 
   const handleSelectTreatment = (treatmentKey: string) => {
@@ -326,6 +380,52 @@ export default function BeautyPlanner() {
                 );
               })}
             </div>
+          </div>
+        </div>
+
+        {/* Phase Statistics */}
+        <div className="rounded-2xl bg-card border border-border p-5 animate-fade-in">
+          <div className="flex items-center gap-2 mb-4">
+            <TrendingUp className="w-5 h-5 text-secondary" />
+            <h2 className="text-sm font-semibold text-foreground">{t('beauty.phaseStats')}</h2>
+          </div>
+          
+          <div className="space-y-3">
+            {phaseStats.map((stat) => (
+              <div key={stat.phase} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-foreground">
+                    {t(`beauty.phase.${stat.phase}`)}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-muted-foreground">
+                      {stat.completed}/{stat.total}
+                    </span>
+                    <span className={cn(
+                      "text-xs font-semibold px-2 py-0.5 rounded-full",
+                      stat.phase === 'menstrual' && 'bg-period/10 text-period',
+                      stat.phase === 'follicular' && 'bg-success/10 text-success',
+                      stat.phase === 'ovulation' && 'bg-fertile/10 text-fertile',
+                      stat.phase === 'luteal' && 'bg-fasting/10 text-fasting'
+                    )}>
+                      {stat.percentage}%
+                    </span>
+                  </div>
+                </div>
+                <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
+                  <div
+                    className={cn(
+                      "h-full transition-all duration-500 rounded-full",
+                      stat.phase === 'menstrual' && 'bg-period',
+                      stat.phase === 'follicular' && 'bg-success',
+                      stat.phase === 'ovulation' && 'bg-fertile',
+                      stat.phase === 'luteal' && 'bg-fasting'
+                    )}
+                    style={{ width: `${stat.percentage}%` }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -553,17 +653,42 @@ export default function BeautyPlanner() {
               {filteredActions.map((action) => (
                 <div
                   key={action.id}
-                  className="group relative overflow-hidden rounded-2xl p-4 bg-card border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300"
+                  className={cn(
+                    "group relative overflow-hidden rounded-2xl p-4 border transition-all duration-300",
+                    action.completed 
+                      ? "bg-muted/50 border-border/50" 
+                      : "bg-card border-border hover:border-primary/30 hover:shadow-md"
+                  )}
                 >
-                  <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    {/* Completion Toggle */}
+                    <button
+                      onClick={() => handleToggleComplete(action.id, action.completed)}
+                      className="mt-1 shrink-0"
+                    >
+                      {action.completed ? (
+                        <CheckCircle2 className="w-5 h-5 text-success" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" />
+                      )}
+                    </button>
+
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-foreground mb-1 truncate">{action.title}</h3>
+                      <h3 className={cn(
+                        "font-semibold mb-1 truncate",
+                        action.completed ? "text-muted-foreground line-through" : "text-foreground"
+                      )}>
+                        {action.title}
+                      </h3>
                       {action.notes && (
-                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                        <p className={cn(
+                          "text-sm line-clamp-2 mb-2",
+                          action.completed ? "text-muted-foreground/70" : "text-muted-foreground"
+                        )}>
                           {action.notes}
                         </p>
                       )}
-                      <div className="flex items-center gap-3 text-xs">
+                      <div className="flex items-center gap-3 text-xs flex-wrap">
                         <span className={cn(
                           'px-2 py-1 rounded-lg font-medium',
                           action.phase === 'menstrual' && 'bg-period/10 text-period',
@@ -579,8 +704,15 @@ export default function BeautyPlanner() {
                             {format(new Date(action.scheduled_at), 'PP')}
                           </span>
                         )}
+                        {action.completed && action.completed_at && (
+                          <span className="flex items-center gap-1 text-success">
+                            <CheckCircle2 className="w-3 h-3" />
+                            {format(new Date(action.completed_at), 'PP')}
+                          </span>
+                        )}
                       </div>
                     </div>
+
                     <Button
                       variant="ghost"
                       size="icon"
