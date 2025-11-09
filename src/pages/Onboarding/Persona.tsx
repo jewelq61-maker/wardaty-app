@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Heart, Users, Baby, HeartHandshake, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 type Persona = 'single' | 'married' | 'mother' | 'partner';
 
@@ -25,6 +26,7 @@ const personaColors = {
 export default function Persona() {
   const { t } = useTranslation();
   const { dir } = useI18n();
+  const { setPersona } = useTheme();
   const navigate = useNavigate();
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
 
@@ -32,8 +34,8 @@ export default function Persona() {
 
   const handleNext = () => {
     if (selectedPersona) {
-      // Store persona selection
-      localStorage.setItem('selectedPersona', selectedPersona);
+      // Apply persona selection immediately
+      setPersona(selectedPersona);
       navigate('/onboarding/language');
     }
   };
