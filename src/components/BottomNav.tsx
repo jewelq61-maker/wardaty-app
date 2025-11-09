@@ -8,10 +8,10 @@ export default function BottomNav() {
   const { t } = useTranslation();
 
   const tabs = [
-    { id: 'home', icon: Home, label: t('homeNav'), path: '/' },
-    { id: 'calendar', icon: CalendarIcon, label: t('calendar'), path: '/calendar' },
-    { id: 'beauty', icon: Sparkles, label: t('beauty.nav'), path: '/beauty' },
     { id: 'stats', icon: TrendingUp, label: t('stats'), path: '/stats' },
+    { id: 'calendar', icon: CalendarIcon, label: t('calendar'), path: '/calendar' },
+    { id: 'home', icon: Home, label: t('homeNav'), path: '/' },
+    { id: 'beauty', icon: Sparkles, label: t('beauty.nav'), path: '/beauty' },
     { id: 'profile', icon: User, label: t('profile'), path: '/profile' },
   ];
 
