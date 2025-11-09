@@ -13,6 +13,10 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        tajawal: ['Tajawal', 'sans-serif'],
+        inter: ['Inter', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,6 +61,34 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        single: {
+          primary: "hsl(var(--single-primary))",
+          secondary: "hsl(var(--single-secondary))",
+          accent: "hsl(var(--single-accent))",
+        },
+        married: {
+          primary: "hsl(var(--married-primary))",
+          secondary: "hsl(var(--married-secondary))",
+          accent: "hsl(var(--married-accent))",
+        },
+        mother: {
+          primary: "hsl(var(--mother-primary))",
+          secondary: "hsl(var(--mother-secondary))",
+          accent: "hsl(var(--mother-accent))",
+        },
+        partner: {
+          primary: "hsl(var(--partner-primary))",
+          secondary: "hsl(var(--partner-secondary))",
+          accent: "hsl(var(--partner-accent))",
+        },
+        period: "hsl(var(--period))",
+        ovulation: "hsl(var(--ovulation))",
+        fertile: "hsl(var(--fertile))",
+        fasting: "hsl(var(--fasting))",
+        success: "hsl(var(--success))",
+        warning: "hsl(var(--warning))",
+        error: "hsl(var(--error))",
+        info: "hsl(var(--info))",
       },
       borderRadius: {
         lg: "var(--radius)",

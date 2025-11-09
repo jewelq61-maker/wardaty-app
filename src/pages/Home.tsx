@@ -1,0 +1,70 @@
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/AuthContext';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { CalendarDays, Sparkles, Moon } from 'lucide-react';
+
+export default function Home() {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+
+  return (
+    <div className="min-h-screen p-4 space-y-6">
+      {/* Greeting Card */}
+      <Card className="glass shadow-elegant">
+        <CardHeader>
+          <CardTitle className="text-2xl">
+            {t('greeting', { name: user?.email?.split('@')[0] || t('user') })}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-muted-foreground">
+            {t('welcomeMessage')}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Phase Card */}
+      <Card className="glass shadow-elegant bg-gradient-to-br from-single-primary/20 to-married-primary/20">
+        <CardHeader>
+          <CardTitle className="text-lg">{t('currentPhase')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-3xl font-bold text-primary">
+            {t('follicular')}
+          </div>
+          <div className="mt-2 text-sm text-muted-foreground">
+            {t('daysToNextPeriod')}: <span className="font-bold">14</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Button 
+          variant="outline" 
+          className="h-24 flex flex-col gap-2 glass shadow-elegant"
+        >
+          <CalendarDays className="h-6 w-6" />
+          <span>{t('logToday')}</span>
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          className="h-24 flex flex-col gap-2 glass shadow-elegant"
+        >
+          <Sparkles className="h-6 w-6" />
+          <span>{t('beautyPlanner')}</span>
+        </Button>
+        
+        <Button 
+          variant="outline" 
+          className="h-24 flex flex-col gap-2 glass shadow-elegant"
+        >
+          <Moon className="h-6 w-6" />
+          <span>{t('fastingQada')}</span>
+        </Button>
+      </div>
+    </div>
+  );
+}
