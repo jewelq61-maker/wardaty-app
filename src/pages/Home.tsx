@@ -137,137 +137,145 @@ export default function Home() {
   };
 
   return (
-    <div className={`min-h-screen pb-24 bg-gradient-to-b ${getPhaseGradient(currentPhase)} transition-all duration-1000`}>
-      {/* Hero Header */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-single-primary via-married-primary to-primary p-6 pb-12 animate-fade-in">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/20" />
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-8">
-            <Avatar className="w-16 h-16 hover-scale cursor-pointer border-4 border-white/20 shadow-elegant" onClick={() => navigate('/profile')}>
-              <AvatarFallback className="bg-white/10 backdrop-blur-sm text-white text-xl">
+    <div className="min-h-screen pb-32 bg-background">
+      {/* Compact Header */}
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/80 border-b border-border/50">
+        <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
+          <div className="flex items-center gap-3">
+            <Avatar className="w-10 h-10 hover-scale cursor-pointer ring-2 ring-primary/20" onClick={() => navigate('/profile')}>
+              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-foreground font-semibold">
                 {user?.email?.[0].toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
-            
-            <button 
-              onClick={handleNotificationClick}
-              className="p-3 hover:bg-white/10 rounded-full transition-all relative backdrop-blur-sm"
-            >
-              <Bell className="w-6 h-6 text-white" />
-              {notificationCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-6 w-6 flex items-center justify-center p-0 text-xs bg-period animate-pulse">
-                  {notificationCount}
-                </Badge>
-              )}
-            </button>
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">
+                {t('greeting', { name: user?.email?.split('@')[0] || t('user') })}
+              </h2>
+              <p className="text-xs text-muted-foreground">{t('welcomeMessage')}</p>
+            </div>
           </div>
           
-          {/* Greeting */}
-          <div className="space-y-2 text-white">
-            <h1 className="text-3xl font-bold flex items-center gap-2 animate-fade-in">
-              {t('greeting', { name: user?.email?.split('@')[0] || t('user') })}
-            </h1>
-            <p className="text-white/80 text-lg animate-fade-in">
-              {t('welcomeMessage')}
-            </p>
-          </div>
+          <button 
+            onClick={handleNotificationClick}
+            className="relative p-2 hover:bg-muted rounded-full transition-colors"
+          >
+            <Bell className="w-5 h-5 text-muted-foreground" />
+            {notificationCount > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-[10px] bg-period animate-pulse border-2 border-background">
+                {notificationCount}
+              </Badge>
+            )}
+          </button>
+        </div>
+      </header>
 
-          {/* Phase Badge */}
-          {!loading && (
-            <div className="mt-6 flex items-center gap-3 animate-fade-in">
-              <div className="px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-elegant">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl">{getPhaseEmoji(currentPhase)}</span>
-                  <div>
-                    <p className="text-xs text-white/70">{t('currentPhase')}</p>
-                    <p className="text-xl font-bold text-white">{t(currentPhase)}</p>
-                  </div>
+      <main className="max-w-lg mx-auto px-4 pt-4 space-y-6">
+        {/* Phase Status Card */}
+        {!loading && (
+          <div className="glass rounded-3xl p-6 shadow-elegant bg-gradient-to-br from-primary/5 via-secondary/5 to-background animate-fade-in border border-primary/10">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl">
+                  {getPhaseEmoji(currentPhase)}
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">{t('currentPhase')}</p>
+                  <p className="text-lg font-bold text-foreground">{t(currentPhase)}</p>
                 </div>
               </div>
               {daysToNextPeriod !== null && (
-                <div className="px-6 py-3 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-elegant">
-                  <p className="text-xs text-white/70">{t('daysToNextPeriod')}</p>
-                  <p className="text-2xl font-bold text-white">{daysToNextPeriod}</p>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-primary">{daysToNextPeriod}</p>
+                  <p className="text-xs text-muted-foreground">{t('daysToNextPeriod')}</p>
                 </div>
               )}
             </div>
-          )}
-        </div>
-      </div>
+            
+            {/* Progress bar */}
+            {daysToNextPeriod !== null && (
+              <div className="mt-4">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000 rounded-full"
+                    style={{ width: `${Math.max(0, Math.min(100, ((28 - daysToNextPeriod) / 28) * 100))}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )}
 
-      <div className="p-4 space-y-4 -mt-6 relative z-20">
         {/* Daily Affirmation */}
         {!loading && <DailyAffirmation phase={currentPhase} />}
 
-        {/* Quick Actions - Improved Design */}
-        <div className="grid grid-cols-2 gap-3 animate-fade-in">
-          <Button 
-            variant="outline" 
-            className="h-32 flex flex-col gap-3 glass shadow-elegant hover-scale hover:shadow-lg transition-all group border-primary/20"
-            onClick={() => navigate('/calendar')}
-          >
-            <div className="p-3 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20 group-hover:scale-110 transition-transform">
-              <CalendarDays className="h-7 w-7 text-primary" />
-            </div>
-            <span className="text-sm font-medium">{t('logToday')}</span>
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            className="h-32 flex flex-col gap-3 glass shadow-elegant hover-scale hover:shadow-lg transition-all group border-secondary/20"
-            onClick={() => navigate('/beauty')}
-          >
-            <div className="p-3 rounded-full bg-gradient-to-br from-secondary/20 to-success/20 group-hover:scale-110 transition-transform">
-              <Sparkles className="h-7 w-7 text-secondary" />
-            </div>
-            <span className="text-sm font-medium">{t('beautyPlanner')}</span>
-          </Button>
-          
-          <Button 
-            variant="outline" 
-            className="h-32 flex flex-col gap-3 glass shadow-elegant hover-scale hover:shadow-lg transition-all group border-fasting/20"
-            onClick={() => navigate('/fasting-qada')}
-          >
-            <div className="p-3 rounded-full bg-gradient-to-br from-fasting/20 to-primary/20 group-hover:scale-110 transition-transform">
-              <Moon className="h-7 w-7 text-fasting" />
-            </div>
-            <span className="text-sm font-medium">{t('fastingQada.title')}</span>
-          </Button>
+        {/* Quick Actions Grid */}
+        <div>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{t('quickActions')}</h3>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => navigate('/calendar')}
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 transition-all duration-300 border border-primary/20 hover:border-primary/30 hover:shadow-lg active:scale-95"
+            >
+              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <CalendarDays className="w-8 h-8 text-primary mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <p className="text-sm font-medium text-foreground relative z-10">{t('logToday')}</p>
+            </button>
+            
+            <button
+              onClick={() => navigate('/beauty')}
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-secondary/10 to-secondary/5 hover:from-secondary/20 hover:to-secondary/10 transition-all duration-300 border border-secondary/20 hover:border-secondary/30 hover:shadow-lg active:scale-95"
+            >
+              <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <Sparkles className="w-8 h-8 text-secondary mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <p className="text-sm font-medium text-foreground relative z-10">{t('beautyPlanner')}</p>
+            </button>
+            
+            <button
+              onClick={() => navigate('/fasting-qada')}
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-fasting/10 to-fasting/5 hover:from-fasting/20 hover:to-fasting/10 transition-all duration-300 border border-fasting/20 hover:border-fasting/30 hover:shadow-lg active:scale-95"
+            >
+              <div className="absolute top-0 right-0 w-20 h-20 bg-fasting/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <Moon className="w-8 h-8 text-fasting mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <p className="text-sm font-medium text-foreground relative z-10">{t('fastingQada.title')}</p>
+            </button>
 
-          <Button 
-            variant="outline" 
-            className="h-32 flex flex-col gap-3 glass shadow-elegant hover-scale hover:shadow-lg transition-all group border-info/20"
-            onClick={() => navigate('/stats')}
-          >
-            <div className="p-3 rounded-full bg-gradient-to-br from-info/20 to-success/20 group-hover:scale-110 transition-transform">
-              <TrendingUp className="h-7 w-7 text-info" />
-            </div>
-            <span className="text-sm font-medium">{t('stats')}</span>
-          </Button>
+            <button
+              onClick={() => navigate('/stats')}
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-success/10 to-success/5 hover:from-success/20 hover:to-success/10 transition-all duration-300 border border-success/20 hover:border-success/30 hover:shadow-lg active:scale-95"
+            >
+              <div className="absolute top-0 right-0 w-20 h-20 bg-success/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <TrendingUp className="w-8 h-8 text-success mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <p className="text-sm font-medium text-foreground relative z-10">{t('stats')}</p>
+            </button>
+          </div>
         </div>
 
-        {/* Trackers Section */}
-        <div className="space-y-4">
-          <MoodTrackerWidget />
-          <SymptomTrackerWidget />
-          <WaterTrackerWidget />
+        {/* Today's Tracking */}
+        <div>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{t('todayTracking')}</h3>
+          <div className="space-y-3">
+            <MoodTrackerWidget />
+            <SymptomTrackerWidget />
+            <WaterTrackerWidget />
+          </div>
         </div>
 
-        {/* Daily Insights - AI Powered */}
-        {!loading && <DailyInsightsCard phase={currentPhase} />}
+        {/* Insights & Achievements */}
+        <div className="space-y-3">
+          {!loading && <DailyInsightsCard phase={currentPhase} />}
+          <AchievementsBadges />
+        </div>
 
-        {/* Achievements */}
-        <AchievementsBadges />
-
-        {/* Stats Preview */}
-        <StatsPreviewWidget />
-
-        {/* Cycle Predictions Widget */}
-        <CyclePredictionsWidget />
-
-        {/* Upcoming Beauty Actions Widget */}
-        <UpcomingBeautyWidget />
-      </div>
+        {/* Overview Section */}
+        <div>
+          <h3 className="text-sm font-semibold text-foreground mb-3">{t('overview')}</h3>
+          <div className="space-y-3">
+            <StatsPreviewWidget />
+            <CyclePredictionsWidget />
+            <UpcomingBeautyWidget />
+          </div>
+        </div>
+      </main>
 
       <BottomNav />
     </div>

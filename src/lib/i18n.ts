@@ -105,6 +105,9 @@ const resources = {
       daysToNextPeriod: 'أيام حتى الدورة القادمة',
       logToday: 'تسجيل اليوم',
       beautyPlanner: 'مخطط الجمال',
+      quickActions: 'إجراءات سريعة',
+      todayTracking: 'تتبع اليوم',
+      overview: 'نظرة عامة',
       
       home: {
         dailyInsights: 'رؤى يومية',
@@ -412,6 +415,9 @@ const resources = {
       daysToNextPeriod: 'Days to Next Period',
       logToday: 'Log Today',
       beautyPlanner: 'Beauty Planner',
+      quickActions: 'Quick Actions',
+      todayTracking: 'Today\'s Tracking',
+      overview: 'Overview',
       
       home: {
         dailyInsights: 'Daily Insights',
