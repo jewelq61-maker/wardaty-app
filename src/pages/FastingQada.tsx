@@ -42,6 +42,7 @@ export default function FastingQada() {
   const { toast } = useToast();
   
   const [missedDays, setMissedDays] = useState(0);
+  const [manualAdjustment, setManualAdjustment] = useState(0);
   const [completedEntries, setCompletedEntries] = useState<FastingEntry[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [loading, setLoading] = useState(false);
@@ -51,13 +52,15 @@ export default function FastingQada() {
   const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
+  const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
   
   const dateLocale = locale === 'ar' ? ar : enUS;
   const BackIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
   
+  const totalMissedDays = missedDays + manualAdjustment;
   const completed = completedEntries.length;
-  const remaining = Math.max(0, missedDays - completed);
-  const progress = missedDays > 0 ? (completed / missedDays) * 100 : 0;
+  const remaining = Math.max(0, totalMissedDays - completed);
+  const progress = totalMissedDays > 0 ? (completed / totalMissedDays) * 100 : 0;
 
   useEffect(() => {
     if (user) {
@@ -128,8 +131,50 @@ export default function FastingQada() {
 
   const loadData = async () => {
     setInitialLoading(true);
-    await Promise.all([calculateMissedDays(), fetchCompletedEntries()]);
+    await Promise.all([calculateMissedDays(), fetchCompletedEntries(), fetchManualAdjustment()]);
     setInitialLoading(false);
+  };
+
+  const fetchManualAdjustment = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('profiles')
+      .select('fasting_manual_adjustment')
+      .eq('id', user.id)
+      .single();
+
+    if (data) {
+      setManualAdjustment(data.fasting_manual_adjustment || 0);
+    }
+  };
+
+  const updateManualAdjustment = async (newAdjustment: number) => {
+    if (!user) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ fasting_manual_adjustment: newAdjustment })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      setManualAdjustment(newAdjustment);
+      toast({
+        title: t('fastingQada.success'),
+        description: t('fastingQada.adjustmentSaved'),
+      });
+    } catch (error: any) {
+      toast({
+        title: t('fastingQada.error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const calculateMissedDays = async () => {
@@ -354,10 +399,10 @@ export default function FastingQada() {
                 <div className="grid grid-cols-3 gap-8 w-full max-w-sm">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-foreground">
-                      {missedDays}
+                      {totalMissedDays}
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      {t('fastingQada.missedDays')}
+                      {t('fastingQada.totalMissed')}
                     </div>
                   </div>
                   <div className="text-center">
@@ -377,7 +422,48 @@ export default function FastingQada() {
                     </div>
                   </div>
                 </div>
+                
+                {manualAdjustment !== 0 && (
+                  <div className="text-xs text-muted-foreground text-center">
+                    {t('fastingQada.calculatedDays')}: {missedDays} | {t('fastingQada.manualAdjustment')}: {manualAdjustment > 0 ? '+' : ''}{manualAdjustment}
+                  </div>
+                )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Manual Adjustment */}
+          <Card className="glass shadow-elegant">
+            <CardHeader>
+              <CardTitle className="text-lg">{t('fastingQada.manualAdjustmentTitle')}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                {t('fastingQada.manualAdjustmentDesc')}
+              </p>
+              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50">
+                <div>
+                  <div className="text-sm text-muted-foreground">{t('fastingQada.autoCalculated')}</div>
+                  <div className="text-2xl font-bold">{missedDays}</div>
+                </div>
+                <div className="text-2xl font-bold text-muted-foreground">+</div>
+                <div>
+                  <div className="text-sm text-muted-foreground">{t('fastingQada.manualAdjustment')}</div>
+                  <div className="text-2xl font-bold">{manualAdjustment}</div>
+                </div>
+                <div className="text-2xl font-bold text-muted-foreground">=</div>
+                <div>
+                  <div className="text-sm text-muted-foreground">{t('fastingQada.total')}</div>
+                  <div className="text-2xl font-bold text-fasting">{totalMissedDays}</div>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => setAdjustDialogOpen(true)}
+              >
+                {t('fastingQada.adjustCount')}
+              </Button>
             </CardContent>
           </Card>
 
@@ -558,6 +644,52 @@ export default function FastingQada() {
             <AlertDialogAction onClick={handleClearAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               {t('fastingQada.clearAll')}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Manual Adjustment Dialog */}
+      <AlertDialog open={adjustDialogOpen} onOpenChange={setAdjustDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('fastingQada.adjustCountTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('fastingQada.adjustCountDesc')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="flex items-center justify-center gap-4">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12"
+                onClick={() => updateManualAdjustment(manualAdjustment - 1)}
+                disabled={loading}
+              >
+                -
+              </Button>
+              <div className="text-center min-w-[100px]">
+                <div className="text-3xl font-bold">{manualAdjustment}</div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  {t('fastingQada.adjustment')}
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-12 w-12"
+                onClick={() => updateManualAdjustment(manualAdjustment + 1)}
+                disabled={loading}
+              >
+                +
+              </Button>
+            </div>
+            <div className="text-center text-sm text-muted-foreground">
+              {t('fastingQada.newTotal')}: {totalMissedDays} {t('fastingQada.days')}
+            </div>
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('close')}</AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

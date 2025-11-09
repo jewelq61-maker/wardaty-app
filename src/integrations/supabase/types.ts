@@ -245,6 +245,7 @@ export type Database = {
         Row: {
           created_at: string
           email: string | null
+          fasting_manual_adjustment: number
           id: string
           is_premium: boolean
           locale: string
@@ -256,6 +257,7 @@ export type Database = {
         Insert: {
           created_at?: string
           email?: string | null
+          fasting_manual_adjustment?: number
           id: string
           is_premium?: boolean
           locale?: string
@@ -267,6 +269,7 @@ export type Database = {
         Update: {
           created_at?: string
           email?: string | null
+          fasting_manual_adjustment?: number
           id?: string
           is_premium?: boolean
           locale?: string
