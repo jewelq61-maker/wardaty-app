@@ -135,6 +135,9 @@ const resources = {
         addGlass: 'إضافة كوب',
         achievements: 'الإنجازات',
         dailyAffirmation: 'تأكيد اليوم',
+        pullToRefresh: 'اسحبي للتحديث',
+        releaseToRefresh: 'اتركي للتحديث',
+        dataRefreshed: 'تم تحديث البيانات',
       },
       
       achievements: {
@@ -445,6 +448,9 @@ const resources = {
         addGlass: 'Add Glass',
         achievements: 'Achievements',
         dailyAffirmation: 'Daily Affirmation',
+        pullToRefresh: 'Pull to Refresh',
+        releaseToRefresh: 'Release to Refresh',
+        dataRefreshed: 'Data Refreshed',
       },
       
       achievements: {

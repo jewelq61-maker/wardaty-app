@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { format, differenceInDays, parseISO } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CalendarDays, Sparkles, Moon, Bell, TrendingUp } from 'lucide-react';
+import { CalendarDays, Sparkles, Moon, Bell, TrendingUp, RefreshCw } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -30,6 +30,10 @@ export default function Home() {
   const [daysToNextPeriod, setDaysToNextPeriod] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [notificationCount, setNotificationCount] = useState(0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const startY = useRef(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user) {
@@ -102,6 +106,42 @@ export default function Home() {
     setNotificationCount(count);
   };
 
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await Promise.all([loadCycleData(), checkNotifications()]);
+    setIsRefreshing(false);
+    setPullDistance(0);
+    toast({
+      title: t('success'),
+      description: t('home.dataRefreshed'),
+    });
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (containerRef.current && containerRef.current.scrollTop === 0) {
+      startY.current = e.touches[0].clientY;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!containerRef.current || containerRef.current.scrollTop > 0 || isRefreshing) return;
+    
+    const currentY = e.touches[0].clientY;
+    const distance = currentY - startY.current;
+    
+    if (distance > 0) {
+      setPullDistance(Math.min(distance, 120));
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance > 80 && !isRefreshing) {
+      handleRefresh();
+    } else {
+      setPullDistance(0);
+    }
+  };
+
   const handleNotificationClick = () => {
     toast({
       title: t('home.notifications'),
@@ -137,7 +177,32 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen pb-32 bg-background">
+    <div 
+      ref={containerRef}
+      className="min-h-screen pb-32 bg-background overflow-y-auto"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Pull to refresh indicator */}
+      <div 
+        className="absolute top-0 left-0 right-0 flex items-center justify-center transition-all duration-300"
+        style={{ 
+          height: pullDistance,
+          opacity: pullDistance / 80,
+        }}
+      >
+        <div className="flex items-center gap-2 text-primary">
+          <RefreshCw 
+            className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`}
+            style={{ transform: `rotate(${pullDistance * 3}deg)` }}
+          />
+          <span className="text-sm font-medium">
+            {pullDistance > 80 ? t('home.releaseToRefresh') : t('home.pullToRefresh')}
+          </span>
+        </div>
+      </div>
+
       {/* Compact Header */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/80 border-b border-border/50">
         <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
