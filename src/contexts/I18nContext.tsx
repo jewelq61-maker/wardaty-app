@@ -30,6 +30,11 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     const savedLocale = localStorage.getItem('locale') as 'ar' | 'en' | null;
     if (savedLocale) {
       setLocale(savedLocale);
+    } else {
+      // Initialize dir on mount
+      const initialDir = locale === 'ar' ? 'rtl' : 'ltr';
+      document.documentElement.dir = initialDir;
+      document.documentElement.lang = locale;
     }
   }, []);
 

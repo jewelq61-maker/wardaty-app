@@ -27,13 +27,15 @@ const moodColors: { [key: string]: { bg: string; text: string; label: string; la
 export default function MoodHistoryCalendar() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const { locale } = useI18n();
+  const { locale, dir } = useI18n();
   const [moodData, setMoodData] = useState<MoodData>({});
   const [selectedMonth, setSelectedMonth] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
   const dateLocale = locale === 'ar' ? ar : enUS;
+  const PrevIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
+  const NextIcon = dir === 'rtl' ? ChevronLeft : ChevronRight;
 
   useEffect(() => {
     if (user && open) {
@@ -119,7 +121,7 @@ export default function MoodHistoryCalendar() {
               size="icon"
               onClick={() => handleMonthChange('prev')}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <PrevIcon className="w-5 h-5" />
             </Button>
             <h3 className="text-lg font-medium">
               {format(selectedMonth, 'MMMM yyyy', { locale: dateLocale })}
@@ -130,7 +132,7 @@ export default function MoodHistoryCalendar() {
               onClick={() => handleMonthChange('next')}
               disabled={selectedMonth >= new Date()}
             >
-              <ChevronRight className="w-5 h-5" />
+              <NextIcon className="w-5 h-5" />
             </Button>
           </div>
 
@@ -141,6 +143,7 @@ export default function MoodHistoryCalendar() {
               month={selectedMonth}
               onMonthChange={setSelectedMonth}
               locale={dateLocale}
+              dir={dir}
               disabled={(date) => date > new Date()}
               components={{
                 DayContent: customDayContent,

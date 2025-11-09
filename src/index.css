@@ -162,6 +162,15 @@ All colors MUST be HSL.
   [dir="ltr"] {
     direction: ltr;
   }
+
+  /* RTL-specific icon rotation */
+  [dir="rtl"] .rtl\:rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  [dir="rtl"] .rtl\:scale-x-[-1] {
+    transform: scaleX(-1);
+  }
 }
 
 @layer utilities {
@@ -174,5 +183,30 @@ All colors MUST be HSL.
   
   .shadow-elegant {
     box-shadow: var(--shadow-elegant);
+  }
+
+  /* RTL hover scale animation */
+  .hover-scale {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* RTL-aware animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
   }
 }
