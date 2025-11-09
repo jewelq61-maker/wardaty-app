@@ -125,6 +125,26 @@ const resources = {
         symptomsUpdatedDesc: 'تم حفظ أعراضك لهذا اليوم',
         symptomError: 'حدث خطأ في تسجيل الأعراض',
         symptomsSelected: '{{count}} أعراض محددة',
+        waterIntake: 'شرب الماء',
+        waterGoalReached: 'أحسنتِ! وصلتِ للهدف',
+        waterGoalDesc: 'أكملتِ هدفك اليومي من الماء',
+        waterError: 'حدث خطأ في تسجيل الماء',
+        addGlass: 'إضافة كوب',
+        achievements: 'الإنجازات',
+        dailyAffirmation: 'تأكيد اليوم',
+      },
+      
+      achievements: {
+        firstCycle: 'الدورة الأولى',
+        firstCycleDesc: 'سجلتِ أول دورة شهرية',
+        weekTracker: 'متتبعة أسبوع',
+        weekTrackerDesc: 'سجلتِ 7 أيام متتالية',
+        moodMaster: 'خبيرة المزاج',
+        moodMasterDesc: 'سجلتِ 30 حالة مزاجية',
+        beautyGuru: 'خبيرة الجمال',
+        beautyGuruDesc: 'جدولتِ 10 مواعيد جمال',
+        consistencyQueen: 'ملكة الاستمرارية',
+        consistencyQueenDesc: 'تتبعتِ 3 دورات كاملة',
       },
       
       // Cycle
@@ -412,6 +432,26 @@ const resources = {
         symptomsUpdatedDesc: 'Your symptoms have been saved for today',
         symptomError: 'Error logging symptoms',
         symptomsSelected: '{{count}} symptoms selected',
+        waterIntake: 'Water Intake',
+        waterGoalReached: 'Great job! Goal reached',
+        waterGoalDesc: 'You completed your daily water goal',
+        waterError: 'Error logging water',
+        addGlass: 'Add Glass',
+        achievements: 'Achievements',
+        dailyAffirmation: 'Daily Affirmation',
+      },
+      
+      achievements: {
+        firstCycle: 'First Cycle',
+        firstCycleDesc: 'Tracked your first cycle',
+        weekTracker: 'Week Tracker',
+        weekTrackerDesc: 'Logged 7 days in a row',
+        moodMaster: 'Mood Master',
+        moodMasterDesc: 'Logged 30 moods',
+        beautyGuru: 'Beauty Guru',
+        beautyGuruDesc: 'Scheduled 10 beauty actions',
+        consistencyQueen: 'Consistency Queen',
+        consistencyQueenDesc: 'Tracked 3 complete cycles',
       },
       
       // Cycle
