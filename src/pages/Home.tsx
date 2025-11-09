@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { CalendarDays, Sparkles, Moon, Bell } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import BottomNav from '@/components/BottomNav';
+import UpcomingBeautyWidget from '@/components/UpcomingBeautyWidget';
 
 export default function Home() {
   const { t } = useTranslation();
@@ -71,6 +72,7 @@ export default function Home() {
         <Button 
           variant="outline" 
           className="h-24 flex flex-col gap-2 glass shadow-elegant"
+          onClick={() => navigate('/beauty')}
         >
           <Sparkles className="h-6 w-6" />
           <span>{t('beautyPlanner')}</span>
@@ -85,6 +87,9 @@ export default function Home() {
           <span>{t('fastingQada')}</span>
         </Button>
       </div>
+
+      {/* Upcoming Beauty Actions Widget */}
+      <UpcomingBeautyWidget />
 
       <BottomNav />
     </div>
