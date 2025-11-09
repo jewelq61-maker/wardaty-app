@@ -200,78 +200,125 @@ export default function BeautyPlanner() {
   const recommendations = beautyRecommendations[currentPhase];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-24">
-      {/* Header */}
-      <div className="bg-gradient-to-br from-single-primary to-married-primary p-6 text-white">
-        <div className="flex items-center gap-3 mb-2">
-          <Sparkles className="w-8 h-8" />
-          <h1 className="text-3xl font-bold">{t('beauty.title')}</h1>
-        </div>
-        <p className="text-white/90">{t('beauty.subtitle')}</p>
-      </div>
-
-      <div className="max-w-4xl mx-auto p-4 space-y-6">
-        {/* Current Phase Card */}
-        <Card className={cn('border-2 bg-gradient-to-br', getPhaseColor(currentPhase))}>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              {t(`beauty.phase.${currentPhase}`)}
-            </CardTitle>
-            <CardDescription>{t('beauty.currentPhase')}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <p className="font-semibold text-foreground">{t('beauty.recommended')}:</p>
-              <ul className="grid grid-cols-2 gap-2">
-                {recommendations.items.map((item, index) => (
-                  <li key={index} className="flex items-center gap-2 text-sm">
-                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    {t(`beauty.treatment.${item.toLowerCase().replace(/\s+/g, '_')}`)}
-                  </li>
-                ))}
-              </ul>
+    <div className="min-h-screen bg-background pb-32">
+      {/* Compact Header */}
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/80 border-b border-border/50">
+        <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-secondary" />
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{t('beauty.title')}</h1>
+              <p className="text-xs text-muted-foreground">{t('beauty.subtitle')}</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-lg mx-auto px-4 pt-4 space-y-6">
+        {/* Current Phase Card */}
+        <div className={cn(
+          'relative overflow-hidden rounded-3xl p-6 border-2 animate-fade-in',
+          currentPhase === 'menstrual' && 'bg-period/10 border-period/30',
+          currentPhase === 'follicular' && 'bg-success/10 border-success/30',
+          currentPhase === 'ovulation' && 'bg-fertile/10 border-fertile/30',
+          currentPhase === 'luteal' && 'bg-fasting/10 border-fasting/30'
+        )}>
+          {/* Background decoration */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-3xl" />
+          
+          <div className="relative">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className={cn(
+                'w-6 h-6',
+                currentPhase === 'menstrual' && 'text-period',
+                currentPhase === 'follicular' && 'text-success',
+                currentPhase === 'ovulation' && 'text-fertile',
+                currentPhase === 'luteal' && 'text-fasting'
+              )} />
+              <h2 className="text-xl font-bold text-foreground">
+                {t(`beauty.phase.${currentPhase}`)}
+              </h2>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-4">{t('beauty.recommended')}:</p>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {recommendations.items.map((item, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background/50 backdrop-blur-sm"
+                >
+                  <div className={cn(
+                    'w-2 h-2 rounded-full',
+                    currentPhase === 'menstrual' && 'bg-period',
+                    currentPhase === 'follicular' && 'bg-success',
+                    currentPhase === 'ovulation' && 'bg-fertile',
+                    currentPhase === 'luteal' && 'bg-fasting'
+                  )} />
+                  <span className="text-xs font-medium text-foreground">
+                    {t(`beauty.treatment.${item.toLowerCase().replace(/\s+/g, '_')}`)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
 
         {/* Add Action Button */}
         <Sheet open={isAddingAction} onOpenChange={setIsAddingAction}>
           <SheetTrigger asChild>
-            <Button className="w-full" size="lg">
-              <Plus className="w-5 h-5 mr-2" />
-              {t('beauty.addAction')}
-            </Button>
+            <button className="w-full group relative overflow-hidden rounded-2xl p-4 bg-gradient-to-br from-secondary/20 to-secondary/10 border-2 border-secondary/30 hover:border-secondary/50 transition-all duration-300 hover:shadow-lg active:scale-95">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-secondary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="relative flex items-center justify-center gap-2">
+                <Plus className="w-5 h-5 text-secondary" />
+                <span className="font-semibold text-foreground">{t('beauty.addAction')}</span>
+              </div>
+            </button>
           </SheetTrigger>
-          <SheetContent side="bottom" className="h-[90vh]">
-            <SheetHeader>
-              <SheetTitle>{t('beauty.scheduleAction')}</SheetTitle>
+          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+            <SheetHeader className="pb-6">
+              <SheetTitle className="text-xl">{t('beauty.scheduleAction')}</SheetTitle>
             </SheetHeader>
-            <div className="space-y-4 mt-6">
+            <div className="space-y-5">
               <div>
-                <label className="text-sm font-medium mb-2 block">{t('beauty.actionTitle')}</label>
+                <label className="text-sm font-semibold mb-2 block text-foreground">
+                  {t('beauty.actionTitle')}
+                </label>
                 <Input
                   value={newAction.title}
                   onChange={(e) => setNewAction({ ...newAction, title: e.target.value })}
                   placeholder={t('beauty.actionTitlePlaceholder')}
+                  className="h-12"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">{t('beauty.notes')}</label>
+                <label className="text-sm font-semibold mb-2 block text-foreground">
+                  {t('beauty.notes')}
+                </label>
                 <Textarea
                   value={newAction.notes}
                   onChange={(e) => setNewAction({ ...newAction, notes: e.target.value })}
                   placeholder={t('beauty.notesPlaceholder')}
-                  rows={3}
+                  rows={4}
+                  className="resize-none"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-2 block">{t('beauty.scheduleDate')}</label>
+                <label className="text-sm font-semibold mb-2 block text-foreground">
+                  {t('beauty.scheduleDate')}
+                </label>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="w-full justify-start text-left">
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {newAction.scheduled_at ? format(newAction.scheduled_at, 'PPP') : t('beauty.pickDate')}
+                    <Button 
+                      variant="outline" 
+                      className="w-full h-12 justify-start text-left border-2"
+                    >
+                      <CalendarIcon className="mr-2 h-5 w-5 text-muted-foreground" />
+                      <span className={newAction.scheduled_at ? 'text-foreground' : 'text-muted-foreground'}>
+                        {newAction.scheduled_at ? format(newAction.scheduled_at, 'PPP') : t('beauty.pickDate')}
+                      </span>
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -285,7 +332,7 @@ export default function BeautyPlanner() {
                   </PopoverContent>
                 </Popover>
               </div>
-              <Button onClick={handleAddAction} className="w-full" size="lg">
+              <Button onClick={handleAddAction} className="w-full h-12" size="lg">
                 {t('beauty.save')}
               </Button>
             </div>
@@ -293,28 +340,42 @@ export default function BeautyPlanner() {
         </Sheet>
 
         {/* Scheduled Actions */}
-        <div className="space-y-3">
-          <h2 className="text-xl font-semibold">{t('beauty.scheduledActions')}</h2>
+        <div className="space-y-4">
+          <h2 className="text-sm font-semibold text-foreground">{t('beauty.scheduledActions')}</h2>
           {beautyActions.length === 0 ? (
-            <Card>
-              <CardContent className="py-8 text-center text-muted-foreground">
-                {t('beauty.noActions')}
-              </CardContent>
-            </Card>
+            <div className="text-center py-12 px-4">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-muted/50 flex items-center justify-center">
+                <Sparkles className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <p className="text-sm text-muted-foreground">{t('beauty.noActions')}</p>
+            </div>
           ) : (
-            beautyActions.map((action) => (
-              <Card key={action.id} className="hover:shadow-md transition-shadow">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <h3 className="font-semibold">{action.title}</h3>
+            <div className="space-y-3">
+              {beautyActions.map((action) => (
+                <div
+                  key={action.id}
+                  className="group relative overflow-hidden rounded-2xl p-4 bg-card border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-foreground mb-1 truncate">{action.title}</h3>
                       {action.notes && (
-                        <p className="text-sm text-muted-foreground mt-1">{action.notes}</p>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                          {action.notes}
+                        </p>
                       )}
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        <span className="capitalize">{t(`beauty.phase.${action.phase}`)}</span>
+                      <div className="flex items-center gap-3 text-xs">
+                        <span className={cn(
+                          'px-2 py-1 rounded-lg font-medium',
+                          action.phase === 'menstrual' && 'bg-period/10 text-period',
+                          action.phase === 'follicular' && 'bg-success/10 text-success',
+                          action.phase === 'ovulation' && 'bg-fertile/10 text-fertile',
+                          action.phase === 'luteal' && 'bg-fasting/10 text-fasting'
+                        )}>
+                          {t(`beauty.phase.${action.phase}`)}
+                        </span>
                         {action.scheduled_at && (
-                          <span className="flex items-center gap-1">
+                          <span className="flex items-center gap-1 text-muted-foreground">
                             <CalendarIcon className="w-3 h-3" />
                             {format(new Date(action.scheduled_at), 'PP')}
                           </span>
@@ -325,17 +386,17 @@ export default function BeautyPlanner() {
                       variant="ghost"
                       size="icon"
                       onClick={() => handleDeleteAction(action.id)}
-                      className="text-destructive hover:text-destructive"
+                      className="text-muted-foreground hover:text-destructive shrink-0"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      </div>
+      </main>
 
       <BottomNav />
     </div>
