@@ -391,19 +391,15 @@ export default function Profile() {
                 <Globe className="w-5 h-5 text-muted-foreground" />
                 <Label>{t('onboarding.chooseLanguage')}</Label>
               </div>
-              <Select
-                value={profile.locale}
-                onValueChange={(value) => updateProfile('locale', value)}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => updateProfile('locale', locale === 'ar' ? 'en' : 'ar')}
                 disabled={loading}
+                className="min-w-24"
               >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ar">العربية</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                </SelectContent>
-              </Select>
+                {locale === 'ar' ? 'العربية' : 'English'}
+              </Button>
             </div>
 
             <Separator />
