@@ -136,13 +136,14 @@ const resources = {
       fastingQada: {
         title: 'صيام القضاء',
         subtitle: 'تتبعي أيام القضاء من رمضان',
-        missedDays: 'أيام الإفطار في رمضان',
+        missedDays: 'أيام الإفطار',
         completed: 'تم قضاؤها',
         remaining: 'متبقية',
         markCompleted: 'تحديد يوم القضاء',
         selectDate: 'اختاري تاريخ يوم القضاء',
         markAsCompleted: 'تأكيد القضاء',
         completedDays: 'الأيام المقضية',
+        completedOn: 'تم القضاء في',
         calculating: 'جاري الحساب...',
         ramadanDays: 'أيام رمضان',
         periodDays: 'أيام الدورة',
@@ -150,7 +151,14 @@ const resources = {
         success: 'تم بنجاح',
         dayMarked: 'تم تسجيل يوم القضاء',
         dayRemoved: 'تم حذف يوم القضاء',
-        noCompletedDays: 'لم تقومي بقضاء أي أيام بعد'
+        noCompletedDays: 'لم تقومي بقضاء أي أيام بعد',
+        duplicateDate: 'هذا التاريخ مسجل مسبقاً',
+        confirmDelete: 'تأكيد الحذف',
+        confirmDeleteDesc: 'هل أنت متأكدة من حذف هذا اليوم؟',
+        clearAll: 'حذف الكل',
+        allCleared: 'تم حذف جميع الأيام',
+        confirmClearAll: 'حذف جميع الأيام',
+        confirmClearAllDesc: 'هل أنت متأكدة من حذف جميع أيام القضاء المسجلة؟ لا يمكن التراجع عن هذا الإجراء.',
       },
       
       // Beauty Planner
@@ -352,13 +360,14 @@ const resources = {
       fastingQada: {
         title: 'Fasting Qada',
         subtitle: 'Track your Ramadan make-up days',
-        missedDays: 'Missed Ramadan Days',
+        missedDays: 'Missed Days',
         completed: 'Completed',
         remaining: 'Remaining',
         markCompleted: 'Mark Day Completed',
         selectDate: 'Select the date you completed this fast',
         markAsCompleted: 'Mark as Completed',
         completedDays: 'Completed Days',
+        completedOn: 'Completed on',
         calculating: 'Calculating...',
         ramadanDays: 'Ramadan Days',
         periodDays: 'Period Days',
@@ -366,7 +375,14 @@ const resources = {
         success: 'Success',
         dayMarked: 'Fasting day marked as completed',
         dayRemoved: 'Completed day removed',
-        noCompletedDays: 'No completed days yet'
+        noCompletedDays: 'No completed days yet',
+        duplicateDate: 'This date is already recorded',
+        confirmDelete: 'Confirm Deletion',
+        confirmDeleteDesc: 'Are you sure you want to delete this day?',
+        clearAll: 'Clear All',
+        allCleared: 'All days cleared',
+        confirmClearAll: 'Clear All Days',
+        confirmClearAllDesc: 'Are you sure you want to delete all recorded fasting days? This action cannot be undone.',
       },
       
       // Beauty Planner
