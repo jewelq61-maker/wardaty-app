@@ -205,11 +205,16 @@ const resources = {
       
       // Articles
       categories: {
+        all: 'الكل',
         basics: 'الأساسيات',
         fertility: 'الخصوبة',
         wellness: 'الصحة',
         beauty: 'الجمال',
         rulings: 'الأحكام الشرعية'
+      },
+      articlesPage: {
+        search: 'ابحث في المقالات...',
+        noArticles: 'لا توجد مقالات في هذا القسم',
       }
     }
   },
@@ -416,11 +421,16 @@ const resources = {
       
       // Articles
       categories: {
+        all: 'All',
         basics: 'Basics',
         fertility: 'Fertility',
         wellness: 'Wellness',
         beauty: 'Beauty',
         rulings: 'Islamic Rulings'
+      },
+      articlesPage: {
+        search: 'Search articles...',
+        noArticles: 'No articles in this category',
       }
     }
   }

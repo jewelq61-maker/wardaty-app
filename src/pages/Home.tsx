@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CalendarDays, Sparkles, Moon, Bell } from 'lucide-react';
+import { CalendarDays, Sparkles, Moon, Bell, BookOpen } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import BottomNav from '@/components/BottomNav';
 import UpcomingBeautyWidget from '@/components/UpcomingBeautyWidget';
@@ -60,7 +60,7 @@ export default function Home() {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <Button 
           variant="outline" 
           className="h-24 flex flex-col gap-2 glass shadow-elegant"
@@ -85,7 +85,16 @@ export default function Home() {
           onClick={() => navigate('/fasting-qada')}
         >
           <Moon className="h-6 w-6" />
-          <span>{t('fastingQada')}</span>
+          <span>{t('fastingQada.title')}</span>
+        </Button>
+
+        <Button 
+          variant="outline" 
+          className="h-24 flex flex-col gap-2 glass shadow-elegant col-span-2 md:col-span-1"
+          onClick={() => navigate('/articles')}
+        >
+          <BookOpen className="h-6 w-6" />
+          <span>{t('articles')}</span>
         </Button>
       </div>
 
