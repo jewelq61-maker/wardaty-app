@@ -41,6 +41,41 @@ export type Database = {
         }
         Relationships: []
       }
+      beauty_action_history: {
+        Row: {
+          created_at: string
+          duplicated_at: string
+          id: string
+          next_due_date: string
+          original_action_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          duplicated_at?: string
+          id?: string
+          next_due_date: string
+          original_action_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          duplicated_at?: string
+          id?: string
+          next_due_date?: string
+          original_action_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "beauty_action_history_original_action_id_fkey"
+            columns: ["original_action_id"]
+            isOneToOne: false
+            referencedRelation: "beauty_actions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       beauty_actions: {
         Row: {
           completed: boolean
@@ -50,6 +85,8 @@ export type Database = {
           id: string
           notes: string | null
           phase: string
+          reminder_enabled: boolean
+          reminder_hours_before: number | null
           scheduled_at: string | null
           time_of_day: string | null
           title: string
@@ -64,6 +101,8 @@ export type Database = {
           id?: string
           notes?: string | null
           phase: string
+          reminder_enabled?: boolean
+          reminder_hours_before?: number | null
           scheduled_at?: string | null
           time_of_day?: string | null
           title: string
@@ -78,6 +117,8 @@ export type Database = {
           id?: string
           notes?: string | null
           phase?: string
+          reminder_enabled?: boolean
+          reminder_hours_before?: number | null
           scheduled_at?: string | null
           time_of_day?: string | null
           title?: string

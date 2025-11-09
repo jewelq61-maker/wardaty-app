@@ -285,6 +285,8 @@ const resources = {
         add: 'إضافة',
         frequency: 'التكرار',
         timeOfDay: 'وقت اليوم',
+        enableReminder: 'تفعيل التذكير',
+        reminderHoursBefore: 'التذكير قبل بكم ساعة',
         freq: {
           once: 'مرة واحدة',
           daily: 'يومياً',
@@ -626,6 +628,8 @@ const resources = {
         add: 'Add',
         frequency: 'Frequency',
         timeOfDay: 'Time of Day',
+        enableReminder: 'Enable Reminder',
+        reminderHoursBefore: 'Remind me before',
         freq: {
           once: 'Once',
           daily: 'Daily',

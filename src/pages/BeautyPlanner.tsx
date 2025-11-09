@@ -12,8 +12,9 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { format, differenceInDays, startOfDay, isWithinInterval } from 'date-fns';
-import { CalendarIcon, Plus, Sparkles, Trash2, Filter, Droplets, Wind, Zap, Heart, Scissors, Eye, Flower2, Leaf, FlaskConical, Palette, CheckCircle2, Circle, TrendingUp } from 'lucide-react';
+import { CalendarIcon, Plus, Sparkles, Trash2, Filter, Droplets, Wind, Zap, Heart, Scissors, Eye, Flower2, Leaf, FlaskConical, Palette, CheckCircle2, Circle, TrendingUp, Bell, BellOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Switch } from '@/components/ui/switch';
 import BottomNav from '@/components/BottomNav';
 
 interface CycleDay {
@@ -32,6 +33,8 @@ interface BeautyAction {
   completed_at?: string;
   frequency?: 'once' | 'daily' | 'weekly' | 'monthly';
   time_of_day?: 'morning' | 'afternoon' | 'evening' | 'night';
+  reminder_enabled: boolean;
+  reminder_hours_before?: number;
 }
 
 interface PhaseStats {
@@ -100,7 +103,9 @@ export default function BeautyPlanner() {
     notes: '', 
     scheduled_at: undefined as Date | undefined,
     frequency: 'once' as 'once' | 'daily' | 'weekly' | 'monthly',
-    time_of_day: undefined as 'morning' | 'afternoon' | 'evening' | 'night' | undefined
+    time_of_day: undefined as 'morning' | 'afternoon' | 'evening' | 'night' | undefined,
+    reminder_enabled: false,
+    reminder_hours_before: 24
   });
   const [filterPhase, setFilterPhase] = useState<CyclePhase | 'all'>('all');
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
@@ -244,7 +249,9 @@ export default function BeautyPlanner() {
         phase: currentPhase,
         scheduled_at: newAction.scheduled_at?.toISOString() || null,
         frequency: newAction.frequency || 'once',
-        time_of_day: newAction.time_of_day || null
+        time_of_day: newAction.time_of_day || null,
+        reminder_enabled: newAction.reminder_enabled,
+        reminder_hours_before: newAction.reminder_hours_before
       });
 
     if (error) {
@@ -266,7 +273,9 @@ export default function BeautyPlanner() {
       notes: '', 
       scheduled_at: undefined,
       frequency: 'once',
-      time_of_day: undefined
+      time_of_day: undefined,
+      reminder_enabled: false,
+      reminder_hours_before: 24
     });
     setSelectedTreatment('');
     setIsAddingAction(false);
@@ -455,7 +464,9 @@ export default function BeautyPlanner() {
               notes: '', 
               scheduled_at: undefined,
               frequency: 'once',
-              time_of_day: undefined
+              time_of_day: undefined,
+              reminder_enabled: false,
+              reminder_hours_before: 24
             });
           }
         }}>
@@ -612,6 +623,50 @@ export default function BeautyPlanner() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Reminder Settings */}
+              <div className="rounded-xl bg-muted/30 p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    {newAction.reminder_enabled ? (
+                      <Bell className="w-4 h-4 text-secondary" />
+                    ) : (
+                      <BellOff className="w-4 h-4 text-muted-foreground" />
+                    )}
+                    <label className="text-sm font-semibold text-foreground">
+                      {t('beauty.enableReminder')}
+                    </label>
+                  </div>
+                  <Switch
+                    checked={newAction.reminder_enabled}
+                    onCheckedChange={(checked) => setNewAction({ ...newAction, reminder_enabled: checked })}
+                  />
+                </div>
+                
+                {newAction.reminder_enabled && (
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-2 block">
+                      {t('beauty.reminderHoursBefore')}
+                    </label>
+                    <div className="grid grid-cols-4 gap-2">
+                      {[1, 6, 12, 24].map((hours) => (
+                        <button
+                          key={hours}
+                          onClick={() => setNewAction({ ...newAction, reminder_hours_before: hours })}
+                          className={cn(
+                            "px-3 py-2 rounded-lg text-xs font-medium border transition-all",
+                            newAction.reminder_hours_before === hours
+                              ? "border-secondary bg-secondary/10 text-secondary"
+                              : "border-border bg-background text-muted-foreground hover:border-primary/30"
+                          )}
+                        >
+                          {hours}h
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -799,6 +854,12 @@ export default function BeautyPlanner() {
                           <span className="flex items-center gap-1 text-success">
                             <CheckCircle2 className="w-3 h-3" />
                             {format(new Date(action.completed_at), 'PP')}
+                          </span>
+                        )}
+                        {action.reminder_enabled && !action.completed && (
+                          <span className="flex items-center gap-1 text-secondary">
+                            <Bell className="w-3 h-3" />
+                            {action.reminder_hours_before}h
                           </span>
                         )}
                       </div>
