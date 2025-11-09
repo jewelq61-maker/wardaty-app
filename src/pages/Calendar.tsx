@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek, differenceInDays, addDays } from 'date-fns';
 import { ar, enUS } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight, Bell } from 'lucide-react';
 import { useI18n } from '@/contexts/I18nContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import BottomNav from '@/components/BottomNav';
 import DayLogSheet from '@/components/DayLogSheet';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -19,12 +20,21 @@ interface CycleDay {
   notes?: string;
 }
 
+interface Cycle {
+  start_date: string;
+  length: number;
+  duration: number;
+}
+
+type PhaseType = 'menstrual' | 'follicular' | 'ovulation' | 'luteal' | null;
+
 export default function Calendar() {
   const { t } = useTranslation();
   const { locale, dir } = useI18n();
   const { user } = useAuth();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [cycleDays, setCycleDays] = useState<CycleDay[]>([]);
+  const [lastCycle, setLastCycle] = useState<Cycle | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -34,7 +44,24 @@ export default function Calendar() {
 
   useEffect(() => {
     fetchCycleDays();
-  }, [currentMonth]);
+    fetchLastCycle();
+  }, [currentMonth, user]);
+
+  const fetchLastCycle = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('cycles')
+      .select('start_date, length, duration')
+      .eq('user_id', user.id)
+      .order('start_date', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (data) {
+      setLastCycle(data);
+    }
+  };
 
   const fetchCycleDays = async () => {
     if (!user) return;
@@ -65,19 +92,63 @@ export default function Calendar() {
     return format(date, 'EEEEEE', { locale: dateLocale });
   });
 
-  const getDayStatus = (date: Date) => {
-    const cycleDay = cycleDays.find((cd) => isSameDay(new Date(cd.date), date));
-    if (cycleDay?.flow) return 'period';
+  const getPhaseForDate = (date: Date): PhaseType => {
+    if (!lastCycle) return null;
+
+    const lastPeriodStart = new Date(lastCycle.start_date);
+    const cycleLength = lastCycle.length || 28;
+    const periodDuration = lastCycle.duration || 5;
     
-    // TODO: Calculate fertile and ovulation days based on cycle data
+    // Check logged period days first
+    const cycleDay = cycleDays.find((cd) => isSameDay(new Date(cd.date), date));
+    if (cycleDay?.flow) return 'menstrual';
+
+    // Calculate current cycle day
+    const daysSinceLastPeriod = differenceInDays(date, lastPeriodStart);
+    const currentCycleDay = ((daysSinceLastPeriod % cycleLength) + cycleLength) % cycleLength;
+
+    // Determine phase
+    if (currentCycleDay < periodDuration) {
+      return 'menstrual';
+    } else if (currentCycleDay < 14) {
+      return 'follicular';
+    } else if (currentCycleDay >= 14 && currentCycleDay <= 16) {
+      return 'ovulation';
+    } else if (currentCycleDay > 16) {
+      return 'luteal';
+    }
+
     return null;
   };
 
-  const getDayDot = (status: string | null) => {
-    if (status === 'period') return 'bg-period';
-    if (status === 'fertile') return 'bg-fertile';
-    if (status === 'ovulation') return 'bg-ovulation';
-    return '';
+  const getPhaseColor = (phase: PhaseType) => {
+    switch (phase) {
+      case 'menstrual':
+        return 'bg-period/20 border-period/30';
+      case 'follicular':
+        return 'bg-info/20 border-info/30';
+      case 'ovulation':
+        return 'bg-ovulation/20 border-ovulation/30';
+      case 'luteal':
+        return 'bg-warning/20 border-warning/30';
+      default:
+        return '';
+    }
+  };
+
+  const getPhaseDot = (phase: PhaseType) => {
+    switch (phase) {
+      case 'menstrual':
+        return 'bg-period';
+      case 'follicular':
+        return 'bg-info';
+      case 'ovulation':
+        return 'bg-ovulation';
+      case 'luteal':
+        return 'bg-warning';
+      default:
+        return '';
+    }
   };
 
   const handleDayClick = (date: Date) => {
@@ -143,27 +214,28 @@ export default function Calendar() {
             {calendarDays.map((day, index) => {
               const isCurrentMonth = isSameMonth(day, currentMonth);
               const isToday = isSameDay(day, new Date());
-              const status = getDayStatus(day);
-              const dotColor = getDayDot(status);
+              const phase = getPhaseForDate(day);
+              const phaseColor = getPhaseColor(phase);
+              const phaseDot = getPhaseDot(phase);
+              const hasLog = cycleDays.some((cd) => isSameDay(new Date(cd.date), day));
 
               return (
                 <button
                   key={index}
-                  onClick={() => handleDayClick(day)}
+                  onClick={() => isCurrentMonth && handleDayClick(day)}
                   className={`
                     aspect-square flex flex-col items-center justify-center rounded-xl
-                    transition-all hover:scale-105 relative
-                    ${isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/40'}
-                    ${isToday ? 'ring-2 ring-primary font-bold' : ''}
-                    ${status === 'period' ? 'bg-period/10' : ''}
-                    ${status === 'fertile' ? 'bg-fertile/10' : ''}
-                    ${status === 'ovulation' ? 'bg-ovulation/10' : ''}
+                    transition-all hover:scale-105 relative border-2
+                    ${isCurrentMonth ? 'text-foreground' : 'text-muted-foreground/40 opacity-50'}
+                    ${isToday ? 'ring-2 ring-primary ring-offset-2 font-bold' : 'border-transparent'}
+                    ${isCurrentMonth && phase ? phaseColor : ''}
+                    ${hasLog ? 'font-semibold' : ''}
                   `}
                   disabled={!isCurrentMonth}
                 >
                   <span className="text-sm">{format(day, 'd')}</span>
-                  {dotColor && (
-                    <div className={`w-1 h-1 rounded-full ${dotColor} mt-1`}></div>
+                  {isCurrentMonth && phaseDot && (
+                    <div className={`w-1.5 h-1.5 rounded-full ${phaseDot} mt-1`}></div>
                   )}
                 </button>
               );
@@ -171,21 +243,30 @@ export default function Calendar() {
           </div>
         </Card>
 
-        {/* Legend */}
-        <div className="flex items-center justify-center gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-period"></div>
-            <span className="text-muted-foreground">{t('menstrual')}</span>
+        {/* Phase Legend */}
+        <Card className="glass shadow-elegant p-4">
+          <h3 className="font-semibold mb-3 text-sm text-muted-foreground">
+            {t('cycle.phases')}
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-period"></div>
+              <span className="text-sm">{t('menstrual')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-info"></div>
+              <span className="text-sm">{t('follicular')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-ovulation"></div>
+              <span className="text-sm">{t('ovulation')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-full bg-warning"></div>
+              <span className="text-sm">{t('luteal')}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-fertile"></div>
-            <span className="text-muted-foreground">{t('fertile', { defaultValue: 'Fertile' })}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-ovulation"></div>
-            <span className="text-muted-foreground">{t('ovulation')}</span>
-          </div>
-        </div>
+        </Card>
       </div>
 
       {/* Day Log Bottom Sheet */}
