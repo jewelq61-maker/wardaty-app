@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import BottomNav from '@/components/BottomNav';
 export default function Home() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen p-4 space-y-6 pb-24">
@@ -60,6 +62,7 @@ export default function Home() {
         <Button 
           variant="outline" 
           className="h-24 flex flex-col gap-2 glass shadow-elegant"
+          onClick={() => navigate('/calendar')}
         >
           <CalendarDays className="h-6 w-6" />
           <span>{t('logToday')}</span>
@@ -76,6 +79,7 @@ export default function Home() {
         <Button 
           variant="outline" 
           className="h-24 flex flex-col gap-2 glass shadow-elegant"
+          onClick={() => navigate('/fasting-qada')}
         >
           <Moon className="h-6 w-6" />
           <span>{t('fastingQada')}</span>

@@ -112,6 +112,9 @@ const resources = {
       completed: 'مكتمل',
       remaining: 'المتبقي',
       markCompleted: 'وضع علامة مكتمل',
+      selectDate: 'اختر تاريخ الإكمال',
+      completedDays: 'الأيام المكتملة',
+      completedOn: 'مكتمل في',
       
       // Beauty
       waxing: 'إزالة الشعر',
@@ -242,6 +245,9 @@ const resources = {
       completed: 'Completed',
       remaining: 'Remaining',
       markCompleted: 'Mark Completed',
+      selectDate: 'Select completion date',
+      completedDays: 'Completed Days',
+      completedOn: 'Completed on',
       
       // Beauty
       waxing: 'Waxing',

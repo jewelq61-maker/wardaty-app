@@ -12,6 +12,7 @@ import Calendar from "./pages/Calendar";
 import Stats from "./pages/Stats";
 import Articles from "./pages/Articles";
 import Profile from "./pages/Profile";
+import FastingQada from "./pages/FastingQada";
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
@@ -55,6 +56,7 @@ const App = () => (
               <Route path="/stats" element={<ProtectedRoute><Stats /></ProtectedRoute>} />
               <Route path="/articles" element={<ProtectedRoute><Articles /></ProtectedRoute>} />
               <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+              <Route path="/fasting-qada" element={<ProtectedRoute><FastingQada /></ProtectedRoute>} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
