@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import MoodHistoryCalendar from './MoodHistoryCalendar';
 
 const moods = [
   { id: 'happy', icon: Smile, emoji: '😊', color: 'text-success', bg: 'bg-success/10 hover:bg-success/20' },
@@ -101,7 +102,7 @@ export default function MoodTrackerWidget() {
       <CardHeader>
         <CardTitle className="text-lg">{t('home.howAreYouFeeling')}</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
         <div className="flex items-center justify-between gap-2">
           {moods.map((mood) => {
             const Icon = mood.icon;
@@ -127,6 +128,8 @@ export default function MoodTrackerWidget() {
             );
           })}
         </div>
+        
+        <MoodHistoryCalendar />
       </CardContent>
     </Card>
   );

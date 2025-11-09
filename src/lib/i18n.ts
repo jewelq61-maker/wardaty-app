@@ -101,6 +101,9 @@ const resources = {
         moodLogged: 'تم تسجيل المزاج',
         moodLoggedDesc: 'تم حفظ مزاجك لهذا اليوم',
         moodError: 'حدث خطأ في تسجيل المزاج',
+        viewMoodHistory: 'عرض سجل المزاج',
+        moodHistory: 'سجل المزاج',
+        moodLegend: 'دليل الألوان',
       },
       
       // Cycle
@@ -360,6 +363,9 @@ const resources = {
         moodLogged: 'Mood Logged',
         moodLoggedDesc: 'Your mood has been saved for today',
         moodError: 'Error logging mood',
+        viewMoodHistory: 'View Mood History',
+        moodHistory: 'Mood History',
+        moodLegend: 'Color Legend',
       },
       
       // Cycle
