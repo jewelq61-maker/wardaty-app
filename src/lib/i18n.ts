@@ -66,6 +66,21 @@ const resources = {
       articles: 'المقالات',
       profile: 'الملف الشخصي',
       
+      // Stats
+      statsPage: {
+        noData: 'لا توجد بيانات كافية لعرض الإحصائيات',
+        avgCycleLength: 'متوسط طول الدورة',
+        avgPeriodDuration: 'متوسط مدة الدورة',
+        totalCycles: 'إجمالي الدورات',
+        trackedDays: 'الأيام المسجلة',
+        days: 'يوم',
+        cycleHistory: 'تاريخ الدورة الشهرية',
+        cycleLength: 'طول الدورة',
+        periodDuration: 'مدة الدورة',
+        symptomFrequency: 'تكرار الأعراض',
+        moodDistribution: 'توزيع المزاج',
+      },
+      
       // Home
       greeting: 'مرحباً، {{name}} 💕',
       welcomeMessage: 'نحن هنا لمساعدتك في كل خطوة',
@@ -261,6 +276,21 @@ const resources = {
       stats: 'Stats',
       articles: 'Articles',
       profile: 'Profile',
+      
+      // Stats
+      statsPage: {
+        noData: 'Not enough data to display statistics',
+        avgCycleLength: 'Avg Cycle Length',
+        avgPeriodDuration: 'Avg Period Duration',
+        totalCycles: 'Total Cycles',
+        trackedDays: 'Tracked Days',
+        days: 'days',
+        cycleHistory: 'Cycle History',
+        cycleLength: 'Cycle Length',
+        periodDuration: 'Period Duration',
+        symptomFrequency: 'Symptom Frequency',
+        moodDistribution: 'Mood Distribution',
+      },
       
       // Home
       greeting: 'Hello, {{name}} 💕',
