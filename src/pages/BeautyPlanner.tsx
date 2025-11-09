@@ -9,9 +9,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { format, differenceInDays, startOfDay } from 'date-fns';
-import { CalendarIcon, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { format, differenceInDays, startOfDay, isWithinInterval } from 'date-fns';
+import { CalendarIcon, Plus, Sparkles, Trash2, Filter } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import BottomNav from '@/components/BottomNav';
 
@@ -57,6 +58,8 @@ export default function BeautyPlanner() {
   const [beautyActions, setBeautyActions] = useState<BeautyAction[]>([]);
   const [isAddingAction, setIsAddingAction] = useState(false);
   const [newAction, setNewAction] = useState({ title: '', notes: '', scheduled_at: undefined as Date | undefined });
+  const [filterPhase, setFilterPhase] = useState<CyclePhase | 'all'>('all');
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
 
   useEffect(() => {
     if (user) {
@@ -199,6 +202,21 @@ export default function BeautyPlanner() {
 
   const recommendations = beautyRecommendations[currentPhase];
 
+  const filteredActions = beautyActions.filter(action => {
+    // Phase filter
+    if (filterPhase !== 'all' && action.phase !== filterPhase) {
+      return false;
+    }
+    
+    // Date range filter
+    if (dateRange.from && dateRange.to && action.scheduled_at) {
+      const actionDate = new Date(action.scheduled_at);
+      return isWithinInterval(actionDate, { start: dateRange.from, end: dateRange.to });
+    }
+    
+    return true;
+  });
+
   return (
     <div className="min-h-screen bg-background pb-32">
       {/* Compact Header */}
@@ -339,19 +357,103 @@ export default function BeautyPlanner() {
           </SheetContent>
         </Sheet>
 
+        {/* Filters */}
+        <div className="space-y-4 rounded-2xl bg-card border border-border p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter className="w-4 h-4 text-muted-foreground" />
+            <h3 className="text-sm font-semibold text-foreground">{t('beauty.filters')}</h3>
+          </div>
+          
+          {/* Phase Filter */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-2 block">
+              {t('beauty.filterByPhase')}
+            </label>
+            <Tabs value={filterPhase} onValueChange={(value) => setFilterPhase(value as CyclePhase | 'all')}>
+              <TabsList className="grid w-full grid-cols-5 h-auto">
+                <TabsTrigger value="all" className="text-xs px-2 py-2">{t('beauty.all')}</TabsTrigger>
+                <TabsTrigger value="menstrual" className="text-xs px-2 py-2">{t('beauty.phase.menstrual')}</TabsTrigger>
+                <TabsTrigger value="follicular" className="text-xs px-2 py-2">{t('beauty.phase.follicular')}</TabsTrigger>
+                <TabsTrigger value="ovulation" className="text-xs px-2 py-2">{t('beauty.phase.ovulation')}</TabsTrigger>
+                <TabsTrigger value="luteal" className="text-xs px-2 py-2">{t('beauty.phase.luteal')}</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Date Range Filter */}
+          <div>
+            <label className="text-xs font-medium text-muted-foreground mb-2 block">
+              {t('beauty.filterByDate')}
+            </label>
+            <div className="flex gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex-1 justify-start text-xs h-9">
+                    <CalendarIcon className="mr-2 h-3 w-3" />
+                    {dateRange.from ? format(dateRange.from, 'PP') : t('beauty.startDate')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.from}
+                    onSelect={(date) => setDateRange({ ...dateRange, from: date })}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="flex-1 justify-start text-xs h-9">
+                    <CalendarIcon className="mr-2 h-3 w-3" />
+                    {dateRange.to ? format(dateRange.to, 'PP') : t('beauty.endDate')}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.to}
+                    onSelect={(date) => setDateRange({ ...dateRange, to: date })}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+            {(dateRange.from || dateRange.to) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setDateRange({ from: undefined, to: undefined })}
+                className="w-full mt-2 h-8 text-xs"
+              >
+                {t('beauty.clearDateFilter')}
+              </Button>
+            )}
+          </div>
+        </div>
+
         {/* Scheduled Actions */}
         <div className="space-y-4">
-          <h2 className="text-sm font-semibold text-foreground">{t('beauty.scheduledActions')}</h2>
-          {beautyActions.length === 0 ? (
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-foreground">{t('beauty.scheduledActions')}</h2>
+            <span className="text-xs text-muted-foreground">
+              {filteredActions.length} {t('beauty.actions')}
+            </span>
+          </div>
+          {filteredActions.length === 0 ? (
             <div className="text-center py-12 px-4">
               <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-muted/50 flex items-center justify-center">
                 <Sparkles className="w-8 h-8 text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground">{t('beauty.noActions')}</p>
+              <p className="text-sm text-muted-foreground">
+                {beautyActions.length === 0 ? t('beauty.noActions') : t('beauty.noMatchingActions')}
+              </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {beautyActions.map((action) => (
+              {filteredActions.map((action) => (
                 <div
                   key={action.id}
                   className="group relative overflow-hidden rounded-2xl p-4 bg-card border border-border hover:border-primary/30 hover:shadow-md transition-all duration-300"
