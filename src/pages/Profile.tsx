@@ -264,114 +264,113 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 pb-24">
-      {/* Header with Avatar */}
-      <div className="bg-gradient-to-br from-single-primary to-married-primary p-8 text-white animate-fade-in">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">{t('profile')}</h1>
-          <button 
-            onClick={() => navigate('/')}
-            className="p-2 hover:bg-white/10 rounded-full transition-colors"
+    <div className="min-h-screen bg-background pb-24">
+      {/* Compact Header */}
+      <header className="sticky top-0 z-40 backdrop-blur-xl bg-gradient-to-br from-primary/10 to-secondary/10 border-b border-border/50">
+        <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
+          <div className="flex items-center gap-3">
+            <Avatar className="w-12 h-12 border-2 border-primary/20 ring-2 ring-primary/10">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground text-lg font-bold">
+                {profile.name?.[0]?.toUpperCase() || user?.email?.[0].toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{t('profile')}</h1>
+              <p className="text-xs text-muted-foreground">{user?.email}</p>
+            </div>
+          </div>
+          <Button
+            onClick={handleLogout}
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-destructive"
           >
-            <Bell className="w-6 h-6" />
-          </button>
+            <LogOut className="w-5 h-5" />
+          </Button>
         </div>
-        
-        <div className="flex items-center gap-4">
-          <Avatar className="w-20 h-20 border-4 border-white/20">
-            <AvatarFallback className="bg-white/10 text-white text-2xl">
-              {profile.name?.[0]?.toUpperCase() || user?.email?.[0].toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          
-          <div className="flex-1">
-            {isEditingName ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  value={tempName}
-                  onChange={(e) => setTempName(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-white/50"
-                  placeholder={t('profilePage.enterName')}
-                />
-                <Button size="icon" variant="ghost" onClick={handleSaveName}>
-                  <Check className="w-4 h-4" />
-                </Button>
-                <Button size="icon" variant="ghost" onClick={() => setIsEditingName(false)}>
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-bold">
-                  {profile.name || user?.email?.split('@')[0] || t('user')}
-                </h2>
-                <Button 
-                  size="icon" 
-                  variant="ghost" 
-                  onClick={() => setIsEditingName(true)}
-                  className="hover:bg-white/10"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
-            <p className="text-white/80 text-sm">{user?.email}</p>
-            <Badge className="mt-2 bg-white/10 text-white border-white/20">
-              {t(`personas.${profile.persona}`)}
-            </Badge>
+      </header>
+
+      <main className="max-w-lg mx-auto px-4 pt-6 space-y-6">
+        {/* Profile Card */}
+        <div className="rounded-3xl bg-gradient-to-br from-card to-muted/20 p-6 border border-border/50 shadow-lg animate-fade-in">
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1">
+              {isEditingName ? (
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    className="h-10"
+                    placeholder={t('profilePage.enterName')}
+                  />
+                  <Button size="icon" variant="ghost" onClick={handleSaveName} className="shrink-0">
+                    <Check className="w-4 h-4 text-success" />
+                  </Button>
+                  <Button size="icon" variant="ghost" onClick={() => setIsEditingName(false)} className="shrink-0">
+                    <X className="w-4 h-4 text-destructive" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold text-foreground">
+                      {profile.name || user?.email?.split('@')[0] || t('user')}
+                    </h2>
+                    <Button 
+                      size="icon" 
+                      variant="ghost" 
+                      onClick={() => setIsEditingName(true)}
+                      className="w-8 h-8"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                  <Badge className="bg-primary/10 text-primary border-primary/20">
+                    {t(`personas.${profile.persona}`)}
+                  </Badge>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Statistics Grid */}
+          <div className="grid grid-cols-2 gap-3 mt-6">
+            <div className="rounded-2xl bg-background/50 backdrop-blur-sm p-4 border border-border/50">
+              <div className="text-2xl font-bold text-primary">{stats.totalCycles}</div>
+              <div className="text-xs text-muted-foreground mt-1">{t('statsPage.totalCycles')}</div>
+            </div>
+            <div className="rounded-2xl bg-background/50 backdrop-blur-sm p-4 border border-border/50">
+              <div className="text-2xl font-bold text-secondary">{stats.trackedDays}</div>
+              <div className="text-xs text-muted-foreground mt-1">{t('statsPage.trackedDays')}</div>
+            </div>
+            <div className="rounded-2xl bg-background/50 backdrop-blur-sm p-4 border border-border/50">
+              <div className="text-2xl font-bold text-success">{stats.moodsLogged}</div>
+              <div className="text-xs text-muted-foreground mt-1">{t('profilePage.moodsLogged')}</div>
+            </div>
+            <div className="rounded-2xl bg-background/50 backdrop-blur-sm p-4 border border-border/50">
+              <div className="text-2xl font-bold text-fasting">{stats.beautyActions}</div>
+              <div className="text-xs text-muted-foreground mt-1">{t('profilePage.beautyScheduled')}</div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="p-4 space-y-4">
-        {/* Statistics */}
-        <Card className="glass shadow-elegant animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
-              {t('profilePage.statistics')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5">
-                <div className="text-3xl font-bold text-primary">{stats.totalCycles}</div>
-                <div className="text-xs text-muted-foreground mt-1">{t('statsPage.totalCycles')}</div>
-              </div>
-              <div className="text-center p-4 rounded-xl bg-gradient-to-br from-secondary/10 to-secondary/5">
-                <div className="text-3xl font-bold text-secondary">{stats.trackedDays}</div>
-                <div className="text-xs text-muted-foreground mt-1">{t('statsPage.trackedDays')}</div>
-              </div>
-              <div className="text-center p-4 rounded-xl bg-gradient-to-br from-success/10 to-success/5">
-                <div className="text-3xl font-bold text-success">{stats.moodsLogged}</div>
-                <div className="text-xs text-muted-foreground mt-1">{t('profilePage.moodsLogged')}</div>
-              </div>
-              <div className="text-center p-4 rounded-xl bg-gradient-to-br from-fasting/10 to-fasting/5">
-                <div className="text-3xl font-bold text-fasting">{stats.beautyActions}</div>
-                <div className="text-xs text-muted-foreground mt-1">{t('profilePage.beautyScheduled')}</div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Preferences */}
-        <Card className="glass shadow-elegant animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="w-5 h-5" />
-              {t('profilePage.preferences')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="rounded-3xl bg-card p-6 border border-border/50 shadow-md animate-fade-in">
+          <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+            <Settings className="w-4 h-4" />
+            {t('profilePage.preferences')}
+          </h3>
+          
+          <div className="space-y-4">
             {/* Persona */}
             <div className="space-y-2">
-              <Label>{t('onboarding.choosePersona')}</Label>
+              <Label className="text-xs text-muted-foreground">{t('onboarding.choosePersona')}</Label>
               <Select
                 value={profile.persona}
                 onValueChange={(value) => updateProfile('persona', value)}
                 disabled={loading}
               >
-                <SelectTrigger>
+                <SelectTrigger className="h-11">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -386,17 +385,19 @@ export default function Profile() {
             <Separator />
 
             {/* Language */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Globe className="w-5 h-5 text-muted-foreground" />
-                <Label>{t('onboarding.chooseLanguage')}</Label>
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Globe className="w-4 h-4 text-primary" />
+                </div>
+                <Label className="text-sm font-medium">{t('onboarding.chooseLanguage')}</Label>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => updateProfile('locale', locale === 'ar' ? 'en' : 'ar')}
                 disabled={loading}
-                className="min-w-24"
+                className="h-9 px-4 min-w-24"
               >
                 {locale === 'ar' ? 'العربية' : 'English'}
               </Button>
@@ -405,14 +406,16 @@ export default function Profile() {
             <Separator />
 
             {/* Theme */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {theme === 'dark' ? (
-                  <Moon className="w-5 h-5 text-muted-foreground" />
-                ) : (
-                  <Sun className="w-5 h-5 text-muted-foreground" />
-                )}
-                <Label>{t('profilePage.darkMode')}</Label>
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
+                  {theme === 'dark' ? (
+                    <Moon className="w-4 h-4 text-secondary" />
+                  ) : (
+                    <Sun className="w-4 h-4 text-secondary" />
+                  )}
+                </div>
+                <Label className="text-sm font-medium">{t('profilePage.darkMode')}</Label>
               </div>
               <Switch
                 checked={theme === 'dark'}
@@ -420,38 +423,43 @@ export default function Profile() {
                 disabled={loading}
               />
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Data & Privacy */}
-        <Card className="glass shadow-elegant animate-fade-in">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="w-5 h-5" />
-              {t('profilePage.dataPrivacy')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button
-              variant="outline"
-              className="w-full justify-start"
+        <div className="rounded-3xl bg-card p-6 border border-border/50 shadow-md animate-fade-in">
+          <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+            <User className="w-4 h-4" />
+            {t('profilePage.dataPrivacy')}
+          </h3>
+          
+          <div className="space-y-3">
+            <button
               onClick={handleExportData}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-background hover:bg-muted/50 border border-border/50 transition-all duration-200 active:scale-95"
             >
-              <Download className="w-4 h-4 mr-2" />
-              {t('profilePage.exportData')}
-              <ChevronRight className={`w-4 h-4 ${dir === 'rtl' ? 'mr-auto rotate-180' : 'ml-auto'}`} />
-            </Button>
+              <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
+                <Download className="w-4 h-4 text-success" />
+              </div>
+              <span className="flex-1 text-left text-sm font-medium text-foreground">
+                {t('profilePage.exportData')}
+              </span>
+              <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+            </button>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-destructive hover:text-destructive"
+                <button
+                  className="w-full flex items-center gap-3 p-4 rounded-2xl bg-background hover:bg-destructive/5 border border-border/50 hover:border-destructive/30 transition-all duration-200 active:scale-95"
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  {t('profilePage.deleteAccount')}
-                  <ChevronRight className={`w-4 h-4 ${dir === 'rtl' ? 'mr-auto rotate-180' : 'ml-auto'}`} />
-                </Button>
+                  <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+                    <Trash2 className="w-4 h-4 text-destructive" />
+                  </div>
+                  <span className="flex-1 text-left text-sm font-medium text-destructive">
+                    {t('profilePage.deleteAccount')}
+                  </span>
+                  <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+                </button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -471,23 +479,9 @@ export default function Profile() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-          </CardContent>
-        </Card>
-
-        {/* Logout */}
-        <Card className="glass shadow-elegant animate-fade-in">
-          <CardContent className="pt-6">
-            <Button
-              onClick={handleLogout}
-              variant="destructive"
-              className="w-full"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              {t('logout')}
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </div>
+      </main>
 
       <BottomNav />
     </div>
