@@ -97,6 +97,10 @@ const resources = {
         notifications: 'الإشعارات',
         notificationDesc: 'لديك {{count}} إشعار',
         noNotifications: 'لا توجد إشعارات جديدة',
+        howAreYouFeeling: 'كيف تشعرين اليوم؟',
+        moodLogged: 'تم تسجيل المزاج',
+        moodLoggedDesc: 'تم حفظ مزاجك لهذا اليوم',
+        moodError: 'حدث خطأ في تسجيل المزاج',
       },
       
       // Cycle
@@ -352,6 +356,10 @@ const resources = {
         notifications: 'Notifications',
         notificationDesc: 'You have {{count}} notification(s)',
         noNotifications: 'No new notifications',
+        howAreYouFeeling: 'How are you feeling today?',
+        moodLogged: 'Mood Logged',
+        moodLoggedDesc: 'Your mood has been saved for today',
+        moodError: 'Error logging mood',
       },
       
       // Cycle
