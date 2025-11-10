@@ -281,11 +281,11 @@ export default function Articles() {
 
       {/* Article Detail Dialog */}
       <Dialog open={!!selectedArticle} onOpenChange={() => setSelectedArticle(null)}>
-        <DialogContent className="max-w-3xl max-h-[85vh] rounded-3xl">
-          <ScrollArea className="max-h-[75vh] pr-4">
-            <DialogHeader className="mb-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
+        <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl p-0 overflow-hidden">
+          <ScrollArea className="max-h-[90vh]">
+            <div className="p-8">
+              <DialogHeader className="mb-8 space-y-4">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Badge
                     variant="outline"
                     className={selectedArticle ? getCategoryColor(selectedArticle.category) : ''}
@@ -293,55 +293,65 @@ export default function Articles() {
                     {selectedArticle && t(`categories.${selectedArticle.category}`)}
                   </Badge>
                   {selectedArticle?.source && selectedArticle.category === 'rulings' && (
-                    <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/30">
-                      <Shield className="w-3 h-3" />
+                    <Badge variant="outline" className="gap-1.5 bg-success/10 text-success border-success/30">
+                      <Shield className="w-3.5 h-3.5" />
                       {t('articlesPage.verified')}
                     </Badge>
                   )}
                 </div>
-                <DialogTitle className="text-2xl leading-tight pr-6">
+                
+                <DialogTitle className="text-3xl md:text-4xl leading-tight font-bold pr-8 text-foreground">
                   {selectedArticle?.title}
                 </DialogTitle>
-                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
+                
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pt-2">
+                  <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4" />
                     <span>{t('articlesPage.readTime')}</span>
                   </div>
                   {selectedArticle?.author && (
-                    <div className="flex items-center gap-1">
-                      <span>•</span>
-                      <span className="text-foreground/70">{selectedArticle.author}</span>
-                    </div>
+                    <>
+                      <span className="text-border">•</span>
+                      <span className="text-foreground/80 font-medium">{selectedArticle.author}</span>
+                    </>
                   )}
                 </div>
+                
                 {selectedArticle?.source && (
-                  <div className="p-3 rounded-xl bg-muted/50 border border-border/50">
-                    <div className="flex items-start gap-2">
-                      <BookOpen className="w-4 h-4 text-primary mt-0.5" />
-                      <div className="flex-1 text-sm">
-                        <p className="font-medium text-foreground">{t('articlesPage.source')}:</p>
-                        <p className="text-muted-foreground">{selectedArticle.source}</p>
+                  <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 mt-4">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <BookOpen className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <p className="font-semibold text-foreground text-sm">{t('articlesPage.source')}</p>
+                        <p className="text-muted-foreground text-sm leading-relaxed">{selectedArticle.source}</p>
                         {selectedArticle.reference_url && (
                           <a
                             href={selectedArticle.reference_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-primary hover:underline mt-1"
+                            className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors font-medium text-sm mt-2"
                           >
                             {t('articlesPage.viewOriginal')}
-                            <ExternalLink className="w-3 h-3" />
+                            <ExternalLink className="w-4 h-4" />
                           </a>
                         )}
                       </div>
                     </div>
                   </div>
                 )}
+              </DialogHeader>
+              
+              <div className="prose prose-lg dark:prose-invert max-w-none">
+                <div className="text-foreground/90 leading-[1.8] text-base md:text-lg space-y-4">
+                  {selectedArticle?.body.split('\n\n').map((paragraph, index) => (
+                    <p key={index} className="whitespace-pre-line">
+                      {paragraph}
+                    </p>
+                  ))}
+                </div>
               </div>
-            </DialogHeader>
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <p className="whitespace-pre-line text-foreground/90 leading-relaxed text-base">
-                {selectedArticle?.body}
-              </p>
             </div>
           </ScrollArea>
         </DialogContent>
