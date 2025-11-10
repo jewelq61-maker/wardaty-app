@@ -60,7 +60,11 @@ const resources = {
         partnerDesc: 'دعم شريكة حياتك وفهم احتياجاتها',
       },
       
-      // Profile
+      // Navigation
+      homeNav: 'الرئيسية',
+      calendar: 'التقويم',
+      stats: 'التحليلات',
+      articles: 'المقالات',
       profile: 'الملف الشخصي',
       
       profilePage: {
