@@ -201,17 +201,18 @@ export default function Articles() {
       <div className="px-4 pt-6 pb-4 space-y-6">
         {/* Search Bar */}
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             type="text"
             placeholder={t('articlesPage.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-11 h-12 glass border-border/50 focus-visible:ring-primary/20 rounded-2xl"
+            className="pl-12 h-14 glass border-border/50 focus-visible:ring-primary/20 rounded-2xl text-base shadow-sm"
           />
         </div>
 
         {/* Category Tabs */}
+        <div className="bg-muted/30 rounded-2xl p-2">
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
           <ScrollArea className="w-full">
             <TabsList className="inline-flex w-full min-w-max gap-2 bg-transparent p-0">
@@ -219,7 +220,7 @@ export default function Articles() {
                 <TabsTrigger 
                   key={category} 
                   value={category} 
-                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground rounded-xl px-4 py-2 text-sm font-medium"
+                  className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md rounded-xl px-5 py-2.5 text-sm font-medium transition-all"
                 >
                   {t(`categories.${category}`)}
                 </TabsTrigger>
@@ -227,6 +228,7 @@ export default function Articles() {
             </TabsList>
           </ScrollArea>
         </Tabs>
+        </div>
 
         {/* Loading State */}
         {loading && (
@@ -254,17 +256,19 @@ export default function Articles() {
         {/* Featured Article */}
         {!loading && featuredArticle && (
           <Card 
-            className="glass shadow-elegant hover:shadow-xl transition-all cursor-pointer border-border/50 rounded-3xl overflow-hidden group bg-gradient-to-br from-primary/5 to-secondary/5 animate-fade-in"
+            className="glass shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-border/50 rounded-3xl overflow-hidden group bg-gradient-to-br from-primary/8 to-secondary/8 animate-fade-in backdrop-blur-sm"
             onClick={() => setSelectedArticle(featuredArticle)}
           >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                    <span className="text-xs font-semibold text-primary">{t('articlesPage.featured')}</span>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="p-1.5 bg-primary/10 rounded-lg">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="text-xs font-bold text-primary uppercase tracking-wide">{t('articlesPage.featured')}</span>
                     {featuredArticle.source && featuredArticle.category === 'rulings' && (
-                      <Badge variant="outline" className="text-xs gap-1 bg-success/10 text-success border-success/30 ml-1">
+                      <Badge variant="outline" className="text-xs gap-1.5 bg-success/10 text-success border-success/30">
                         <Shield className="w-3 h-3" />
                         {t('articlesPage.verified')}
                       </Badge>
@@ -272,36 +276,37 @@ export default function Articles() {
                   </div>
                   <Badge
                     variant="outline"
-                    className={getCategoryColor(featuredArticle.category)}
+                    className={`${getCategoryColor(featuredArticle.category)} mb-3`}
                   >
                     {t(`categories.${featuredArticle.category}`)}
                   </Badge>
-                  <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors mt-2">
+                  <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors mb-2">
                     {featuredArticle.title}
                   </CardTitle>
                   {featuredArticle.source && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs text-muted-foreground mt-2 flex items-center gap-1">
+                      <BookOpen className="w-3 h-3" />
                       {featuredArticle.source}
                     </p>
                   )}
                 </div>
                 <button
                   onClick={(e) => toggleBookmark(featuredArticle.id, e)}
-                  className="p-2 hover:bg-muted rounded-xl transition-colors shrink-0"
+                  className="p-2.5 hover:bg-muted/50 rounded-xl transition-all shrink-0 hover:scale-110"
                 >
                   {bookmarkedArticles.has(featuredArticle.id) ? (
-                    <BookmarkCheck className="w-5 h-5 text-primary fill-primary" />
+                    <BookmarkCheck className="w-6 h-6 text-primary fill-primary" />
                   ) : (
-                    <Bookmark className="w-5 h-5 text-muted-foreground" />
+                    <Bookmark className="w-6 h-6 text-muted-foreground" />
                   )}
                 </button>
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed mb-4">
+              <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-4">
                 {featuredArticle.body}
               </p>
-              <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary hover:bg-primary/10">
+              <Button variant="ghost" size="sm" className="gap-2 text-primary hover:text-primary hover:bg-primary/10 -ml-2">
                 {t('articlesPage.readMore')}
                 <ChevronRight className="w-4 h-4" />
               </Button>
@@ -311,18 +316,18 @@ export default function Articles() {
 
         {/* Articles Grid */}
         {!loading && regularArticles.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {regularArticles.map((article, index) => (
               <Card
                 key={article.id}
-                className="glass shadow-elegant hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border-border/50 rounded-3xl overflow-hidden group animate-fade-in"
+                className="glass shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border-border/50 rounded-3xl overflow-hidden group animate-fade-in backdrop-blur-sm"
                 style={{ animationDelay: `${index * 50}ms` }}
                 onClick={() => setSelectedArticle(article)}
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1">
-                    <div className="flex flex-wrap items-center gap-1.5 mb-2">
+                    <div className="flex flex-wrap items-center gap-2 mb-3">
                       <Badge
                         variant="outline"
                         className={`${getCategoryColor(article.category)} text-xs`}
@@ -331,22 +336,23 @@ export default function Articles() {
                       </Badge>
                       {article.source && article.category === 'rulings' && (
                         <Badge variant="outline" className="text-xs gap-1 bg-success/10 text-success border-success/30">
-                          <Shield className="w-2.5 h-2.5" />
+                          <Shield className="w-3 h-3" />
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                    <CardTitle className="text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors mb-2">
                       {article.title}
                     </CardTitle>
                     {article.source && (
-                      <p className="text-xs text-muted-foreground mt-2 line-clamp-1">
+                      <p className="text-xs text-muted-foreground line-clamp-1 flex items-center gap-1">
+                        <BookOpen className="w-3 h-3" />
                         {article.source}
                       </p>
                     )}
                     </div>
                     <button
                       onClick={(e) => toggleBookmark(article.id, e)}
-                      className="p-2 hover:bg-muted rounded-xl transition-colors shrink-0"
+                      className="p-2 hover:bg-muted/50 rounded-xl transition-all shrink-0 hover:scale-110"
                     >
                       {bookmarkedArticles.has(article.id) ? (
                         <BookmarkCheck className="w-5 h-5 text-primary fill-primary" />
@@ -357,11 +363,11 @@ export default function Articles() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed mb-3">
                     {article.body}
                   </p>
-                  <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
-                    <Clock className="w-3 h-3" />
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Clock className="w-3.5 h-3.5" />
                     <span>{t('articlesPage.readTime')}</span>
                   </div>
                 </CardContent>
