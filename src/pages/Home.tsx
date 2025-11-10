@@ -5,10 +5,11 @@ import { format, differenceInDays, parseISO } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CalendarDays, Sparkles, Moon, Bell, TrendingUp, RefreshCw } from 'lucide-react';
+import { CalendarDays, Sparkles, Moon, Bell, TrendingUp, RefreshCw, BookOpen, ChevronRight, Shield } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { useI18n } from '@/contexts/I18nContext';
 import BottomNav from '@/components/BottomNav';
 import UpcomingBeautyWidget from '@/components/UpcomingBeautyWidget';
 import CyclePredictionsWidget from '@/components/CyclePredictionsWidget';
@@ -19,10 +20,20 @@ import SymptomTrackerWidget from '@/components/SymptomTrackerWidget';
 import WaterTrackerWidget from '@/components/WaterTrackerWidget';
 import AchievementsBadges from '@/components/AchievementsBadges';
 import DailyAffirmation from '@/components/DailyAffirmation';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface Article {
+  id: string;
+  title: string;
+  body: string;
+  category: string;
+  source?: string;
+}
 
 export default function Home() {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const { locale } = useI18n();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -32,6 +43,7 @@ export default function Home() {
   const [notificationCount, setNotificationCount] = useState(0);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [featuredArticles, setFeaturedArticles] = useState<Article[]>([]);
   const startY = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -39,8 +51,9 @@ export default function Home() {
     if (user) {
       loadCycleData();
       checkNotifications();
+      loadFeaturedArticles();
     }
-  }, [user]);
+  }, [user, locale]);
 
   const loadCycleData = async () => {
     if (!user) return;
@@ -104,6 +117,23 @@ export default function Home() {
 
     const count = (beautyActions?.length || 0) + (fastingEntries && fastingEntries.length > 0 ? 1 : 0);
     setNotificationCount(count);
+  };
+
+  const loadFeaturedArticles = async () => {
+    try {
+      const { data } = await supabase
+        .from('articles')
+        .select('id, title, body, category, source')
+        .eq('lang', locale)
+        .order('created_at', { ascending: false })
+        .limit(3);
+
+      if (data) {
+        setFeaturedArticles(data);
+      }
+    } catch (error) {
+      console.error('Error loading articles:', error);
+    }
   };
 
   const handleRefresh = async () => {
@@ -173,6 +203,23 @@ export default function Home() {
       case 'ovulation': return '🌸';
       case 'luteal': return '🍂';
       default: return '✨';
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'basics':
+        return 'bg-info/10 text-info border-info/20';
+      case 'wellness':
+        return 'bg-fertile/10 text-fertile border-fertile/20';
+      case 'beauty':
+        return 'bg-ovulation/10 text-ovulation border-ovulation/20';
+      case 'fertility':
+        return 'bg-period/10 text-period border-period/20';
+      case 'rulings':
+        return 'bg-fasting/10 text-fasting border-fasting/20';
+      default:
+        return 'bg-muted text-muted-foreground';
     }
   };
 
@@ -340,6 +387,61 @@ export default function Home() {
             <UpcomingBeautyWidget />
           </div>
         </div>
+
+        {/* Featured Articles Section */}
+        {featuredArticles.length > 0 && (
+          <div className="pb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-primary" />
+                {t('articles')}
+              </h3>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate('/articles')}
+                className="text-primary hover:text-primary/80 h-8"
+              >
+                {t('home.viewAll')}
+                <ChevronRight className="w-4 h-4 mr-1" />
+              </Button>
+            </div>
+            
+            <div className="space-y-3">
+              {featuredArticles.map((article) => (
+                <Card
+                  key={article.id}
+                  onClick={() => navigate('/articles')}
+                  className="glass hover:shadow-lg transition-all cursor-pointer border-border/50 rounded-2xl overflow-hidden group bg-gradient-to-br from-background to-muted/20"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between gap-2 mb-2">
+                      <Badge
+                        variant="outline"
+                        className={`${getCategoryColor(article.category)} text-xs`}
+                      >
+                        {t(`categories.${article.category}`)}
+                      </Badge>
+                      {article.source && article.category === 'rulings' && (
+                        <Badge variant="outline" className="text-xs gap-1 bg-success/10 text-success border-success/30">
+                          <Shield className="w-2.5 h-2.5" />
+                        </Badge>
+                      )}
+                    </div>
+                    <CardTitle className="text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                      {article.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
+                      {article.body}
+                    </p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       <BottomNav />

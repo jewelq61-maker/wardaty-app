@@ -281,72 +281,77 @@ export default function Articles() {
 
       {/* Article Detail Dialog */}
       <Dialog open={!!selectedArticle} onOpenChange={() => setSelectedArticle(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl p-0 overflow-hidden">
+        <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl p-0 overflow-hidden border-border/50 shadow-2xl">
           <ScrollArea className="max-h-[90vh]">
-            <div className="p-8">
-              <DialogHeader className="mb-8 space-y-4">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <Badge
-                    variant="outline"
-                    className={selectedArticle ? getCategoryColor(selectedArticle.category) : ''}
-                  >
-                    {selectedArticle && t(`categories.${selectedArticle.category}`)}
+            {/* Header with gradient background */}
+            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-b border-border/50 p-8 pb-6">
+              <div className="flex items-center gap-2 flex-wrap mb-4">
+                <Badge
+                  variant="outline"
+                  className={selectedArticle ? getCategoryColor(selectedArticle.category) : ''}
+                >
+                  {selectedArticle && t(`categories.${selectedArticle.category}`)}
+                </Badge>
+                {selectedArticle?.source && selectedArticle.category === 'rulings' && (
+                  <Badge variant="outline" className="gap-1.5 bg-success/10 text-success border-success/30">
+                    <Shield className="w-3.5 h-3.5" />
+                    {t('articlesPage.verified')}
                   </Badge>
-                  {selectedArticle?.source && selectedArticle.category === 'rulings' && (
-                    <Badge variant="outline" className="gap-1.5 bg-success/10 text-success border-success/30">
-                      <Shield className="w-3.5 h-3.5" />
-                      {t('articlesPage.verified')}
-                    </Badge>
-                  )}
+                )}
+              </div>
+              
+              <DialogTitle className="text-3xl md:text-4xl leading-[1.2] font-bold pr-8 text-foreground mb-4">
+                {selectedArticle?.title}
+              </DialogTitle>
+              
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{t('articlesPage.readTime')}</span>
                 </div>
-                
-                <DialogTitle className="text-3xl md:text-4xl leading-tight font-bold pr-8 text-foreground">
-                  {selectedArticle?.title}
-                </DialogTitle>
-                
-                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground pt-2">
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4" />
-                    <span>{t('articlesPage.readTime')}</span>
-                  </div>
-                  {selectedArticle?.author && (
-                    <>
-                      <span className="text-border">•</span>
-                      <span className="text-foreground/80 font-medium">{selectedArticle.author}</span>
-                    </>
-                  )}
-                </div>
-                
-                {selectedArticle?.source && (
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 mt-4">
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-primary/10">
-                        <BookOpen className="w-5 h-5 text-primary" />
-                      </div>
-                      <div className="flex-1 space-y-1">
-                        <p className="font-semibold text-foreground text-sm">{t('articlesPage.source')}</p>
-                        <p className="text-muted-foreground text-sm leading-relaxed">{selectedArticle.source}</p>
-                        {selectedArticle.reference_url && (
-                          <a
-                            href={selectedArticle.reference_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-primary hover:text-primary/80 transition-colors font-medium text-sm mt-2"
-                          >
-                            {t('articlesPage.viewOriginal')}
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        )}
-                      </div>
+                {selectedArticle?.author && (
+                  <>
+                    <span className="text-border">•</span>
+                    <span className="text-foreground/80 font-medium">{selectedArticle.author}</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            {/* Source info */}
+            {selectedArticle?.source && (
+              <div className="px-8 pt-6">
+                <div className="p-5 rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5 border border-primary/20">
+                  <div className="flex items-start gap-4">
+                    <div className="p-2.5 rounded-xl bg-primary/10 shrink-0">
+                      <BookOpen className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <p className="font-semibold text-foreground">{t('articlesPage.source')}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{selectedArticle.source}</p>
+                      {selectedArticle.reference_url && (
+                        <a
+                          href={selectedArticle.reference_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors font-medium text-sm group"
+                        >
+                          <span>{t('articlesPage.viewOriginal')}</span>
+                          <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        </a>
+                      )}
                     </div>
                   </div>
-                )}
-              </DialogHeader>
-              
+                </div>
+              </div>
+            )}
+            
+            {/* Article content */}
+            <div className="px-8 py-8">
               <div className="prose prose-lg dark:prose-invert max-w-none">
-                <div className="text-foreground/90 leading-[1.8] text-base md:text-lg space-y-4">
+                <div className="text-foreground/90 leading-[1.9] text-[17px] md:text-lg space-y-5">
                   {selectedArticle?.body.split('\n\n').map((paragraph, index) => (
-                    <p key={index} className="whitespace-pre-line">
+                    <p key={index} className="whitespace-pre-line first-letter:text-2xl first-letter:font-bold first-letter:text-primary">
                       {paragraph}
                     </p>
                   ))}
