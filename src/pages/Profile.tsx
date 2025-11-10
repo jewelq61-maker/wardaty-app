@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
+import SyncedCycleInsights from '@/components/SyncedCycleInsights';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -650,6 +651,13 @@ export default function Profile() {
             <p className="text-xs text-muted-foreground mt-4 text-center">
               {t('profilePage.sharingDescription')}
             </p>
+
+            {/* Synchronized Cycle Insights */}
+            {shareLink?.status === 'active' && shareLink.connected_user_id && (
+              <div className="mt-4">
+                <SyncedCycleInsights partnerId={shareLink.connected_user_id} />
+              </div>
+            )}
           </div>
         )}
 
