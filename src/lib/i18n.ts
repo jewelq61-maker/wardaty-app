@@ -379,6 +379,10 @@ const resources = {
       articlesPage: {
         search: 'ابحث في المقالات...',
         noResults: 'لم يتم العثور على مقالات',
+        articlesFound: 'مقالة',
+        featured: 'مميز',
+        readMore: 'اقرأ المزيد',
+        readTime: '٥ دقائق قراءة'
       }
     }
   },
@@ -763,6 +767,10 @@ const resources = {
       articlesPage: {
         search: 'Search articles...',
         noResults: 'No articles found',
+        articlesFound: 'articles',
+        featured: 'Featured',
+        readMore: 'Read More',
+        readTime: '5 min read'
       }
     }
   }
