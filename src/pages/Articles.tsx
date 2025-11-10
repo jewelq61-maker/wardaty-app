@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bell, BookOpen, Search, Sparkles, Clock, ChevronRight, ExternalLink, Shield } from 'lucide-react';
+import { Bell, BookOpen, Search, Sparkles, Clock, ChevronRight, ExternalLink, Shield, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
+import { useRtl } from '@/hooks/use-rtl';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +18,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
 
 interface Article {
@@ -30,26 +32,30 @@ interface Article {
   author?: string;
 }
 
-const categories = ['all', 'basics', 'wellness', 'beauty', 'fertility', 'rulings'] as const;
+const categories = ['all', 'bookmarked', 'basics', 'wellness', 'beauty', 'fertility', 'rulings'] as const;
 
 export default function Articles() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { locale } = useI18n();
+  const { toast } = useToast();
+  const isRtl = useRtl();
   const [articles, setArticles] = useState<Article[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bookmarkedArticles, setBookmarkedArticles] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchArticles();
-  }, [locale]);
+    fetchBookmarks();
+  }, [locale, user]);
 
   useEffect(() => {
     filterArticles();
-  }, [articles, selectedCategory, searchQuery]);
+  }, [articles, selectedCategory, searchQuery, bookmarkedArticles]);
 
   const fetchArticles = async () => {
     setLoading(true);
@@ -65,11 +71,73 @@ export default function Articles() {
     setLoading(false);
   };
 
+  const fetchBookmarks = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('bookmarks')
+      .select('article_id')
+      .eq('user_id', user.id);
+
+    if (data) {
+      setBookmarkedArticles(new Set(data.map(b => b.article_id)));
+    }
+  };
+
+  const toggleBookmark = async (articleId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!user) {
+      toast({
+        title: t('error'),
+        description: t('articlesPage.loginToBookmark'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const isBookmarked = bookmarkedArticles.has(articleId);
+
+    if (isBookmarked) {
+      const { error } = await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('article_id', articleId);
+
+      if (!error) {
+        setBookmarkedArticles(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(articleId);
+          return newSet;
+        });
+        toast({
+          title: t('success'),
+          description: t('articlesPage.bookmarkRemoved'),
+        });
+      }
+    } else {
+      const { error } = await supabase
+        .from('bookmarks')
+        .insert({ user_id: user.id, article_id: articleId });
+
+      if (!error) {
+        setBookmarkedArticles(prev => new Set(prev).add(articleId));
+        toast({
+          title: t('success'),
+          description: t('articlesPage.bookmarkAdded'),
+        });
+      }
+    }
+  };
+
   const filterArticles = () => {
     let filtered = articles;
 
-    // Filter by category
-    if (selectedCategory !== 'all') {
+    // Filter by bookmarked
+    if (selectedCategory === 'bookmarked') {
+      filtered = filtered.filter((article) => bookmarkedArticles.has(article.id));
+    } else if (selectedCategory !== 'all') {
+      // Filter by category
       filtered = filtered.filter((article) => article.category === selectedCategory);
     }
 
@@ -105,7 +173,7 @@ export default function Articles() {
   const regularArticles = filteredArticles.slice(1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-24">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Compact Header */}
       <div className="sticky top-0 bg-background/80 backdrop-blur-xl z-10 border-b border-border/50">
         <div className="flex items-center justify-between px-4 py-3">
@@ -191,31 +259,43 @@ export default function Articles() {
           >
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  <span className="text-xs font-semibold text-primary">{t('articlesPage.featured')}</span>
-                  {featuredArticle.source && featuredArticle.category === 'rulings' && (
-                    <Badge variant="outline" className="text-xs gap-1 bg-success/10 text-success border-success/30 ml-1">
-                      <Shield className="w-3 h-3" />
-                      {t('articlesPage.verified')}
-                    </Badge>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-semibold text-primary">{t('articlesPage.featured')}</span>
+                    {featuredArticle.source && featuredArticle.category === 'rulings' && (
+                      <Badge variant="outline" className="text-xs gap-1 bg-success/10 text-success border-success/30 ml-1">
+                        <Shield className="w-3 h-3" />
+                        {t('articlesPage.verified')}
+                      </Badge>
+                    )}
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className={getCategoryColor(featuredArticle.category)}
+                  >
+                    {t(`categories.${featuredArticle.category}`)}
+                  </Badge>
+                  <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors mt-2">
+                    {featuredArticle.title}
+                  </CardTitle>
+                  {featuredArticle.source && (
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {featuredArticle.source}
+                    </p>
                   )}
                 </div>
-                <Badge
-                  variant="outline"
-                  className={getCategoryColor(featuredArticle.category)}
+                <button
+                  onClick={(e) => toggleBookmark(featuredArticle.id, e)}
+                  className="p-2 hover:bg-muted rounded-xl transition-colors shrink-0"
                 >
-                  {t(`categories.${featuredArticle.category}`)}
-                </Badge>
+                  {bookmarkedArticles.has(featuredArticle.id) ? (
+                    <BookmarkCheck className="w-5 h-5 text-primary fill-primary" />
+                  ) : (
+                    <Bookmark className="w-5 h-5 text-muted-foreground" />
+                  )}
+                </button>
               </div>
-              <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors">
-                {featuredArticle.title}
-              </CardTitle>
-              {featuredArticle.source && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  {featuredArticle.source}
-                </p>
-              )}
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed mb-4">
@@ -240,8 +320,9 @@ export default function Articles() {
                 onClick={() => setSelectedArticle(article)}
               >
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <div className="flex flex-wrap items-center gap-1.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-2">
                       <Badge
                         variant="outline"
                         className={`${getCategoryColor(article.category)} text-xs`}
@@ -254,15 +335,26 @@ export default function Articles() {
                         </Badge>
                       )}
                     </div>
+                    <CardTitle className="text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                      {article.title}
+                    </CardTitle>
+                    {article.source && (
+                      <p className="text-xs text-muted-foreground mt-2 line-clamp-1">
+                        {article.source}
+                      </p>
+                    )}
+                    </div>
+                    <button
+                      onClick={(e) => toggleBookmark(article.id, e)}
+                      className="p-2 hover:bg-muted rounded-xl transition-colors shrink-0"
+                    >
+                      {bookmarkedArticles.has(article.id) ? (
+                        <BookmarkCheck className="w-5 h-5 text-primary fill-primary" />
+                      ) : (
+                        <Bookmark className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </button>
                   </div>
-                  <CardTitle className="text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
-                    {article.title}
-                  </CardTitle>
-                  {article.source && (
-                    <p className="text-xs text-muted-foreground mt-2 line-clamp-1">
-                      {article.source}
-                    </p>
-                  )}
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
@@ -281,10 +373,20 @@ export default function Articles() {
 
       {/* Article Detail Dialog */}
       <Dialog open={!!selectedArticle} onOpenChange={() => setSelectedArticle(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl p-0 overflow-hidden border-border/50 shadow-2xl">
+        <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl p-0 overflow-hidden border-border/50 shadow-2xl" dir={isRtl ? 'rtl' : 'ltr'}>
           <ScrollArea className="max-h-[90vh]">
             {/* Header with gradient background */}
-            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-b border-border/50 p-8 pb-6">
+            <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-b border-border/50 p-8 pb-6 relative">
+              <button
+                onClick={(e) => selectedArticle && toggleBookmark(selectedArticle.id, e)}
+                className={`absolute ${isRtl ? 'left-8' : 'right-8'} top-8 p-2 hover:bg-background/50 rounded-xl transition-colors`}
+              >
+                {selectedArticle && bookmarkedArticles.has(selectedArticle.id) ? (
+                  <BookmarkCheck className="w-6 h-6 text-primary fill-primary" />
+                ) : (
+                  <Bookmark className="w-6 h-6 text-muted-foreground" />
+                )}
+              </button>
               <div className="flex items-center gap-2 flex-wrap mb-4">
                 <Badge
                   variant="outline"

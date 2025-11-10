@@ -370,10 +370,11 @@ const resources = {
       // Articles
       categories: {
         all: 'الكل',
+        bookmarked: 'المحفوظة',
         basics: 'الأساسيات',
-        fertility: 'الخصوبة',
         wellness: 'الصحة',
         beauty: 'الجمال',
+        fertility: 'الخصوبة',
         rulings: 'الأحكام الشرعية'
       },
       articlesPage: {
@@ -385,7 +386,10 @@ const resources = {
         readTime: '٥ دقائق قراءة',
         verified: 'موثق',
         source: 'المصدر',
-        viewOriginal: 'عرض المرجع الأصلي'
+        viewOriginal: 'عرض المرجع الأصلي',
+        loginToBookmark: 'يجب تسجيل الدخول لحفظ المقالات',
+        bookmarkAdded: 'تم حفظ المقال',
+        bookmarkRemoved: 'تم إزالة المقال من المحفوظات'
       }
     }
   },
@@ -761,7 +765,13 @@ const resources = {
       // Articles
       categories: {
         all: 'All',
+        bookmarked: 'Bookmarked',
         basics: 'Basics',
+        wellness: 'Wellness',
+        beauty: 'Beauty',
+        fertility: 'Fertility',
+        rulings: 'Islamic Rulings'
+      },
         fertility: 'Fertility',
         wellness: 'Wellness',
         beauty: 'Beauty',
@@ -776,7 +786,10 @@ const resources = {
         readTime: '5 min read',
         verified: 'Verified',
         source: 'Source',
-        viewOriginal: 'View Original Reference'
+        viewOriginal: 'View Original Reference',
+        loginToBookmark: 'Please login to bookmark articles',
+        bookmarkAdded: 'Article bookmarked',
+        bookmarkRemoved: 'Bookmark removed'
       }
     }
   }
