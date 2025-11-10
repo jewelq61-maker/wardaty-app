@@ -326,10 +326,10 @@ export default function Home() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => navigate('/calendar')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-primary/10 hover:bg-primary/15 transition-all duration-300 border-2 border-primary/30 hover:border-primary/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-fertile/10 hover:bg-fertile/15 transition-all duration-300 border-2 border-fertile/30 hover:border-fertile/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <CalendarDays className="w-8 h-8 text-primary mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-fertile/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <CalendarDays className="w-8 h-8 text-fertile mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('logToday')}</p>
             </button>
             
@@ -344,19 +344,19 @@ export default function Home() {
             
             <button
               onClick={() => navigate('/fasting-qada')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-fasting/10 hover:bg-fasting/15 transition-all duration-300 border-2 border-fasting/30 hover:border-fasting/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-period/10 hover:bg-period/15 transition-all duration-300 border-2 border-period/30 hover:border-period/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-fasting/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <Moon className="w-8 h-8 text-fasting mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-period/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <Moon className="w-8 h-8 text-period mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('fastingQada.title')}</p>
             </button>
 
             <button
               onClick={() => navigate('/stats')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-success/10 hover:bg-success/15 transition-all duration-300 border-2 border-success/30 hover:border-success/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-info/10 hover:bg-info/15 transition-all duration-300 border-2 border-info/30 hover:border-info/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-success/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <TrendingUp className="w-8 h-8 text-success mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-info/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <TrendingUp className="w-8 h-8 text-info mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('stats')}</p>
             </button>
           </div>
