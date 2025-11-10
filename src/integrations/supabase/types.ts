@@ -16,27 +16,36 @@ export type Database = {
     Tables: {
       articles: {
         Row: {
+          author: string | null
           body: string
           category: string
           created_at: string
           id: string
           lang: string
+          reference_url: string | null
+          source: string | null
           title: string
         }
         Insert: {
+          author?: string | null
           body: string
           category: string
           created_at?: string
           id?: string
           lang: string
+          reference_url?: string | null
+          source?: string | null
           title: string
         }
         Update: {
+          author?: string | null
           body?: string
           category?: string
           created_at?: string
           id?: string
           lang?: string
+          reference_url?: string | null
+          source?: string | null
           title?: string
         }
         Relationships: []
