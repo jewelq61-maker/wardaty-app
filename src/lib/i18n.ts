@@ -772,11 +772,6 @@ const resources = {
         fertility: 'Fertility',
         rulings: 'Islamic Rulings'
       },
-        fertility: 'Fertility',
-        wellness: 'Wellness',
-        beauty: 'Beauty',
-        rulings: 'Islamic Rulings'
-      },
       articlesPage: {
         search: 'Search articles...',
         noResults: 'No articles found',

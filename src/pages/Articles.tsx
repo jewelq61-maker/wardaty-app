@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Bell, BookOpen, Search, Sparkles, Clock, ChevronRight, ExternalLink, Shield, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
-import { useRtl } from '@/hooks/use-rtl';
+import { useRTL } from '@/hooks/use-rtl';
 import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,7 +39,7 @@ export default function Articles() {
   const { user } = useAuth();
   const { locale } = useI18n();
   const { toast } = useToast();
-  const isRtl = useRtl();
+  const { isRTL } = useRTL();
   const [articles, setArticles] = useState<Article[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -173,7 +173,7 @@ export default function Articles() {
   const regularArticles = filteredArticles.slice(1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-24" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-24" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Compact Header */}
       <div className="sticky top-0 bg-background/80 backdrop-blur-xl z-10 border-b border-border/50">
         <div className="flex items-center justify-between px-4 py-3">
@@ -373,13 +373,13 @@ export default function Articles() {
 
       {/* Article Detail Dialog */}
       <Dialog open={!!selectedArticle} onOpenChange={() => setSelectedArticle(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl p-0 overflow-hidden border-border/50 shadow-2xl" dir={isRtl ? 'rtl' : 'ltr'}>
+        <DialogContent className="max-w-4xl max-h-[90vh] rounded-3xl p-0 overflow-hidden border-border/50 shadow-2xl" dir={isRTL ? 'rtl' : 'ltr'}>
           <ScrollArea className="max-h-[90vh]">
             {/* Header with gradient background */}
             <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-background border-b border-border/50 p-8 pb-6 relative">
               <button
                 onClick={(e) => selectedArticle && toggleBookmark(selectedArticle.id, e)}
-                className={`absolute ${isRtl ? 'left-8' : 'right-8'} top-8 p-2 hover:bg-background/50 rounded-xl transition-colors`}
+                className={`absolute ${isRTL ? 'left-8' : 'right-8'} top-8 p-2 hover:bg-background/50 rounded-xl transition-colors`}
               >
                 {selectedArticle && bookmarkedArticles.has(selectedArticle.id) ? (
                   <BookmarkCheck className="w-6 h-6 text-primary fill-primary" />
