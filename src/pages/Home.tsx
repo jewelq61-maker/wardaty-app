@@ -284,36 +284,48 @@ export default function Home() {
       <main className="max-w-lg mx-auto px-4 pt-4 space-y-6">
         {/* Phase Status Card */}
         {!loading && (
-          <div className="glass rounded-3xl p-6 shadow-elegant bg-gradient-to-br from-primary/5 via-secondary/5 to-background animate-fade-in border border-primary/10">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center text-2xl">
+          <div className="glass rounded-3xl p-6 shadow-lg bg-gradient-to-br from-primary/10 via-secondary/5 to-background animate-fade-in border border-primary/20 relative overflow-hidden">
+            {/* Decorative elements */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-secondary/10 rounded-full blur-2xl"></div>
+            
+            <div className="relative z-10">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary/30 backdrop-blur-sm flex items-center justify-center text-3xl shadow-lg border border-primary/20">
                   {getPhaseEmoji(currentPhase)}
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">{t('currentPhase')}</p>
-                  <p className="text-lg font-bold text-foreground">{t(currentPhase)}</p>
+                  <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{t('currentPhase')}</p>
+                  <p className="text-xl font-bold text-foreground bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{t(currentPhase)}</p>
                 </div>
               </div>
               {daysToNextPeriod !== null && (
-                <div className="text-right">
-                  <p className="text-2xl font-bold text-primary">{daysToNextPeriod}</p>
-                  <p className="text-xs text-muted-foreground">{t('daysToNextPeriod')}</p>
+                <div className="text-right bg-background/50 backdrop-blur-sm rounded-2xl p-3 border border-border/50 shadow-sm">
+                  <p className="text-3xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">{daysToNextPeriod}</p>
+                  <p className="text-xs text-muted-foreground font-medium">{t('daysToNextPeriod')}</p>
                 </div>
               )}
             </div>
             
             {/* Progress bar */}
             {daysToNextPeriod !== null && (
-              <div className="mt-4">
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
+              <div className="mt-5">
+                <div className="flex items-center justify-between mb-2 text-xs text-muted-foreground">
+                  <span>{t('menstrual')}</span>
+                  <span>{t('ovulation')}</span>
+                </div>
+                <div className="h-3 bg-muted/50 rounded-full overflow-hidden backdrop-blur-sm border border-border/50">
                   <div 
-                    className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-1000 rounded-full"
+                    className="h-full bg-gradient-to-r from-primary via-secondary to-primary transition-all duration-1000 rounded-full shadow-lg relative"
                     style={{ width: `${Math.max(0, Math.min(100, ((28 - daysToNextPeriod) / 28) * 100))}%` }}
-                  />
+                  >
+                    <div className="absolute inset-0 bg-white/20 animate-pulse"></div>
+                  </div>
                 </div>
               </div>
             )}
+            </div>
           </div>
         )}
 
@@ -322,58 +334,69 @@ export default function Home() {
 
         {/* Quick Actions Grid */}
         <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">{t('quickActions')}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-foreground">{t('quickActions')}</h3>
+            <div className="h-1 w-12 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => navigate('/calendar')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-fertile/10 hover:bg-fertile/15 transition-all duration-300 border-2 border-fertile/30 hover:border-fertile/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-fertile/10 to-fertile/5 hover:from-fertile/15 hover:to-fertile/10 transition-all duration-300 border-2 border-fertile/30 hover:border-fertile/50 hover:shadow-xl hover:scale-[1.02] active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-fertile/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <CalendarDays className="w-8 h-8 text-fertile mb-3 relative z-10 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium text-foreground relative z-10">{t('logToday')}</p>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-fertile/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <CalendarDays className="w-8 h-8 text-fertile mb-3 relative z-10 group-hover:scale-110 group-hover:rotate-3 transition-transform" />
+              <p className="text-sm font-semibold text-foreground relative z-10">{t('logToday')}</p>
             </button>
             
             <button
               onClick={() => navigate('/beauty')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-ovulation/10 hover:bg-ovulation/15 transition-all duration-300 border-2 border-ovulation/30 hover:border-ovulation/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-ovulation/10 to-ovulation/5 hover:from-ovulation/15 hover:to-ovulation/10 transition-all duration-300 border-2 border-ovulation/30 hover:border-ovulation/50 hover:shadow-xl hover:scale-[1.02] active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-ovulation/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <Sparkles className="w-8 h-8 text-ovulation mb-3 relative z-10 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium text-foreground relative z-10">{t('beautyPlanner')}</p>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-ovulation/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <Sparkles className="w-8 h-8 text-ovulation mb-3 relative z-10 group-hover:scale-110 group-hover:rotate-12 transition-transform" />
+              <p className="text-sm font-semibold text-foreground relative z-10">{t('beautyPlanner')}</p>
             </button>
             
             <button
               onClick={() => navigate('/fasting-qada')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-period/10 hover:bg-period/15 transition-all duration-300 border-2 border-period/30 hover:border-period/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-period/10 to-period/5 hover:from-period/15 hover:to-period/10 transition-all duration-300 border-2 border-period/30 hover:border-period/50 hover:shadow-xl hover:scale-[1.02] active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-period/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <Moon className="w-8 h-8 text-period mb-3 relative z-10 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium text-foreground relative z-10">{t('fastingQada.title')}</p>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-period/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <Moon className="w-8 h-8 text-period mb-3 relative z-10 group-hover:scale-110 group-hover:-rotate-12 transition-transform" />
+              <p className="text-sm font-semibold text-foreground relative z-10">{t('fastingQada.title')}</p>
             </button>
 
             <button
               onClick={() => navigate('/stats')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-info/10 hover:bg-info/15 transition-all duration-300 border-2 border-info/30 hover:border-info/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-info/10 to-info/5 hover:from-info/15 hover:to-info/10 transition-all duration-300 border-2 border-info/30 hover:border-info/50 hover:shadow-xl hover:scale-[1.02] active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-info/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute top-0 right-0 w-24 h-24 bg-info/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <TrendingUp className="w-8 h-8 text-info mb-3 relative z-10 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium text-foreground relative z-10">{t('stats')}</p>
+              <p className="text-sm font-semibold text-foreground relative z-10">{t('stats')}</p>
             </button>
 
             <button
               onClick={() => navigate('/articles')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-fasting/10 hover:bg-fasting/15 transition-all duration-300 border-2 border-fasting/30 hover:border-fasting/50 hover:shadow-lg active:scale-95 col-span-2"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br from-fasting/10 to-fasting/5 hover:from-fasting/15 hover:to-fasting/10 transition-all duration-300 border-2 border-fasting/30 hover:border-fasting/50 hover:shadow-xl hover:scale-[1.02] active:scale-95 col-span-2"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-fasting/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <BookOpen className="w-8 h-8 text-fasting mb-3 relative z-10 group-hover:scale-110 transition-transform" />
-              <p className="text-sm font-medium text-foreground relative z-10">{t('articles')}</p>
+              <div className="absolute top-0 right-0 w-32 h-32 bg-fasting/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+              <BookOpen className="w-8 h-8 text-fasting mb-3 relative z-10 group-hover:scale-110 group-hover:rotate-6 transition-transform" />
+              <p className="text-sm font-semibold text-foreground relative z-10">{t('articles')}</p>
             </button>
           </div>
         </div>
 
         {/* Today's Tracking */}
         <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">{t('todayTracking')}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-foreground">{t('todayTracking')}</h3>
+            <div className="h-1 w-12 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+          </div>
           <div className="space-y-3">
             <MoodTrackerWidget />
             <SymptomTrackerWidget />
@@ -389,7 +412,10 @@ export default function Home() {
 
         {/* Overview Section */}
         <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">{t('overview')}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-foreground">{t('overview')}</h3>
+            <div className="h-1 w-12 bg-gradient-to-r from-primary to-secondary rounded-full"></div>
+          </div>
           <div className="space-y-3">
             <StatsPreviewWidget />
             <CyclePredictionsWidget />
