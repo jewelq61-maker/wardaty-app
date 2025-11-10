@@ -335,10 +335,10 @@ export default function Home() {
             
             <button
               onClick={() => navigate('/beauty')}
-              className="group relative overflow-hidden rounded-2xl p-5 bg-secondary/10 hover:bg-secondary/15 transition-all duration-300 border-2 border-secondary/30 hover:border-secondary/50 hover:shadow-lg active:scale-95"
+              className="group relative overflow-hidden rounded-2xl p-5 bg-ovulation/10 hover:bg-ovulation/15 transition-all duration-300 border-2 border-ovulation/30 hover:border-ovulation/50 hover:shadow-lg active:scale-95"
             >
-              <div className="absolute top-0 right-0 w-20 h-20 bg-secondary/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-              <Sparkles className="w-8 h-8 text-secondary mb-3 relative z-10 group-hover:scale-110 transition-transform" />
+              <div className="absolute top-0 right-0 w-20 h-20 bg-ovulation/20 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+              <Sparkles className="w-8 h-8 text-ovulation mb-3 relative z-10 group-hover:scale-110 transition-transform" />
               <p className="text-sm font-medium text-foreground relative z-10">{t('beautyPlanner')}</p>
             </button>
             
