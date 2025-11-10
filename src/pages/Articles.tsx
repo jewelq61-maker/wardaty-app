@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bell, BookOpen, Search, Sparkles, Clock, ChevronRight } from 'lucide-react';
+import { Bell, BookOpen, Search, Sparkles, Clock, ChevronRight, ExternalLink, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,6 +25,9 @@ interface Article {
   body: string;
   category: string;
   lang: string;
+  source?: string;
+  reference_url?: string;
+  author?: string;
 }
 
 const categories = ['all', 'basics', 'wellness', 'beauty', 'fertility', 'rulings'] as const;
@@ -191,6 +194,12 @@ export default function Articles() {
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-4 h-4 text-primary" />
                   <span className="text-xs font-semibold text-primary">{t('articlesPage.featured')}</span>
+                  {featuredArticle.source && featuredArticle.category === 'rulings' && (
+                    <Badge variant="outline" className="text-xs gap-1 bg-success/10 text-success border-success/30 ml-1">
+                      <Shield className="w-3 h-3" />
+                      {t('articlesPage.verified')}
+                    </Badge>
+                  )}
                 </div>
                 <Badge
                   variant="outline"
@@ -202,6 +211,11 @@ export default function Articles() {
               <CardTitle className="text-xl leading-tight group-hover:text-primary transition-colors">
                 {featuredArticle.title}
               </CardTitle>
+              {featuredArticle.source && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  {featuredArticle.source}
+                </p>
+              )}
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground line-clamp-4 leading-relaxed mb-4">
@@ -227,16 +241,28 @@ export default function Articles() {
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <Badge
-                      variant="outline"
-                      className={`${getCategoryColor(article.category)} text-xs`}
-                    >
-                      {t(`categories.${article.category}`)}
-                    </Badge>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <Badge
+                        variant="outline"
+                        className={`${getCategoryColor(article.category)} text-xs`}
+                      >
+                        {t(`categories.${article.category}`)}
+                      </Badge>
+                      {article.source && article.category === 'rulings' && (
+                        <Badge variant="outline" className="text-xs gap-1 bg-success/10 text-success border-success/30">
+                          <Shield className="w-2.5 h-2.5" />
+                        </Badge>
+                      )}
+                    </div>
                   </div>
                   <CardTitle className="text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
                     {article.title}
                   </CardTitle>
+                  {article.source && (
+                    <p className="text-xs text-muted-foreground mt-2 line-clamp-1">
+                      {article.source}
+                    </p>
+                  )}
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
@@ -259,19 +285,57 @@ export default function Articles() {
           <ScrollArea className="max-h-[75vh] pr-4">
             <DialogHeader className="mb-6">
               <div className="space-y-3">
-                <Badge
-                  variant="outline"
-                  className={selectedArticle ? getCategoryColor(selectedArticle.category) : ''}
-                >
-                  {selectedArticle && t(`categories.${selectedArticle.category}`)}
-                </Badge>
+                <div className="flex items-center gap-2">
+                  <Badge
+                    variant="outline"
+                    className={selectedArticle ? getCategoryColor(selectedArticle.category) : ''}
+                  >
+                    {selectedArticle && t(`categories.${selectedArticle.category}`)}
+                  </Badge>
+                  {selectedArticle?.source && selectedArticle.category === 'rulings' && (
+                    <Badge variant="outline" className="gap-1 bg-success/10 text-success border-success/30">
+                      <Shield className="w-3 h-3" />
+                      {t('articlesPage.verified')}
+                    </Badge>
+                  )}
+                </div>
                 <DialogTitle className="text-2xl leading-tight pr-6">
                   {selectedArticle?.title}
                 </DialogTitle>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="w-4 h-4" />
-                  <span>{t('articlesPage.readTime')}</span>
+                <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Clock className="w-4 h-4" />
+                    <span>{t('articlesPage.readTime')}</span>
+                  </div>
+                  {selectedArticle?.author && (
+                    <div className="flex items-center gap-1">
+                      <span>•</span>
+                      <span className="text-foreground/70">{selectedArticle.author}</span>
+                    </div>
+                  )}
                 </div>
+                {selectedArticle?.source && (
+                  <div className="p-3 rounded-xl bg-muted/50 border border-border/50">
+                    <div className="flex items-start gap-2">
+                      <BookOpen className="w-4 h-4 text-primary mt-0.5" />
+                      <div className="flex-1 text-sm">
+                        <p className="font-medium text-foreground">{t('articlesPage.source')}:</p>
+                        <p className="text-muted-foreground">{selectedArticle.source}</p>
+                        {selectedArticle.reference_url && (
+                          <a
+                            href={selectedArticle.reference_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-primary hover:underline mt-1"
+                          >
+                            {t('articlesPage.viewOriginal')}
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </DialogHeader>
             <div className="prose prose-sm dark:prose-invert max-w-none">

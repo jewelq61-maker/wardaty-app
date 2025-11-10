@@ -382,7 +382,10 @@ const resources = {
         articlesFound: 'مقالة',
         featured: 'مميز',
         readMore: 'اقرأ المزيد',
-        readTime: '٥ دقائق قراءة'
+        readTime: '٥ دقائق قراءة',
+        verified: 'موثق',
+        source: 'المصدر',
+        viewOriginal: 'عرض المرجع الأصلي'
       }
     }
   },
@@ -770,7 +773,10 @@ const resources = {
         articlesFound: 'articles',
         featured: 'Featured',
         readMore: 'Read More',
-        readTime: '5 min read'
+        readTime: '5 min read',
+        verified: 'Verified',
+        source: 'Source',
+        viewOriginal: 'View Original Reference'
       }
     }
   }
