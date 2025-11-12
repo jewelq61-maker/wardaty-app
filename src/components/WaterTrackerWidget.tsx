@@ -112,61 +112,61 @@ export default function WaterTrackerWidget() {
   const progress = (glassesCount / DAILY_GOAL) * 100;
 
   return (
-    <Card className="glass shadow-elegant animate-fade-in">
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Droplet className="w-5 h-5 text-info" />
+    <Card className="bg-card border border-border animate-fade-in">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <Droplet className="w-4 h-4 text-info" />
           {t('home.waterIntake')}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
+        {/* Progress Text */}
+        <div className="text-center">
+          <p className="text-sm text-muted-foreground mb-2">{t('home.todayProgress')}</p>
+          <p className="text-2xl font-bold text-foreground">
+            {glassesCount} / {DAILY_GOAL}
+          </p>
+        </div>
+
         {/* Progress Bar */}
-        <div className="relative">
-          <div className="h-16 bg-muted rounded-2xl overflow-hidden">
-            <div 
-              className="h-full bg-gradient-to-r from-info/60 to-info transition-all duration-500"
-              style={{ width: `${Math.min(progress, 100)}%` }}
-            />
-          </div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl font-bold">
-              {glassesCount} / {DAILY_GOAL}
-            </span>
-          </div>
+        <div className="h-2 bg-muted rounded-full overflow-hidden">
+          <div 
+            className="h-full bg-info transition-all duration-500"
+            style={{ width: `${Math.min(progress, 100)}%` }}
+          />
         </div>
 
         {/* Glass Icons */}
-        <div className="flex justify-center gap-2 flex-wrap">
+        <div className="flex justify-center gap-1.5 flex-wrap">
           {Array.from({ length: DAILY_GOAL }).map((_, i) => (
             <Droplet
               key={i}
               className={cn(
-                'w-6 h-6 transition-all',
+                'w-5 h-5 transition-all',
                 i < glassesCount 
-                  ? 'fill-info text-info scale-110' 
-                  : 'text-muted-foreground'
+                  ? 'fill-info text-info' 
+                  : 'text-muted-foreground/30'
               )}
             />
           ))}
         </div>
 
         {/* Controls */}
-        <div className="flex items-center justify-center gap-4">
+        <div className="flex items-center justify-center gap-3 pt-2">
           <Button
             size="icon"
             variant="outline"
             onClick={() => updateWaterCount(glassesCount - 1)}
             disabled={loading || glassesCount === 0}
-            className="rounded-full"
+            className="h-9 w-9 rounded-full"
           >
             <Minus className="w-4 h-4" />
           </Button>
           
           <Button
-            size="lg"
             onClick={() => updateWaterCount(glassesCount + 1)}
             disabled={loading || glassesCount >= DAILY_GOAL}
-            className="rounded-full px-8"
+            className="rounded-full px-6 h-9"
           >
             <Plus className="w-4 h-4 mr-2" />
             {t('home.addGlass')}

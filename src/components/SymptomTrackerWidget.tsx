@@ -102,10 +102,10 @@ export default function SymptomTrackerWidget() {
   };
 
   return (
-    <Card className="glass shadow-elegant animate-fade-in">
-      <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Activity className="w-5 h-5" />
+    <Card className="bg-card border border-border animate-fade-in">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-semibold flex items-center gap-2">
+          <Activity className="w-4 h-4" />
           {t('home.trackSymptoms')}
         </CardTitle>
       </CardHeader>
@@ -120,14 +120,13 @@ export default function SymptomTrackerWidget() {
                 onClick={() => handleSymptomToggle(symptom.id)}
                 disabled={loading}
                 className={cn(
-                  'flex flex-col items-center gap-2 p-3 rounded-2xl transition-all flex-1',
-                  symptom.bg,
-                  isSelected && 'ring-2 ring-primary scale-105',
+                  'flex flex-col items-center gap-1.5 p-2.5 rounded-xl transition-all flex-1',
+                  isSelected ? 'bg-primary/10 border border-primary' : 'bg-muted/50 border border-transparent hover:bg-muted',
                   loading && 'opacity-50 cursor-not-allowed'
                 )}
               >
-                <span className="text-3xl">{symptom.emoji}</span>
-                <span className={cn('text-xs font-medium', symptom.color)}>
+                <span className="text-2xl">{symptom.emoji}</span>
+                <span className="text-xs font-medium text-foreground">
                   {t(symptom.id)}
                 </span>
               </button>
@@ -136,7 +135,7 @@ export default function SymptomTrackerWidget() {
         </div>
         
         {selectedSymptoms.length > 0 && (
-          <div className="mt-4 text-center text-sm text-muted-foreground">
+          <div className="mt-3 text-center text-xs text-muted-foreground">
             {t('home.symptomsSelected', { count: selectedSymptoms.length })}
           </div>
         )}

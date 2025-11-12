@@ -98,9 +98,9 @@ export default function MoodTrackerWidget() {
   };
 
   return (
-    <Card className="glass shadow-elegant animate-fade-in">
-      <CardHeader>
-        <CardTitle className="text-lg">{t('home.howAreYouFeeling')}</CardTitle>
+    <Card className="bg-card border border-border animate-fade-in">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base font-semibold">{t('home.howAreYouFeeling')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between gap-2">
@@ -114,14 +114,13 @@ export default function MoodTrackerWidget() {
                 onClick={() => handleMoodSelect(mood.id)}
                 disabled={loading}
                 className={cn(
-                  'flex flex-col items-center gap-2 p-3 rounded-2xl transition-all flex-1',
-                  mood.bg,
-                  isSelected && 'ring-2 ring-primary scale-105',
+                  'flex flex-col items-center gap-1.5 p-2.5 rounded-xl transition-all flex-1',
+                  isSelected ? 'bg-primary/10 border border-primary' : 'bg-muted/50 border border-transparent hover:bg-muted',
                   loading && 'opacity-50 cursor-not-allowed'
                 )}
               >
-                <span className="text-3xl">{mood.emoji}</span>
-                <span className={cn('text-xs font-medium', mood.color)}>
+                <span className="text-2xl">{mood.emoji}</span>
+                <span className="text-xs font-medium text-foreground">
                   {t(mood.id)}
                 </span>
               </button>
