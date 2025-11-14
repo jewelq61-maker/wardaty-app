@@ -44,6 +44,7 @@ export default function Settings() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isChangingLanguage, setIsChangingLanguage] = useState(false);
   const [settings, setSettings] = useState<AppSettings>({
     notifications_enabled: true,
     period_reminders: true,
@@ -135,6 +136,25 @@ export default function Settings() {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleLanguageChange = async (newLocale: string) => {
+    setIsChangingLanguage(true);
+    
+    // تأخير صغير للأنيميشن
+    setTimeout(() => {
+      setLocale(newLocale as 'ar' | 'en');
+      
+      toast({
+        title: newLocale === 'ar' ? 'تم تغيير اللغة' : 'Language Changed',
+        description: newLocale === 'ar' ? 'تم تغيير اللغة إلى العربية' : 'Language changed to English',
+      });
+      
+      // إنهاء الأنيميشن بعد التبديل
+      setTimeout(() => {
+        setIsChangingLanguage(false);
+      }, 300);
+    }, 150);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background pb-24 flex items-center justify-center">
@@ -147,35 +167,29 @@ export default function Settings() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 p-4">
+    <div className={`min-h-screen bg-background pb-24 p-4 transition-all duration-300 ${isChangingLanguage ? 'opacity-90' : 'opacity-100'}`}>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button
-              onClick={() => navigate('/profile')}
-              variant="ghost"
-              size="sm"
-              className="gap-2"
-            >
-              <ChevronLeft className={`w-4 h-4 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
-              رجوع
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold flex items-center gap-2">
-                <SettingsIcon className="w-6 h-6" />
-                الإعدادات
-              </h1>
-              <p className="text-sm text-muted-foreground">تخصيص تجربة استخدامك</p>
-            </div>
-          </div>
-          <Button onClick={saveSettings} disabled={saving}>
-            <Save className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-            {saving ? 'جاري الحفظ...' : 'حفظ'}
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={() => navigate('/profile')}
+            variant="ghost"
+            size="sm"
+            className="gap-2"
+          >
+            <ChevronLeft className={`w-4 h-4 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+            رجوع
           </Button>
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <SettingsIcon className="w-6 h-6" />
+              الإعدادات
+            </h1>
+            <p className="text-sm text-muted-foreground">تخصيص تجربة استخدامك</p>
+          </div>
         </div>
 
-        <Tabs defaultValue="general" className="w-full">
+        <Tabs defaultValue="general" className="w-full animate-fade-in">
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="general">عام</TabsTrigger>
             <TabsTrigger value="notifications">الإشعارات</TabsTrigger>
@@ -184,8 +198,8 @@ export default function Settings() {
           </TabsList>
 
           {/* General Settings */}
-          <TabsContent value="general" className="space-y-4">
-            <Card>
+          <TabsContent value="general" className="space-y-4 animate-fade-in">
+            <Card className="animate-scale-in">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Globe className="w-5 h-5" />
@@ -194,14 +208,15 @@ export default function Settings() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {/* Language */}
-                <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30">
+                <div className={`flex items-center justify-between p-4 rounded-lg bg-muted/30 transition-all duration-300 ${isChangingLanguage ? 'scale-95 opacity-50' : 'scale-100 opacity-100'}`}>
                   <div>
                     <Label className="text-base font-medium">اللغة</Label>
                     <p className="text-xs text-muted-foreground">اختر لغة التطبيق</p>
                   </div>
                   <Select
                     value={locale}
-                    onValueChange={(value) => setLocale(value as 'ar' | 'en')}
+                    onValueChange={handleLanguageChange}
+                    disabled={isChangingLanguage}
                   >
                     <SelectTrigger className="w-32">
                       <SelectValue />
@@ -235,7 +250,7 @@ export default function Settings() {
             </Card>
 
             {/* Integration Settings */}
-            <Card>
+            <Card className="animate-scale-in" style={{ animationDelay: '0.1s' }}>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Activity className="w-5 h-5" />
@@ -261,8 +276,8 @@ export default function Settings() {
           </TabsContent>
 
           {/* Notifications */}
-          <TabsContent value="notifications" className="space-y-4">
-            <Card>
+          <TabsContent value="notifications" className="space-y-4 animate-fade-in">
+            <Card className="animate-scale-in">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Bell className="w-5 h-5" />
@@ -342,8 +357,8 @@ export default function Settings() {
           </TabsContent>
 
           {/* Privacy */}
-          <TabsContent value="privacy" className="space-y-4">
-            <Card>
+          <TabsContent value="privacy" className="space-y-4 animate-fade-in">
+            <Card className="animate-scale-in">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Shield className="w-5 h-5" />
@@ -429,8 +444,8 @@ export default function Settings() {
           </TabsContent>
 
           {/* Display */}
-          <TabsContent value="display" className="space-y-4">
-            <Card>
+          <TabsContent value="display" className="space-y-4 animate-fade-in">
+            <Card className="animate-scale-in">
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Eye className="w-5 h-5" />
@@ -483,8 +498,33 @@ export default function Settings() {
           </TabsContent>
         </Tabs>
 
+        {/* Save Button - iOS Style */}
+        <div className="fixed bottom-20 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border/50 z-20 animate-fade-in">
+          <div className="max-w-7xl mx-auto">
+            <Button 
+              onClick={saveSettings} 
+              disabled={saving || isChangingLanguage}
+              className="w-full h-12 text-base font-semibold transition-all duration-200 active:scale-95"
+            >
+              {saving ? (
+                <>
+                  <div className={`animate-spin rounded-full h-4 w-4 border-b-2 border-white ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`}></div>
+                  جاري الحفظ...
+                </>
+              ) : isChangingLanguage ? (
+                <>
+                  <div className={`animate-spin rounded-full h-4 w-4 border-b-2 border-white ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`}></div>
+                  جاري التبديل...
+                </>
+              ) : (
+                'حفظ التغييرات'
+              )}
+            </Button>
+          </div>
+        </div>
+
         {/* Info Card */}
-        <Card className="bg-info/5 border-info/20">
+        <Card className="bg-info/5 border-info/20 mb-24">
           <CardContent className="p-4">
             <div className="flex gap-3">
               <span className="text-2xl">💡</span>
