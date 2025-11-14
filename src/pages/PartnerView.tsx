@@ -1,42 +1,55 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Heart, ArrowLeft, Calendar as CalendarIcon, Droplets, Brain, BarChart3 } from 'lucide-react';
+import { Heart, ArrowLeft, Calendar as CalendarIcon, Baby, Clock, Info } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
+import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
-import SharedCalendar from '@/components/SharedCalendar';
 import { useToast } from '@/hooks/use-toast';
-import { format, parseISO, differenceInDays } from 'date-fns';
+import { format, parseISO, differenceInDays, addDays } from 'date-fns';
 import { ar } from 'date-fns/locale';
 
 interface PartnerData {
   name: string;
   email: string;
-  cyclePhase?: string;
-  currentDay?: number;
-  totalCycleLength?: number;
-  nextPeriodDate?: string;
-  lastPeriodDate?: string;
-  recentMood?: string;
-  recentSymptoms?: string[];
-  shareLinkId?: string;
+  cycleLength: number;
+  periodDuration: number;
+  currentDay: number;
+  daysUntilPeriod: number;
+  nextPeriodDate: string;
+  lastPeriodDate: string;
+  isPregnant: boolean;
+  pregnancyWeeks?: number;
+  pregnancyDueDate?: string;
+}
+
+interface PrivacySettings {
+  show_period_days: boolean;
+  show_fertility_window: boolean;
+  show_general_mood: boolean;
+  show_pregnancy: boolean;
+  show_nothing: boolean;
 }
 
 export default function PartnerView() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   
   const [partnerData, setPartnerData] = useState<PartnerData | null>(null);
+  const [privacySettings, setPrivacySettings] = useState<PrivacySettings>({
+    show_period_days: true,
+    show_fertility_window: true,
+    show_general_mood: false,
+    show_pregnancy: true,
+    show_nothing: false,
+  });
   const [loading, setLoading] = useState(true);
-  const [partnerId, setPartnerId] = useState<string | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -49,10 +62,20 @@ export default function PartnerView() {
 
     setLoading(true);
     try {
-      // Find active share link where current user is connected
       const { data: shareLink, error: linkError } = await supabase
         .from('share_links')
-        .select('id, owner_id, profiles!share_links_owner_id_fkey(name, email)')
+        .select(`
+          id, 
+          owner_id, 
+          privacy_settings,
+          profiles!share_links_owner_id_fkey(
+            name, 
+            email, 
+            is_pregnant, 
+            pregnancy_weeks, 
+            pregnancy_edd
+          )
+        `)
         .eq('connected_user_id', user.id)
         .eq('type', 'profile')
         .eq('status', 'active')
@@ -60,8 +83,8 @@ export default function PartnerView() {
 
       if (linkError || !shareLink) {
         toast({
-          title: t('error'),
-          description: t('profilePage.noPartnerConnected'),
+          title: 'خطأ',
+          description: 'لم يتم العثور على اتصال نشط',
           variant: 'destructive',
         });
         navigate('/profile');
@@ -69,9 +92,13 @@ export default function PartnerView() {
       }
 
       const ownerId = shareLink.owner_id;
-      setPartnerId(ownerId);
+      
+      if (shareLink.privacy_settings) {
+        setPrivacySettings(shareLink.privacy_settings as unknown as PrivacySettings);
+      }
 
-      // Get partner's latest cycle
+      const profile = (shareLink as any).profiles;
+
       const { data: latestCycle } = await supabase
         .from('cycles')
         .select('start_date, length, duration')
@@ -80,63 +107,47 @@ export default function PartnerView() {
         .limit(1)
         .maybeSingle();
 
-      // Get partner's recent cycle day data
-      const { data: recentDay } = await supabase
-        .from('cycle_days')
-        .select('date, mood, symptoms')
-        .eq('user_id', ownerId)
-        .order('date', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      let cyclePhase = '';
-      let currentDay = 0;
-      let totalCycleLength = 28;
-      let nextPeriodDate = '';
-
       if (latestCycle && latestCycle.start_date) {
         const startDate = parseISO(latestCycle.start_date);
         const today = new Date();
-        currentDay = differenceInDays(today, startDate) + 1;
-        totalCycleLength = latestCycle.length || 28;
-        
-        // Calculate cycle phase
-        const duration = latestCycle.duration || 5;
-        if (currentDay <= duration) {
-          cyclePhase = 'menstrual';
-        } else if (currentDay <= 13) {
-          cyclePhase = 'follicular';
-        } else if (currentDay <= 17) {
-          cyclePhase = 'ovulation';
-        } else {
-          cyclePhase = 'luteal';
-        }
+        const currentDay = differenceInDays(today, startDate) + 1;
+        const cycleLength = latestCycle.length || 28;
+        const daysUntilPeriod = cycleLength - currentDay;
+        const nextPeriodDate = addDays(startDate, cycleLength);
 
-        // Calculate next period date
-        const daysUntilNext = totalCycleLength - currentDay;
-        const nextDate = new Date(today);
-        nextDate.setDate(today.getDate() + daysUntilNext);
-        nextPeriodDate = format(nextDate, 'yyyy-MM-dd');
+        setPartnerData({
+          name: profile.name || 'شريكتك',
+          email: profile.email || '',
+          cycleLength,
+          periodDuration: latestCycle.duration || 5,
+          currentDay,
+          daysUntilPeriod: daysUntilPeriod > 0 ? daysUntilPeriod : 0,
+          nextPeriodDate: format(nextPeriodDate, 'yyyy-MM-dd'),
+          lastPeriodDate: latestCycle.start_date,
+          isPregnant: profile.is_pregnant || false,
+          pregnancyWeeks: profile.pregnancy_weeks,
+          pregnancyDueDate: profile.pregnancy_edd,
+        });
+      } else {
+        setPartnerData({
+          name: profile.name || 'شريكتك',
+          email: profile.email || '',
+          cycleLength: 28,
+          periodDuration: 5,
+          currentDay: 0,
+          daysUntilPeriod: 0,
+          nextPeriodDate: '',
+          lastPeriodDate: '',
+          isPregnant: profile.is_pregnant || false,
+          pregnancyWeeks: profile.pregnancy_weeks,
+          pregnancyDueDate: profile.pregnancy_edd,
+        });
       }
-
-      setPartnerData({
-        name: (shareLink.profiles as any)?.name || 'Partner',
-        email: (shareLink.profiles as any)?.email || '',
-        cyclePhase,
-        currentDay,
-        totalCycleLength,
-        nextPeriodDate,
-        lastPeriodDate: latestCycle?.start_date,
-        recentMood: recentDay?.mood,
-        recentSymptoms: recentDay?.symptoms || [],
-        shareLinkId: shareLink.id,
-      });
-
     } catch (error) {
       console.error('Error loading partner data:', error);
       toast({
-        title: t('error'),
-        description: t('profilePage.loadPartnerError'),
+        title: 'خطأ',
+        description: 'حدث خطأ أثناء تحميل البيانات',
         variant: 'destructive',
       });
     } finally {
@@ -144,53 +155,54 @@ export default function PartnerView() {
     }
   };
 
-  const getCyclePhaseInfo = (phase?: string) => {
-    if (!phase) return { label: t('home.unknown'), color: 'bg-muted', icon: '❓' };
+  const getCyclePhaseText = () => {
+    if (!partnerData) return '';
     
-    switch (phase) {
-      case 'menstrual':
-        return { label: t('home.menstrual'), color: 'bg-destructive/20 text-destructive', icon: '🌙' };
-      case 'follicular':
-        return { label: t('home.follicular'), color: 'bg-info/20 text-info', icon: '🌱' };
-      case 'ovulation':
-        return { label: t('home.ovulation'), color: 'bg-warning/20 text-warning', icon: '🌟' };
-      case 'luteal':
-        return { label: t('home.luteal'), color: 'bg-primary/20 text-primary', icon: '🌸' };
-      default:
-        return { label: t('home.unknown'), color: 'bg-muted', icon: '❓' };
+    const { currentDay, periodDuration, daysUntilPeriod } = partnerData;
+    
+    if (currentDay <= periodDuration) {
+      return 'أيام الدورة';
+    } else if (daysUntilPeriod <= 7) {
+      return `قبل الدورة بـ ${daysUntilPeriod} ${daysUntilPeriod === 1 ? 'يوم' : 'أيام'}`;
+    } else if (currentDay >= 11 && currentDay <= 17) {
+      return 'فترة الخصوبة (تقريبية)';
+    } else {
+      return `اليوم ${currentDay} من الدورة`;
     }
   };
 
-  const getMoodEmoji = (mood?: string) => {
-    if (!mood) return '😐';
+  const getMoodSuggestion = () => {
+    if (!partnerData) return '';
     
-    switch (mood) {
-      case 'high': return '😊';
-      case 'neutral': return '😐';
-      case 'low': return '😔';
-      default: return '😐';
+    const { currentDay, periodDuration, daysUntilPeriod } = partnerData;
+    
+    if (currentDay <= periodDuration) {
+      return '💙 احتياج للراحة والدعم';
+    } else if (daysUntilPeriod <= 5) {
+      return '💛 قد تكون الطاقة منخفضة';
+    } else if (currentDay >= 11 && currentDay <= 17) {
+      return '💚 طاقة عالية وحيوية';
+    } else {
+      return '💙 حالة طبيعية';
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{t('loading')}</p>
-        </div>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">جاري التحميل...</div>
       </div>
     );
   }
 
   if (!partnerData) {
     return (
-      <div className="min-h-screen gradient-bg flex items-center justify-center p-4">
-        <Card className="max-w-md w-full">
-          <CardContent className="pt-6 text-center">
-            <p className="text-muted-foreground mb-4">{t('profilePage.noPartnerConnected')}</p>
-            <Button onClick={() => navigate('/profile')}>
-              {t('profilePage.backToProfile')}
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-muted-foreground">لا توجد بيانات متاحة</p>
+            <Button onClick={() => navigate('/profile')} className="mt-4">
+              العودة للملف الشخصي
             </Button>
           </CardContent>
         </Card>
@@ -198,172 +210,169 @@ export default function PartnerView() {
     );
   }
 
-  const phaseInfo = getCyclePhaseInfo(partnerData.cyclePhase);
+  if (privacySettings.show_nothing) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="max-w-md">
+          <CardContent className="p-6 text-center space-y-4">
+            <Heart className="w-16 h-16 mx-auto text-muted-foreground" />
+            <h2 className="text-xl font-semibold">الخصوصية محمية</h2>
+            <p className="text-muted-foreground">
+              {partnerData.name} اختارت عدم مشاركة أي معلومات في الوقت الحالي
+            </p>
+            <Button onClick={() => navigate('/profile')} variant="outline">
+              العودة للملف الشخصي
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen gradient-bg pb-24">
-      {/* Header */}
-      <div className="sticky top-0 bg-card/80 backdrop-blur-lg z-10 border-b border-border/50">
-        <div className="p-4 max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-background pb-24">
+      <div className="bg-gradient-to-br from-primary/5 to-secondary/5 border-b border-border/50">
+        <div className="max-w-4xl mx-auto px-4 py-6">
+          <div className="flex items-center gap-4 mb-6">
             <Button
-              onClick={() => navigate('/profile')}
               variant="ghost"
               size="icon"
-              className="h-10 w-10"
+              onClick={() => navigate('/profile')}
+              className="rounded-full"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 ring-2 ring-primary/20 shadow-elegant">
-                <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
-                  {partnerData.name[0]?.toUpperCase() || 'P'}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h1 className="text-lg font-bold text-foreground flex items-center gap-2">
-                  <Heart className="w-5 h-5 text-destructive fill-destructive" />
-                  {partnerData.name}
-                </h1>
-                <p className="text-sm text-muted-foreground">{partnerData.email}</p>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold flex items-center gap-2">
+                <Heart className="w-6 h-6 text-primary fill-primary" />
+                {partnerData.name}
+              </h1>
+              <p className="text-sm text-muted-foreground">معلومات عامة فقط</p>
             </div>
           </div>
+
+          <Card className="bg-card/50 backdrop-blur">
+            <CardContent className="p-6">
+              <div className="text-center space-y-4">
+                {partnerData.isPregnant && privacySettings.show_pregnancy ? (
+                  <>
+                    <Badge className="text-lg px-4 py-2" variant="secondary">
+                      <Baby className="w-5 h-5 ml-2" />
+                      حامل - الأسبوع {partnerData.pregnancyWeeks || 0}
+                    </Badge>
+                    {partnerData.pregnancyDueDate && (
+                      <p className="text-sm text-muted-foreground">
+                        موعد الولادة المتوقع: {format(parseISO(partnerData.pregnancyDueDate), 'PP', { locale: ar })}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="text-3xl font-bold text-primary">
+                      {privacySettings.show_period_days ? getCyclePhaseText() : 'معلومات محدودة'}
+                    </div>
+                    {privacySettings.show_period_days && partnerData.daysUntilPeriod > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                          <Clock className="w-4 h-4" />
+                          <span>متبقي {partnerData.daysUntilPeriod} {partnerData.daysUntilPeriod === 1 ? 'يوم' : 'أيام'}</span>
+                        </div>
+                        <Progress 
+                          value={(partnerData.currentDay / partnerData.cycleLength) * 100} 
+                          className="h-2"
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto p-4 space-y-4">
-        {/* Stats Button */}
-        <Button
-          onClick={() => navigate('/shared-stats')}
-          className="w-full"
-          variant="outline"
-        >
-          <BarChart3 className="h-5 w-5 mr-2" />
-          {t('partnerView.viewStats')}
-        </Button>
-
-        {/* Cycle Phase Card */}
-        <Card className="glass shadow-elegant">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="w-5 h-5" />
-              {t('home.cyclePhase')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Badge className={`${phaseInfo.color} text-base px-4 py-2`}>
-                <span className="mr-2">{phaseInfo.icon}</span>
-                {phaseInfo.label}
-              </Badge>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-foreground">
-                  {partnerData.currentDay}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {t('home.dayOfCycle', { total: partnerData.totalCycleLength })}
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground mb-1">{t('home.lastPeriod')}</p>
-                <p className="font-medium">
-                  {partnerData.lastPeriodDate
-                    ? format(parseISO(partnerData.lastPeriodDate), 'PPP', { 
-                        locale: i18n.language === 'ar' ? ar : undefined 
-                      })
-                    : t('home.unknown')}
-                </p>
-              </div>
-              <div>
-                <p className="text-muted-foreground mb-1">{t('home.nextPeriod')}</p>
-                <p className="font-medium">
-                  {partnerData.nextPeriodDate
-                    ? format(parseISO(partnerData.nextPeriodDate), 'PPP', { 
-                        locale: i18n.language === 'ar' ? ar : undefined 
-                      })
-                    : t('home.unknown')}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Mood Card */}
-        {partnerData.recentMood && (
-          <Card className="glass shadow-elegant">
+      <main className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {privacySettings.show_general_mood && !partnerData.isPregnant && (
+          <Card className="animate-fade-in">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Brain className="w-5 h-5" />
-                {t('home.recentMood')}
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Info className="w-5 h-5" />
+                نصيحة عامة
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center gap-4">
-                <div className="text-5xl">{getMoodEmoji(partnerData.recentMood)}</div>
-                <div>
-                  <p className="text-lg font-medium capitalize">
-                    {t(`home.${partnerData.recentMood}`)}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {t('home.lastTrackedMood')}
+              <p className="text-lg">{getMoodSuggestion()}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {privacySettings.show_period_days && !partnerData.isPregnant && (
+          <Card className="animate-fade-in">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <CalendarIcon className="w-5 h-5" />
+                معلومات الدورة
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-muted/50">
+                  <p className="text-sm text-muted-foreground mb-1">طول الدورة</p>
+                  <p className="text-2xl font-bold">{partnerData.cycleLength} يوم</p>
+                </div>
+                <div className="p-4 rounded-xl bg-muted/50">
+                  <p className="text-sm text-muted-foreground mb-1">مدة الدورة</p>
+                  <p className="text-2xl font-bold">{partnerData.periodDuration} أيام</p>
+                </div>
+              </div>
+              
+              {partnerData.nextPeriodDate && (
+                <div className="p-4 rounded-xl bg-primary/10 border border-primary/20">
+                  <p className="text-sm text-muted-foreground mb-1">الدورة القادمة المتوقعة</p>
+                  <p className="text-lg font-semibold">
+                    {format(parseISO(partnerData.nextPeriodDate), 'PPP', { locale: ar })}
                   </p>
                 </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {privacySettings.show_fertility_window && !partnerData.isPregnant && (
+          <Card className="animate-fade-in">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Heart className="w-5 h-5" />
+                نافذة الخصوبة (تقريبية)
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="p-4 rounded-xl bg-secondary/10 border border-secondary/20">
+                <p className="text-muted-foreground">
+                  الأيام من {Math.floor(partnerData.cycleLength / 2) - 3} إلى {Math.floor(partnerData.cycleLength / 2) + 3} من الدورة قد تكون أيام خصوبة عالية
+                </p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  * هذه معلومات تقريبية فقط ولا تعتبر وسيلة موثوقة لمنع الحمل
+                </p>
               </div>
             </CardContent>
           </Card>
         )}
 
-        {/* Recent Symptoms Card */}
-        {partnerData.recentSymptoms && partnerData.recentSymptoms.length > 0 && (
-          <Card className="glass shadow-elegant">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Droplets className="w-5 h-5" />
-                {t('home.recentSymptoms')}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {partnerData.recentSymptoms.map((symptom, index) => (
-                  <Badge key={index} variant="secondary" className="text-sm">
-                    {t(`home.${symptom}`)}
-                  </Badge>
-                ))}
+        <Card className="bg-muted/30 border-dashed animate-fade-in">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-3">
+              <Info className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="text-sm font-medium">معلومات محمية بالخصوصية</p>
+                <p className="text-xs text-muted-foreground">
+                  لا يمكنك رؤية الأعراض، المزاج التفصيلي، الأدوية، أو أي معلومات شخصية أخرى. 
+                  هذه البيانات معروضة بموافقة {partnerData.name} فقط.
+                </p>
               </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Support Tips Card */}
-        <Card className="glass shadow-elegant border-primary/20">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-primary">
-              <Heart className="w-5 h-5" />
-              {t('profilePage.partnerSupport')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>• {t('profilePage.supportTip1')}</p>
-            <p>• {t('profilePage.supportTip2')}</p>
-            <p>• {t('profilePage.supportTip3')}</p>
-            <p>• {t('profilePage.supportTip4')}</p>
+            </div>
           </CardContent>
         </Card>
-
-        {/* Shared Calendar */}
-        {partnerData.shareLinkId && partnerId && (
-          <SharedCalendar
-            shareLinkId={partnerData.shareLinkId}
-            partnerId={partnerId}
-            partnerName={partnerData.name}
-          />
-        )}
       </main>
 
       <BottomNav />

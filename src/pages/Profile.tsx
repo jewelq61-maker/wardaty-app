@@ -47,6 +47,7 @@ import BottomNav from '@/components/BottomNav';
 import { useToast } from '@/hooks/use-toast';
 import PregnancyModeToggle from '@/components/PregnancyModeToggle';
 import { useAppleHealth } from '@/hooks/use-apple-health';
+import PartnerPrivacySettings from '@/components/PartnerPrivacySettings';
 
 interface ProfileData {
   name: string;
@@ -690,6 +691,11 @@ export default function Profile() {
                   <Link2 className="w-4 h-4 mr-2" />
                   {t('profilePage.generateShareLink')}
                 </Button>
+              )}
+
+              {/* Partner Privacy Settings - Show only if share link exists */}
+              {shareLink && (
+                <PartnerPrivacySettings />
               )}
 
               {!partnerProfile && (
