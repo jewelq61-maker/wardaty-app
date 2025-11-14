@@ -1,9 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// In-memory cache for AI responses (24 hour TTL)
+const cache = new Map<string, { insights: string; timestamp: number }>();
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -21,6 +26,18 @@ serve(async (req) => {
     }
 
     const { phase, locale = "ar" } = await req.json();
+    
+    // Check cache first
+    const cacheKey = `${phase}-${locale}`;
+    const cached = cache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+      console.log('Returning cached insights for:', cacheKey);
+      return new Response(
+        JSON.stringify({ insights: cached.insights }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
     if (!LOVABLE_API_KEY) {
@@ -80,6 +97,10 @@ Keep it short and direct.`;
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "";
+
+    // Cache the result
+    cache.set(cacheKey, { insights: content, timestamp: Date.now() });
+    console.log('Cached new insights for:', cacheKey);
 
     return new Response(
       JSON.stringify({ insights: content }),
