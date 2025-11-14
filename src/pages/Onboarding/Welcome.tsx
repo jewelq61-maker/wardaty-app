@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -6,6 +7,12 @@ import { Flower2 } from 'lucide-react';
 export default function Welcome() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Remove persona theme for onboarding - use default theme
+    const root = document.documentElement;
+    root.removeAttribute('data-persona');
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-background p-6">

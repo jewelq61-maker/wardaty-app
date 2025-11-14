@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,12 @@ export default function Language() {
   const { locale, setLocale, dir } = useI18n();
   const navigate = useNavigate();
   const [selectedLocale, setSelectedLocale] = useState<'ar' | 'en'>(locale);
+
+  useEffect(() => {
+    // Remove persona theme for onboarding - use default theme
+    const root = document.documentElement;
+    root.removeAttribute('data-persona');
+  }, []);
 
   const handleNext = () => {
     setLocale(selectedLocale);
