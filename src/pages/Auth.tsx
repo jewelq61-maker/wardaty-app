@@ -7,6 +7,12 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { z } from 'zod';
+
+const authSchema = z.object({
+  email: z.string().trim().email('Invalid email address').max(255, 'Email must be less than 255 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(100, 'Password must be less than 100 characters'),
+});
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,6 +25,21 @@ export default function Auth() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate input
+    try {
+      authSchema.parse({ email: email.trim(), password });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        toast({
+          title: t('error'),
+          description: error.errors[0].message,
+          variant: 'destructive',
+        });
+        return;
+      }
+    }
+    
     setLoading(true);
 
     try {

@@ -47,19 +47,12 @@ serve(async (req: Request) => {
       const hoursDiff = timeDiff / (1000 * 60 * 60);
 
       if (hoursDiff <= 1 && hoursDiff >= 0) {
-        // TODO: Integrate with email service (Resend) or push notifications
-        // For now, we'll just log that a reminder should be sent
-        console.log(`Reminder should be sent for action: ${action.title}`);
-        console.log(`User: ${action.profiles?.email || 'No email'}`);
-        console.log(`Scheduled for: ${scheduledDate.toISOString()}`);
-        console.log(`Time of day: ${action.time_of_day || 'Not specified'}`);
+        console.log(`[REMINDER] Action reminder due for user ${action.user_id}`);
+        console.log(`Action: ${action.title}`);
+        console.log(`Scheduled: ${scheduledDate.toISOString()}`);
+        console.log(`Time: ${action.time_of_day || 'Not specified'}`);
         
-        // In a production environment, you would send an email here:
-        // await sendEmail({
-        //   to: action.profiles.email,
-        //   subject: `Reminder: ${action.title}`,
-        //   body: `Your beauty action "${action.title}" is scheduled for ${scheduledDate.toLocaleDateString()}`
-        // });
+        // TODO: Integrate with email service (Resend) or push notifications
 
         remindersSent++;
       }
