@@ -47,7 +47,7 @@ export default function Persona() {
   const BackIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
 
   return (
-    <div className="min-h-screen flex flex-col bg-background p-6">
+    <div className="min-h-screen flex flex-col bg-background p-6 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <button
