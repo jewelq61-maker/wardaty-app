@@ -20,6 +20,7 @@ import SymptomTrackerWidget from '@/components/SymptomTrackerWidget';
 import WaterTrackerWidget from '@/components/WaterTrackerWidget';
 import AchievementsBadges from '@/components/AchievementsBadges';
 import DailyAffirmation from '@/components/DailyAffirmation';
+import FastingQadaWidget from '@/components/FastingQadaWidget';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Article {
@@ -357,16 +358,6 @@ export default function Home() {
               </div>
               <p className="text-sm font-semibold text-foreground">{t('calendar')}</p>
             </button>
-
-            <button
-              onClick={() => navigate('/stats')}
-              className="bg-card rounded-2xl p-5 border border-border hover:bg-accent transition-colors text-start"
-            >
-              <div className="w-10 h-10 rounded-xl bg-info/10 flex items-center justify-center mb-3">
-                <TrendingUp className="w-5 h-5 text-info" />
-              </div>
-              <p className="text-sm font-semibold text-foreground">{t('stats')}</p>
-            </button>
             
             <button
               onClick={() => navigate('/fasting-qada')}
@@ -380,18 +371,12 @@ export default function Home() {
 
             <button
               onClick={() => navigate('/articles')}
-              className="bg-card rounded-2xl p-5 border border-border hover:bg-accent transition-colors col-span-2"
+              className="bg-card rounded-2xl p-5 border border-border hover:bg-accent transition-colors text-start"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-fasting/10 flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-fasting" />
-                </div>
-                <div className="text-start flex-1">
-                  <p className="text-sm font-semibold text-foreground">{t('articles')}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">اكتشف المزيد</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              <div className="w-10 h-10 rounded-xl bg-fasting/10 flex items-center justify-center mb-3">
+                <BookOpen className="w-5 h-5 text-fasting" />
               </div>
+              <p className="text-sm font-semibold text-foreground">{t('articles')}</p>
             </button>
           </div>
         </div>
@@ -416,6 +401,7 @@ export default function Home() {
         <div>
           <h3 className="text-base font-bold text-foreground mb-4">{t('overview')}</h3>
           <div className="space-y-3">
+            <FastingQadaWidget />
             <StatsPreviewWidget />
             <CyclePredictionsWidget />
             <UpcomingBeautyWidget />
