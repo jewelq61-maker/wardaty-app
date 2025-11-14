@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Baby, Calendar as CalendarIcon } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Baby, Calendar as CalendarIcon, ArrowRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -33,6 +34,7 @@ export default function PregnancyModeToggle({
   const { t } = useTranslation();
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const [showSetup, setShowSetup] = useState(false);
   const [method, setMethod] = useState<'lmp' | 'edd'>('lmp');
@@ -163,11 +165,23 @@ export default function PregnancyModeToggle({
         </div>
 
         {isPregnant && pregnancyEDD && (
-          <div className="p-4 bg-primary/10 rounded-lg">
-            <p className="text-sm font-medium">{t('pregnancy.dueDate')}</p>
-            <p className="text-lg font-bold text-primary">
-              {format(new Date(pregnancyEDD), 'PPP', { locale: ar })}
-            </p>
+          <div className="space-y-3">
+            <div className="p-4 bg-primary/10 rounded-lg">
+              <p className="text-sm font-medium">{t('pregnancy.dueDate')}</p>
+              <p className="text-lg font-bold text-primary">
+                {format(new Date(pregnancyEDD), 'PPP', { locale: ar })}
+              </p>
+            </div>
+
+            <Button
+              onClick={() => navigate('/pregnancy-calendar')}
+              className="w-full"
+              variant="outline"
+            >
+              <CalendarIcon className="h-4 w-4 mr-2" />
+              {t('pregnancy.viewCalendar')}
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </Button>
           </div>
         )}
 
