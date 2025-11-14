@@ -21,7 +21,8 @@ import PartnerView from "./pages/PartnerView";
 import SharedStats from "./pages/SharedStats";
 import Subscription from "./pages/Subscription";
 import PregnancyCalendar from "./pages/PregnancyCalendar";
-import BeautyCategories from "./pages/BeautyCategories";
+import BeautyCategories from './pages/BeautyCategories';
+import BeautyRoutines from './pages/BeautyRoutines';
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
@@ -75,6 +76,7 @@ const App = () => (
                 <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
                 <Route path="/pregnancy-calendar" element={<ProtectedRoute><PregnancyCalendar /></ProtectedRoute>} />
                 <Route path="/beauty-categories" element={<ProtectedRoute><BeautyCategories /></ProtectedRoute>} />
+                <Route path="/beauty-routines" element={<ProtectedRoute><BeautyRoutines /></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
