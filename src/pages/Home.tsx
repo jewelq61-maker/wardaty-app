@@ -417,7 +417,7 @@ export default function Home() {
         {featuredArticles.length > 0 && (
           <div className="pb-4">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
                 <BookOpen className="w-4 h-4 text-primary" />
                 {t('articles')}
               </h3>
@@ -425,10 +425,9 @@ export default function Home() {
                 variant="ghost" 
                 size="sm"
                 onClick={() => navigate('/articles')}
-                className="text-primary hover:text-primary/80 h-8"
+                className="text-xs"
               >
                 {t('home.viewAll')}
-                <ChevronRight className="w-4 h-4 mr-1" />
               </Button>
             </div>
             
@@ -437,7 +436,7 @@ export default function Home() {
                 <Card
                   key={article.id}
                   onClick={() => navigate('/articles')}
-                  className="glass hover:shadow-lg transition-all cursor-pointer border-border/50 rounded-2xl overflow-hidden group bg-gradient-to-br from-background to-muted/20"
+                  className="bg-card border border-border hover:border-primary/50 transition-colors cursor-pointer overflow-hidden"
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -453,7 +452,7 @@ export default function Home() {
                         </Badge>
                       )}
                     </div>
-                    <CardTitle className="text-base leading-snug line-clamp-2 group-hover:text-primary transition-colors">
+                    <CardTitle className="text-base leading-snug line-clamp-2">
                       {article.title}
                     </CardTitle>
                   </CardHeader>
