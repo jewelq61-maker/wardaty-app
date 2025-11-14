@@ -12,6 +12,17 @@ serve(async (req: Request) => {
   }
 
   try {
+    // SECURITY: This function is designed for cron jobs only
+    const apiKey = req.headers.get('apikey');
+    
+    if (!apiKey || apiKey !== Deno.env.get('SUPABASE_ANON_KEY')) {
+      console.error('Unauthorized: Invalid API key');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - This endpoint is for internal use only' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
