@@ -38,7 +38,7 @@ export default function DailyInsightsCard({ phase }: DailyInsightsCardProps) {
 
   if (loading) {
     return (
-      <Card className="glass shadow-elegant">
+      <Card className="bg-card border border-border">
         <CardContent className="p-8 flex items-center justify-center">
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </CardContent>
@@ -49,7 +49,7 @@ export default function DailyInsightsCard({ phase }: DailyInsightsCardProps) {
   if (!insights) return null;
 
   return (
-    <Card className="glass shadow-elegant bg-gradient-to-br from-primary/5 to-secondary/5 animate-fade-in">
+    <Card className="bg-card border border-border animate-fade-in">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-primary" />
@@ -57,7 +57,7 @@ export default function DailyInsightsCard({ phase }: DailyInsightsCardProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm leading-relaxed whitespace-pre-line">{insights}</p>
+        <p className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground">{insights}</p>
       </CardContent>
     </Card>
   );

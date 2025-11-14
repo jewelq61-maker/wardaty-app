@@ -109,14 +109,14 @@ export default function AchievementsBadges() {
   if (loading) return null;
 
   return (
-    <Card className="glass shadow-elegant animate-fade-in">
+    <Card className="bg-card border border-border animate-fade-in">
       <CardHeader>
         <CardTitle className="text-lg flex items-center justify-between">
           <span className="flex items-center gap-2">
             <Trophy className="w-5 h-5 text-warning" />
             {t('home.achievements')}
           </span>
-          <Badge variant="secondary">
+          <Badge variant="secondary" className="text-xs">
             {unlockedCount} / {achievements.length}
           </Badge>
         </CardTitle>
@@ -129,14 +129,14 @@ export default function AchievementsBadges() {
               <div
                 key={achievement.id}
                 className={cn(
-                  'relative p-4 rounded-2xl border-2 transition-all',
+                  'relative p-3 rounded-lg border transition-all',
                   achievement.unlocked
-                    ? 'bg-gradient-to-br from-warning/10 to-success/10 border-warning scale-105'
-                    : 'bg-muted/50 border-border grayscale opacity-60'
+                    ? 'bg-warning/5 border-warning/30'
+                    : 'bg-muted/30 border-border grayscale opacity-50'
                 )}
               >
                 <Icon className={cn(
-                  'w-8 h-8 mx-auto mb-2',
+                  'w-7 h-7 mx-auto mb-2',
                   achievement.unlocked ? 'text-warning' : 'text-muted-foreground'
                 )} />
                 <p className={cn(
