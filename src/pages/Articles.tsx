@@ -195,41 +195,21 @@ export default function Articles() {
       </div>
 
       {/* Filters */}
-      <div className="p-4 space-y-4">
+      <div className="p-4 space-y-4 max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
           {/* Search */}
           <div className="flex-1 relative">
-            </Avatar>
-            <div>
-              <h1 className="text-lg font-bold flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-primary" />
-                {t('articles')}
-              </h1>
-              <p className="text-xs text-muted-foreground">{filteredArticles.length} {t('articlesPage.articlesFound')}</p>
-            </div>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t('articlesPage.search')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10"
+            />
           </div>
-          
-          <button className="p-2 hover:bg-muted/50 rounded-xl transition-colors relative">
-            <Bell className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      <div className="px-4 pt-6 pb-4 space-y-6">
-        {/* Search Bar */}
-        <div className="relative group">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <Input
-            type="text"
-            placeholder={t('articlesPage.search')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-14 glass border-border/50 focus-visible:ring-primary/20 rounded-2xl text-base shadow-sm"
-          />
         </div>
 
         {/* Category Tabs */}
-        <div className="bg-muted/30 rounded-2xl p-2">
         <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
           <ScrollArea className="w-full">
             <TabsList className="inline-flex w-full min-w-max gap-2 bg-transparent p-0">
@@ -245,7 +225,6 @@ export default function Articles() {
             </TabsList>
           </ScrollArea>
         </Tabs>
-        </div>
 
         {/* Loading State */}
         {loading && (
