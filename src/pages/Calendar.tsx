@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import BottomNav from '@/components/BottomNav';
 import DayLogSheet from '@/components/DayLogSheet';
+import BeautyRoutineTracker from '@/components/BeautyRoutineTracker';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { 
   calculateBeautyRecommendation,
@@ -346,13 +347,18 @@ export default function Calendar() {
 
       {/* Day Log Bottom Sheet */}
       {selectedDate && (
-        <DayLogSheet
-          isOpen={isSheetOpen}
-          onClose={() => setIsSheetOpen(false)}
-          date={selectedDate}
-          cyclePhase={getPhaseForDate(selectedDate) as any}
-          onSave={fetchCycleDays}
-        />
+        <>
+          <DayLogSheet
+            isOpen={isSheetOpen}
+            onClose={() => setIsSheetOpen(false)}
+            date={selectedDate}
+            cyclePhase={getPhaseForDate(selectedDate) as any}
+            onSave={fetchCycleDays}
+          />
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <BeautyRoutineTracker date={selectedDate} />
+          </div>
+        </>
       )}
 
       <BottomNav />
