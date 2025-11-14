@@ -363,7 +363,7 @@ export default function AppleHealthSettings() {
             disabled={saving}
             className="flex-1 h-12"
           >
-            <Save className="w-4 h-4 mr-2" />
+            <Save className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
             {saving ? 'جاري الحفظ...' : 'حفظ الإعدادات'}
           </Button>
           
@@ -373,7 +373,7 @@ export default function AppleHealthSettings() {
               variant="outline"
               className="flex-1 h-12"
             >
-              <Activity className="w-4 h-4 mr-2" />
+              <Activity className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
               مزامنة الآن
             </Button>
           )}
@@ -386,7 +386,7 @@ export default function AppleHealthSettings() {
               <span className="text-2xl">💡</span>
               <div className="text-sm space-y-2">
                 <p className="font-medium">ملاحظات هامة:</p>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                <ul className={`space-y-1 text-muted-foreground ${dir === 'rtl' ? 'list-disc list-inside' : 'list-disc list-inside'}`}>
                   <li>هذه الميزة تعمل فقط على أجهزة iOS بعد تثبيت التطبيق</li>
                   <li>يجب منح التطبيق صلاحيات الوصول لـ Apple Health</li>
                   <li>البيانات المزامنة تُحفظ في قاعدة البيانات لتتبع التقدم</li>
