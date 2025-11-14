@@ -721,10 +721,25 @@ export default function Profile() {
                     مزامنة البيانات
                   </Button>
                 )}
+                
+                <Button
+                  onClick={() => navigate('/apple-health-settings')}
+                  variant="ghost"
+                  size="icon"
+                  className="h-10 w-10"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
               </div>
 
               <div className="text-xs text-muted-foreground bg-background/50 p-3 rounded-lg">
-                💡 <strong>ملاحظة:</strong> هذه الميزة تعمل فقط على أجهزة iOS بعد تثبيت التطبيق من خلال Xcode
+                💡 <strong>ملاحظة:</strong> هذه الميزة تعمل فقط على أجهزة iOS بعد تثبيت التطبيق.
+                <button 
+                  onClick={() => navigate('/apple-health-settings')}
+                  className="text-primary underline block mt-1"
+                >
+                  إعدادات متقدمة للمزامنة ←
+                </button>
               </div>
             </div>
           </div>
