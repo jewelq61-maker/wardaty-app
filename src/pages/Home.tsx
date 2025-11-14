@@ -46,16 +46,32 @@ export default function Home() {
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [featuredArticles, setFeaturedArticles] = useState<Article[]>([]);
+  const [persona, setPersona] = useState<string>('single');
   const startY = useRef(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (user) {
+      loadUserPersona();
       loadCycleData();
       checkNotifications();
       loadFeaturedArticles();
     }
   }, [user, locale]);
+
+  const loadUserPersona = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('profiles')
+      .select('persona')
+      .eq('id', user.id)
+      .single();
+    
+    if (data) {
+      setPersona(data.persona || 'single');
+    }
+  };
 
   const loadCycleData = async () => {
     if (!user) return;
@@ -402,7 +418,7 @@ export default function Home() {
         <div>
           <h3 className="text-base font-bold text-foreground mb-4">{t('overview')}</h3>
           <div className="space-y-3">
-            <DaughtersCycleStatus />
+            {persona === 'mother' && <DaughtersCycleStatus />}
             <FastingQadaWidget />
             <StatsPreviewWidget />
             <CyclePredictionsWidget />
