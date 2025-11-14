@@ -68,11 +68,12 @@ serve(async (req) => {
           }
 
           // Here you would integrate with your notification service
-          // For now, we'll just log the notification
-          console.log(`Reminder: ${routine.title} for user ${routine.user_id}`);
+          // For now, we'll log without PII
+          console.log(`[REMINDER] Routine reminder for user ${routine.user_id}`);
+          console.log(`Routine ID: ${routine.id}`);
+          console.log(`Title: ${routine.title}`);
           
-          // You can also send an email using Supabase Auth
-          // Or integrate with a push notification service
+          // TODO: Integrate with email service or push notifications
 
           return { routine_id: routine.id, status: 'sent' };
         } catch (error) {

@@ -858,6 +858,7 @@ export type Database = {
           code: string
           connected_user_id: string | null
           created_at: string
+          expires_at: string | null
           id: string
           owner_id: string
           scope: Json
@@ -869,6 +870,7 @@ export type Database = {
           code: string
           connected_user_id?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           owner_id: string
           scope?: Json
@@ -880,6 +882,7 @@ export type Database = {
           code?: string
           connected_user_id?: string | null
           created_at?: string
+          expires_at?: string | null
           id?: string
           owner_id?: string
           scope?: Json
@@ -953,7 +956,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_authorized_partner: {
+        Args: { _owner_id: string; _user_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

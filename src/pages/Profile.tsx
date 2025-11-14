@@ -237,8 +237,33 @@ export default function Profile() {
 
     setLoading(true);
     try {
-      // Generate random 6-character code
-      const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+      let code = '';
+      let attempts = 0;
+      const maxAttempts = 10;
+      
+      // Try to generate a unique code with retry logic
+      while (attempts < maxAttempts) {
+        // Use crypto.randomUUID() for secure random code generation
+        code = crypto.randomUUID().substring(0, 8).toUpperCase().replace(/-/g, '');
+        
+        // Check if code already exists
+        const { data: existing } = await supabase
+          .from('share_links')
+          .select('id')
+          .eq('code', code)
+          .maybeSingle();
+        
+        if (!existing) break;
+        attempts++;
+      }
+      
+      if (attempts === maxAttempts) {
+        throw new Error('Failed to generate unique code. Please try again.');
+      }
+
+      // Set expiration to 7 days from now
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
 
       const { data, error } = await supabase
         .from('share_links')
@@ -247,7 +272,8 @@ export default function Profile() {
           type: 'profile',
           code,
           status: 'pending',
-          scope: { stats: true }
+          scope: { stats: true },
+          expires_at: expiresAt.toISOString()
         })
         .select()
         .single();
@@ -259,10 +285,10 @@ export default function Profile() {
         title: t('success'),
         description: t('profilePage.shareLinkCreated'),
       });
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: t('error'),
-        description: t('profilePage.shareLinkError'),
+        description: error.message || t('profilePage.shareLinkError'),
         variant: 'destructive',
       });
     } finally {
@@ -286,6 +312,11 @@ export default function Profile() {
 
       if (findError || !link) {
         throw new Error(t('profilePage.invalidCode'));
+      }
+      
+      // Check if link has expired
+      if (link.expires_at && new Date(link.expires_at) < new Date()) {
+        throw new Error('This share code has expired.');
       }
 
       // Update the share link with connected user

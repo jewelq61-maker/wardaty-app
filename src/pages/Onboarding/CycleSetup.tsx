@@ -35,6 +35,28 @@ export default function CycleSetup() {
       return;
     }
 
+    // Validate cycle inputs
+    const cycleLengthNum = parseInt(cycleLength);
+    const periodDurationNum = parseInt(periodDuration);
+    
+    if (isNaN(cycleLengthNum) || cycleLengthNum < 21 || cycleLengthNum > 45) {
+      toast({
+        title: t('error'),
+        description: 'Cycle length must be between 21 and 45 days',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (isNaN(periodDurationNum) || periodDurationNum < 1 || periodDurationNum > 10) {
+      toast({
+        title: t('error'),
+        description: 'Period duration must be between 1 and 10 days',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -44,15 +66,27 @@ export default function CycleSetup() {
         const { error } = await supabase.from('cycles').insert({
           user_id: user.id,
           start_date: format(lastPeriodDate, 'yyyy-MM-dd'),
-          length: parseInt(cycleLength),
-          duration: parseInt(periodDuration),
+          length: cycleLengthNum,
+          duration: periodDurationNum,
         });
 
         if (error) throw error;
 
-        // Update profile with selected persona
-        const persona = localStorage.getItem('selectedPersona') || 'single';
-        await supabase.from('profiles').update({ persona }).eq('id', user.id);
+        // Update profile - get persona from database instead of localStorage
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('persona')
+          .eq('id', user.id)
+          .single();
+        
+        // Only update if persona is not already set (for backward compatibility)
+        if (!profile?.persona) {
+          const persona = localStorage.getItem('selectedPersona') || 'single';
+          await supabase.from('profiles').update({ persona }).eq('id', user.id);
+        }
+        
+        // Clean up localStorage
+        localStorage.removeItem('selectedPersona');
 
         toast({
           title: t('success'),
@@ -135,11 +169,12 @@ export default function CycleSetup() {
               id="cycleLength"
               type="number"
               min="21"
-              max="35"
+              max="45"
               value={cycleLength}
               onChange={(e) => setCycleLength(e.target.value)}
               className="h-12"
             />
+            <p className="text-xs text-muted-foreground">21-45 days</p>
           </div>
 
           {/* Period Duration */}
@@ -148,12 +183,13 @@ export default function CycleSetup() {
             <Input
               id="periodDuration"
               type="number"
-              min="3"
-              max="7"
+              min="1"
+              max="10"
               value={periodDuration}
               onChange={(e) => setPeriodDuration(e.target.value)}
               className="h-12"
             />
+            <p className="text-xs text-muted-foreground">1-10 days</p>
           </div>
         </div>
 
