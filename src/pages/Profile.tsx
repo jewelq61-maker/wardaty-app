@@ -1045,21 +1045,21 @@ export default function Profile() {
             <div
               onClick={() => setPreviewPersona('mother')}
               className={`cursor-pointer rounded-xl border-2 transition-all hover:scale-105 ${
-                previewPersona === 'mother' ? 'border-[hsl(274,65%,74%)] shadow-lg' : 'border-border'
+                previewPersona === 'mother' ? 'border-[hsl(270,80%,88%)] shadow-lg' : 'border-border'
               }`}
             >
-              <div className="p-4 bg-gradient-to-br from-[hsl(270,100%,98%)] to-[hsl(270,100%,95%)]">
+              <div className="p-4 bg-gradient-to-br from-[hsl(270,65%,98%)] to-[hsl(280,70%,96%)]">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-[hsl(0,0%,18%)]">{t('personas.mother')}</h3>
                   {previewPersona === 'mother' && (
-                    <Check className="w-5 h-5 text-[hsl(274,65%,74%)]" />
+                    <Check className="w-5 h-5 text-[hsl(270,80%,88%)]" />
                   )}
                 </div>
                 <div className="space-y-2">
-                  <div className="h-8 rounded-lg bg-[hsl(274,65%,74%)]" />
-                  <div className="h-6 rounded-lg bg-[hsl(223,100%,88%)]" />
+                  <div className="h-8 rounded-lg bg-[hsl(270,80%,88%)]" />
+                  <div className="h-6 rounded-lg bg-[hsl(280,70%,82%)]" />
                   <div className="flex gap-2">
-                    <div className="h-6 w-16 rounded-lg bg-[hsl(270,100%,96%)]" />
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(270,60%,96%)]" />
                     <div className="h-6 w-16 rounded-lg bg-[hsl(0,73%,53%)]" />
                   </div>
                 </div>
@@ -1070,21 +1070,21 @@ export default function Profile() {
             <div
               onClick={() => setPreviewPersona('partner')}
               className={`cursor-pointer rounded-xl border-2 transition-all hover:scale-105 ${
-                previewPersona === 'partner' ? 'border-[hsl(340,89%,82%)] shadow-lg' : 'border-border'
+                previewPersona === 'partner' ? 'border-[hsl(197,71%,73%)] shadow-lg' : 'border-border'
               }`}
             >
-              <div className="p-4 bg-gradient-to-br from-[hsl(340,100%,98%)] to-[hsl(340,100%,95%)]">
+              <div className="p-4 bg-gradient-to-br from-[hsl(202,100%,97%)] to-[hsl(202,100%,94%)]">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-semibold text-[hsl(0,0%,18%)]">{t('personas.partner')}</h3>
                   {previewPersona === 'partner' && (
-                    <Check className="w-5 h-5 text-[hsl(340,89%,82%)]" />
+                    <Check className="w-5 h-5 text-[hsl(197,71%,73%)]" />
                   )}
                 </div>
                 <div className="space-y-2">
-                  <div className="h-8 rounded-lg bg-[hsl(340,89%,82%)]" />
-                  <div className="h-6 rounded-lg bg-[hsl(0,84%,60%)]" />
+                  <div className="h-8 rounded-lg bg-[hsl(197,71%,73%)]" />
+                  <div className="h-6 rounded-lg bg-[hsl(207,90%,61%)]" />
                   <div className="flex gap-2">
-                    <div className="h-6 w-16 rounded-lg bg-[hsl(340,100%,96%)]" />
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(202,100%,94%)]" />
                     <div className="h-6 w-16 rounded-lg bg-[hsl(0,73%,53%)]" />
                   </div>
                 </div>
