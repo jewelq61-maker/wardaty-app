@@ -84,7 +84,7 @@ export default function Profile() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const { locale, setLocale, dir } = useI18n();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, setPersona } = useTheme();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -407,6 +407,10 @@ export default function Profile() {
       
       if (field === 'theme' && (value === 'light' || value === 'dark')) {
         setTheme(value);
+      }
+      
+      if (field === 'persona' && typeof value === 'string') {
+        setPersona(value as 'single' | 'married' | 'mother' | 'partner');
       }
 
       toast({
