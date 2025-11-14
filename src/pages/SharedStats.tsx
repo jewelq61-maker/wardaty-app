@@ -61,7 +61,7 @@ export default function SharedStats() {
         .select('connected_user_id, owner_id')
         .or(`owner_id.eq.${user.id},connected_user_id.eq.${user.id}`)
         .eq('status', 'active')
-        .eq('type', 'partner')
+        .eq('type', 'profile')
         .single();
 
       if (!shareData) {
