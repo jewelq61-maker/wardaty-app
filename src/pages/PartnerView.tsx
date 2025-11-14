@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import BottomNav from '@/components/BottomNav';
+import SharedCalendar from '@/components/SharedCalendar';
 import { useToast } from '@/hooks/use-toast';
 import { format, parseISO, differenceInDays } from 'date-fns';
 import { ar } from 'date-fns/locale';
@@ -24,6 +25,7 @@ interface PartnerData {
   lastPeriodDate?: string;
   recentMood?: string;
   recentSymptoms?: string[];
+  shareLinkId?: string;
 }
 
 export default function PartnerView() {
@@ -50,7 +52,7 @@ export default function PartnerView() {
       // Find active share link where current user is connected
       const { data: shareLink, error: linkError } = await supabase
         .from('share_links')
-        .select('owner_id, profiles!share_links_owner_id_fkey(name, email)')
+        .select('id, owner_id, profiles!share_links_owner_id_fkey(name, email)')
         .eq('connected_user_id', user.id)
         .eq('type', 'profile')
         .eq('status', 'active')
@@ -127,6 +129,7 @@ export default function PartnerView() {
         lastPeriodDate: latestCycle?.start_date,
         recentMood: recentDay?.mood,
         recentSymptoms: recentDay?.symptoms || [],
+        shareLinkId: shareLink.id,
       });
 
     } catch (error) {
@@ -342,6 +345,15 @@ export default function PartnerView() {
             <p>• {t('profilePage.supportTip4')}</p>
           </CardContent>
         </Card>
+
+        {/* Shared Calendar */}
+        {partnerData.shareLinkId && partnerId && (
+          <SharedCalendar
+            shareLinkId={partnerData.shareLinkId}
+            partnerId={partnerId}
+            partnerName={partnerData.name}
+          />
+        )}
       </main>
 
       <BottomNav />
