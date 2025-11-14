@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Heart, ArrowLeft, Calendar as CalendarIcon, Droplets, Brain } from 'lucide-react';
+import { Heart, ArrowLeft, Calendar as CalendarIcon, Droplets, Brain, BarChart3 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -233,6 +233,16 @@ export default function PartnerView() {
       </div>
 
       <main className="max-w-7xl mx-auto p-4 space-y-4">
+        {/* Stats Button */}
+        <Button
+          onClick={() => navigate('/shared-stats')}
+          className="w-full"
+          variant="outline"
+        >
+          <BarChart3 className="h-5 w-5 mr-2" />
+          {t('partnerView.viewStats')}
+        </Button>
+
         {/* Cycle Phase Card */}
         <Card className="glass shadow-elegant">
           <CardHeader>
