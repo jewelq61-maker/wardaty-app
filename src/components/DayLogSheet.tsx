@@ -11,12 +11,16 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import BeautyDaySection from '@/components/BeautyDaySection';
+import PremiumPaywall from '@/components/PremiumPaywall';
+import { type CyclePhase } from '@/utils/beautyCalculations';
 
 interface DayLogSheetProps {
   isOpen: boolean;
   onClose: () => void;
   date: Date;
   onSave: () => void;
+  cyclePhase?: CyclePhase;
 }
 
 const flowLevels = ['light', 'medium', 'heavy'] as const;
@@ -24,11 +28,13 @@ const moods = ['low', 'tired', 'neutral', 'happy', 'anxious'] as const;
 const moodEmojis = { low: '😔', tired: '😴', neutral: '😐', happy: '😊', anxious: '😰' };
 const symptoms = ['cramps', 'bloating', 'headache', 'fatigue', 'tenderness'] as const;
 
-export default function DayLogSheet({ isOpen, onClose, date, onSave }: DayLogSheetProps) {
+export default function DayLogSheet({ isOpen, onClose, date, onSave, cyclePhase = 'follicular' }: DayLogSheetProps) {
   const { t } = useTranslation();
   const { locale } = useI18n();
   const { user } = useAuth();
   const { toast } = useToast();
+  const [isPremium, setIsPremium] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   
   const [flow, setFlow] = useState<string | null>(null);
   const [mood, setMood] = useState<string | null>(null);
@@ -41,8 +47,19 @@ export default function DayLogSheet({ isOpen, onClose, date, onSave }: DayLogShe
   useEffect(() => {
     if (isOpen && user) {
       fetchDayData();
+      checkPremium();
     }
   }, [isOpen, date, user]);
+
+  const checkPremium = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_premium')
+      .eq('id', user.id)
+      .single();
+    setIsPremium(data?.is_premium || false);
+  };
 
   const fetchDayData = async () => {
     if (!user) return;
@@ -212,6 +229,14 @@ export default function DayLogSheet({ isOpen, onClose, date, onSave }: DayLogShe
               className="min-h-24 resize-none"
             />
           </div>
+
+          {/* Beauty Section */}
+          <BeautyDaySection 
+            date={date}
+            cyclePhase={cyclePhase}
+            isPremium={isPremium}
+            onUpgrade={() => setShowPaywall(true)}
+          />
         </div>
 
         {/* Save Button */}
@@ -225,6 +250,11 @@ export default function DayLogSheet({ isOpen, onClose, date, onSave }: DayLogShe
           </Button>
         </div>
       </SheetContent>
+      
+      <PremiumPaywall 
+        open={showPaywall} 
+        onClose={() => setShowPaywall(false)} 
+      />
     </Sheet>
   );
 }

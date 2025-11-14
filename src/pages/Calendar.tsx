@@ -280,6 +280,7 @@ export default function Calendar() {
           isOpen={isSheetOpen}
           onClose={() => setIsSheetOpen(false)}
           date={selectedDate}
+          cyclePhase={getPhaseForDate(selectedDate) as any}
           onSave={fetchCycleDays}
         />
       )}
