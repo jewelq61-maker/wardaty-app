@@ -1,243 +1,404 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Bell, TrendingUp, Calendar as CalendarIcon, Activity, BarChart3 } from 'lucide-react';
+import { 
+  TrendingUp, Calendar as CalendarIcon, Activity, Heart, 
+  Sparkles, Droplets, Moon, CheckCircle2, BarChart3 
+} from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BottomNav from '@/components/BottomNav';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { format, differenceInDays } from 'date-fns';
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { format } from 'date-fns';
 
-interface Cycle {
-  start_date: string;
-  end_date: string | null;
-  length: number;
-  duration: number;
+interface StatsData {
+  cycles: {
+    total: number;
+    avgLength: number;
+    avgDuration: number;
+    historyData: Array<{ month: string; length: number; duration: number }>;
+  };
+  mood: {
+    totalLogs: number;
+    distribution: Array<{ name: string; value: number }>;
+    trendData: Array<{ date: string; mood: number }>;
+  };
+  symptoms: {
+    total: number;
+    topSymptoms: Array<{ name: string; count: number }>;
+  };
+  beauty: {
+    totalActions: number;
+    completed: number;
+    upcoming: number;
+    categoryDistribution: Array<{ category: string; count: number }>;
+  };
+  fasting: {
+    totalDays: number;
+    completed: number;
+    remaining: number;
+  };
 }
 
-interface CycleDay {
-  date: string;
-  symptoms: string[];
-  mood: string | null;
-  flow: string | null;
-}
-
-interface CycleHistoryData {
-  month: string;
-  length: number;
-  duration: number;
-}
-
-interface SymptomData {
-  name: string;
-  count: number;
-}
-
-const COLORS = ['hsl(var(--period))', 'hsl(var(--ovulation))', 'hsl(var(--fertile))', 'hsl(var(--warning))', 'hsl(var(--info))'];
+const COLORS = {
+  primary: 'hsl(var(--primary))',
+  secondary: 'hsl(var(--secondary))',
+  period: 'hsl(var(--period))',
+  ovulation: 'hsl(var(--ovulation))',
+  fertile: 'hsl(var(--fertile))',
+  muted: 'hsl(var(--muted))',
+};
 
 export default function Stats() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [cycles, setCycles] = useState<Cycle[]>([]);
-  const [cycleDays, setCycleDays] = useState<CycleDay[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<StatsData>({
+    cycles: { total: 0, avgLength: 0, avgDuration: 0, historyData: [] },
+    mood: { totalLogs: 0, distribution: [], trendData: [] },
+    symptoms: { total: 0, topSymptoms: [] },
+    beauty: { totalActions: 0, completed: 0, upcoming: 0, categoryDistribution: [] },
+    fasting: { totalDays: 0, completed: 0, remaining: 0 },
+  });
 
   useEffect(() => {
     if (user) {
-      fetchData();
+      fetchAllStats();
     }
   }, [user]);
 
-  const fetchData = async () => {
+  const fetchAllStats = async () => {
     if (!user) return;
 
-    const [cyclesResponse, cycleDaysResponse] = await Promise.all([
-      supabase
-        .from('cycles')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('start_date', { ascending: false })
-        .limit(12),
-      supabase
-        .from('cycle_days')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .limit(180)
-    ]);
+    try {
+      const [
+        cyclesRes,
+        cycleDaysRes,
+        beautyActionsRes,
+        fastingRes,
+      ] = await Promise.all([
+        supabase.from('cycles').select('*').eq('user_id', user.id).order('start_date', { ascending: false }),
+        supabase.from('cycle_days').select('*').eq('user_id', user.id).order('date', { ascending: false }).limit(90),
+        supabase.from('beauty_actions').select('*').eq('user_id', user.id),
+        supabase.from('fasting_entries').select('*').eq('user_id', user.id),
+      ]);
 
-    if (cyclesResponse.data) setCycles(cyclesResponse.data);
-    if (cycleDaysResponse.data) setCycleDays(cycleDaysResponse.data);
-    setLoading(false);
+      // Process cycles data
+      const cycles = cyclesRes.data || [];
+      const avgLength = cycles.length > 0 
+        ? Math.round(cycles.reduce((sum, c) => sum + (c.length || 0), 0) / cycles.length) 
+        : 0;
+      const avgDuration = cycles.length > 0 
+        ? Math.round(cycles.reduce((sum, c) => sum + (c.duration || 0), 0) / cycles.length) 
+        : 0;
+      const historyData = cycles.slice(0, 6).reverse().map(c => ({
+        month: format(new Date(c.start_date), 'MMM'),
+        length: c.length || 0,
+        duration: c.duration || 0,
+      }));
+
+      // Process mood data
+      const cycleDays = cycleDaysRes.data || [];
+      const moodCounts: Record<string, number> = {};
+      const moodValues: Record<string, number> = {
+        happy: 5, energetic: 5, calm: 4, neutral: 3, tired: 2, sad: 2, anxious: 2, angry: 1
+      };
+
+      cycleDays.forEach(day => {
+        if (day.mood) {
+          moodCounts[day.mood] = (moodCounts[day.mood] || 0) + 1;
+        }
+      });
+
+      const moodDistribution = Object.entries(moodCounts)
+        .map(([name, value]) => ({ name: t(name), value }))
+        .sort((a, b) => b.value - a.value);
+
+      const trendData = cycleDays.slice(0, 30).reverse().map(day => ({
+        date: format(new Date(day.date), 'MM/dd'),
+        mood: day.mood ? (moodValues[day.mood] || 3) : 3,
+      }));
+
+      // Process symptoms data
+      const symptomCounts: Record<string, number> = {};
+      cycleDays.forEach(day => {
+        day.symptoms?.forEach(symptom => {
+          symptomCounts[symptom] = (symptomCounts[symptom] || 0) + 1;
+        });
+      });
+
+      const topSymptoms = Object.entries(symptomCounts)
+        .map(([name, count]) => ({ name: t(name), count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      // Process beauty actions data
+      const beautyActions = beautyActionsRes.data || [];
+      const completed = beautyActions.filter(a => a.completed).length;
+      const upcoming = beautyActions.filter(a => !a.completed && a.scheduled_at && new Date(a.scheduled_at) > new Date()).length;
+      
+      const categoryCounts: Record<string, number> = {};
+      beautyActions.forEach(action => {
+        if (action.beauty_category) {
+          categoryCounts[action.beauty_category] = (categoryCounts[action.beauty_category] || 0) + 1;
+        }
+      });
+
+      const categoryDistribution = Object.entries(categoryCounts)
+        .map(([category, count]) => ({ category: t(`beautyPlanner.categories.${category}`), count }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 5);
+
+      // Process fasting data
+      const fastingEntries = fastingRes.data || [];
+      const fastingCompleted = fastingEntries.filter(e => e.is_completed).length;
+      const fastingRemaining = fastingEntries.length - fastingCompleted;
+
+      setStats({
+        cycles: {
+          total: cycles.length,
+          avgLength,
+          avgDuration,
+          historyData,
+        },
+        mood: {
+          totalLogs: cycleDays.filter(d => d.mood).length,
+          distribution: moodDistribution,
+          trendData,
+        },
+        symptoms: {
+          total: Object.values(symptomCounts).reduce((sum, count) => sum + count, 0),
+          topSymptoms,
+        },
+        beauty: {
+          totalActions: beautyActions.length,
+          completed,
+          upcoming,
+          categoryDistribution,
+        },
+        fasting: {
+          totalDays: fastingEntries.length,
+          completed: fastingCompleted,
+          remaining: fastingRemaining,
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Calculate cycle history data
-  const cycleHistoryData: CycleHistoryData[] = cycles
-    .slice(0, 6)
-    .reverse()
-    .map((cycle) => ({
-      month: format(new Date(cycle.start_date), 'MMM'),
-      length: cycle.length || 0,
-      duration: cycle.duration || 0,
-    }));
-
-  // Calculate average cycle length
-  const avgCycleLength = cycles.length > 0
-    ? Math.round(cycles.reduce((sum, c) => sum + (c.length || 0), 0) / cycles.length)
-    : 0;
-
-  // Calculate average period duration
-  const avgPeriodDuration = cycles.length > 0
-    ? Math.round(cycles.reduce((sum, c) => sum + (c.duration || 0), 0) / cycles.length)
-    : 0;
-
-  // Calculate symptom frequency
-  const symptomCounts: Record<string, number> = {};
-  cycleDays.forEach((day) => {
-    day.symptoms?.forEach((symptom) => {
-      symptomCounts[symptom] = (symptomCounts[symptom] || 0) + 1;
-    });
-  });
-
-  const symptomData: SymptomData[] = Object.entries(symptomCounts)
-    .map(([name, count]) => ({ name: t(name), count }))
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
-
-  // Calculate mood distribution
-  const moodCounts: Record<string, number> = {};
-  cycleDays.forEach((day) => {
-    if (day.mood) {
-      moodCounts[day.mood] = (moodCounts[day.mood] || 0) + 1;
-    }
-  });
-
-  const moodData = Object.entries(moodCounts)
-    .map(([name, value]) => ({ name: t(name), value }))
-    .sort((a, b) => b.value - a.value);
+  if (loading) {
+    return (
+      <div className="min-h-screen gradient-bg pb-24 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">{t('loading')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen gradient-bg pb-24">
       {/* Header */}
-      <div className="sticky top-0 bg-card/80 backdrop-blur-lg z-10 border-b border-border/50">
-        <div className="p-4 flex items-center justify-between max-w-7xl mx-auto">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 ring-2 ring-primary/20 shadow-elegant">
-              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
-                {user?.email?.[0].toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-lg font-bold text-foreground">{t('stats.title')}</h1>
-              <p className="text-sm text-muted-foreground">{t('stats.subtitle')}</p>
-            </div>
+      <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border z-10 px-6 py-4">
+        <div className="flex items-center gap-3">
+          <BarChart3 className="h-6 w-6 text-primary" />
+          <div>
+            <h1 className="text-xl font-bold">{t('stats')}</h1>
+            <p className="text-sm text-muted-foreground">{t('statsPage.subtitle')}</p>
           </div>
-          <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-primary/10">
-            <Bell className="h-5 w-5" />
-          </Button>
         </div>
       </div>
 
-      {/* Key Metrics */}
-      <div className="p-4 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">{t('stats')}</h1>
+      <div className="p-6 space-y-6">
+        {/* Overview Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="glass-card">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <CalendarIcon className="h-4 w-4 text-primary" />
+                <p className="text-xs text-muted-foreground">{t('statsPage.totalCycles')}</p>
+              </div>
+              <p className="text-2xl font-bold">{stats.cycles.total}</p>
+            </CardContent>
+          </Card>
 
-        {loading ? (
-          <Card className="glass shadow-elegant">
-            <CardContent className="p-6">
-              <p className="text-muted-foreground">{t('loading')}</p>
+          <Card className="glass-card">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Heart className="h-4 w-4 text-destructive" />
+                <p className="text-xs text-muted-foreground">{t('statsPage.moodsLogged')}</p>
+              </div>
+              <p className="text-2xl font-bold">{stats.mood.totalLogs}</p>
             </CardContent>
           </Card>
-        ) : cycles.length === 0 ? (
-          <Card className="glass shadow-elegant">
-            <CardContent className="p-6">
-              <p className="text-muted-foreground">{t('statsPage.noData')}</p>
+
+          <Card className="glass-card">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="h-4 w-4 text-primary" />
+                <p className="text-xs text-muted-foreground">{t('statsPage.beautyActions')}</p>
+              </div>
+              <p className="text-2xl font-bold">{stats.beauty.totalActions}</p>
             </CardContent>
           </Card>
-        ) : (
-          <>
-            {/* Overview Stats */}
+
+          <Card className="glass-card">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Moon className="h-4 w-4 text-primary" />
+                <p className="text-xs text-muted-foreground">{t('fastingQada.title')}</p>
+              </div>
+              <p className="text-2xl font-bold">{stats.fasting.completed}/{stats.fasting.totalDays}</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs for Different Categories */}
+        <Tabs defaultValue="cycle" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="cycle">{t('calendar')}</TabsTrigger>
+            <TabsTrigger value="mood">{t('home.mood')}</TabsTrigger>
+            <TabsTrigger value="beauty">{t('beautyPlanner.title')}</TabsTrigger>
+            <TabsTrigger value="health">{t('statsPage.health')}</TabsTrigger>
+          </TabsList>
+
+          {/* Cycle Tab */}
+          <TabsContent value="cycle" className="space-y-4">
+            {/* Key Metrics */}
             <div className="grid grid-cols-2 gap-4">
-              <Card className="glass shadow-elegant">
+              <Card className="glass-card">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <CalendarIcon className="h-4 w-4 text-primary" />
+                    <TrendingUp className="h-4 w-4 text-primary" />
                     <p className="text-sm text-muted-foreground">{t('statsPage.avgCycleLength')}</p>
                   </div>
-                  <p className="text-2xl font-bold">{avgCycleLength} {t('statsPage.days')}</p>
+                  <p className="text-3xl font-bold">{stats.cycles.avgLength} <span className="text-lg text-muted-foreground">{t('statsPage.days')}</span></p>
                 </CardContent>
               </Card>
 
-              <Card className="glass shadow-elegant">
+              <Card className="glass-card">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-2 mb-2">
-                    <Activity className="h-4 w-4 text-period" />
+                    <Droplets className="h-4 w-4 text-period" />
                     <p className="text-sm text-muted-foreground">{t('statsPage.avgPeriodDuration')}</p>
                   </div>
-                  <p className="text-2xl font-bold">{avgPeriodDuration} {t('statsPage.days')}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="glass shadow-elegant">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <TrendingUp className="h-4 w-4 text-info" />
-                    <p className="text-sm text-muted-foreground">{t('statsPage.totalCycles')}</p>
-                  </div>
-                  <p className="text-2xl font-bold">{cycles.length}</p>
-                </CardContent>
-              </Card>
-
-              <Card className="glass shadow-elegant">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <BarChart3 className="h-4 w-4 text-ovulation" />
-                    <p className="text-sm text-muted-foreground">{t('statsPage.trackedDays')}</p>
-                  </div>
-                  <p className="text-2xl font-bold">{cycleDays.length}</p>
+                  <p className="text-3xl font-bold">{stats.cycles.avgDuration} <span className="text-lg text-muted-foreground">{t('statsPage.days')}</span></p>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Cycle Length History */}
-            {cycleHistoryData.length > 0 && (
-              <Card className="glass shadow-elegant">
+            {/* Cycle History Chart */}
+            {stats.cycles.historyData.length > 0 && (
+              <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    {t('statsPage.cycleHistory')}
-                  </CardTitle>
+                  <CardTitle className="text-lg">{t('statsPage.cycleHistory')}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={250}>
-                    <LineChart data={cycleHistoryData}>
+                    <BarChart data={stats.cycles.historyData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px'
-                        }} 
+                      <XAxis 
+                        dataKey="month" 
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={12}
                       />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                        }}
+                      />
+                      <Bar 
                         dataKey="length" 
-                        stroke="hsl(var(--primary))" 
-                        strokeWidth={2}
+                        fill={COLORS.primary} 
+                        radius={[8, 8, 0, 0]}
                         name={t('statsPage.cycleLength')}
                       />
+                      <Bar 
+                        dataKey="duration" 
+                        fill={COLORS.period} 
+                        radius={[8, 8, 0, 0]}
+                        name={t('statsPage.periodDuration')}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Top Symptoms */}
+            {stats.symptoms.topSymptoms.length > 0 && (
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle className="text-lg">{t('statsPage.symptomFrequency')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {stats.symptoms.topSymptoms.map((symptom, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <span className="text-sm">{symptom.name}</span>
+                        <div className="flex items-center gap-2">
+                          <div className="w-32 h-2 bg-secondary rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-primary rounded-full"
+                              style={{ 
+                                width: `${(symptom.count / Math.max(...stats.symptoms.topSymptoms.map(s => s.count))) * 100}%` 
+                              }}
+                            />
+                          </div>
+                          <Badge variant="secondary">{symptom.count}</Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Mood Tab */}
+          <TabsContent value="mood" className="space-y-4">
+            {/* Mood Trend */}
+            {stats.mood.trendData.length > 0 && (
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle className="text-lg">{t('statsPage.moodTrend')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <LineChart data={stats.mood.trendData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis 
+                        dataKey="date" 
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={12}
+                      />
+                      <YAxis 
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={12}
+                        domain={[0, 5]}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                        }}
+                      />
                       <Line 
                         type="monotone" 
-                        dataKey="duration" 
-                        stroke="hsl(var(--period))" 
+                        dataKey="mood" 
+                        stroke={COLORS.primary} 
                         strokeWidth={2}
-                        name={t('statsPage.periodDuration')}
+                        name={t('home.mood')}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -245,75 +406,171 @@ export default function Stats() {
               </Card>
             )}
 
-            {/* Symptom Frequency */}
-            {symptomData.length > 0 && (
-              <Card className="glass shadow-elegant">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-warning" />
-                    {t('statsPage.symptomFrequency')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={symptomData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                      <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" />
-                      <YAxis stroke="hsl(var(--muted-foreground))" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px'
-                        }} 
-                      />
-                      <Bar dataKey="count" fill="hsl(var(--warning))" radius={[8, 8, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            )}
-
             {/* Mood Distribution */}
-            {moodData.length > 0 && (
-              <Card className="glass shadow-elegant">
+            {stats.mood.distribution.length > 0 && (
+              <Card className="glass-card">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5 text-info" />
-                    {t('statsPage.moodDistribution')}
-                  </CardTitle>
+                  <CardTitle className="text-lg">{t('statsPage.moodDistribution')}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={250}>
+                  <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
                       <Pie
-                        data={moodData}
+                        data={stats.mood.distribution}
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={(entry) => entry.name}
+                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                         outerRadius={80}
-                        fill="hsl(var(--primary))"
+                        fill={COLORS.primary}
                         dataKey="value"
                       >
-                        {moodData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        {stats.mood.distribution.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={Object.values(COLORS)[index % Object.values(COLORS).length]} />
                         ))}
                       </Pie>
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px'
-                        }} 
-                      />
+                      <Tooltip />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
             )}
-          </>
-        )}
+          </TabsContent>
+
+          {/* Beauty Tab */}
+          <TabsContent value="beauty" className="space-y-4">
+            {/* Beauty Stats */}
+            <div className="grid grid-cols-3 gap-4">
+              <Card className="glass-card">
+                <CardContent className="p-4 text-center">
+                  <p className="text-2xl font-bold">{stats.beauty.totalActions}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t('statsPage.total')}</p>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-card">
+                <CardContent className="p-4 text-center">
+                  <p className="text-2xl font-bold text-success">{stats.beauty.completed}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t('statsPage.completed')}</p>
+                </CardContent>
+              </Card>
+
+              <Card className="glass-card">
+                <CardContent className="p-4 text-center">
+                  <p className="text-2xl font-bold text-primary">{stats.beauty.upcoming}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{t('statsPage.upcoming')}</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Category Distribution */}
+            {stats.beauty.categoryDistribution.length > 0 && (
+              <Card className="glass-card">
+                <CardHeader>
+                  <CardTitle className="text-lg">{t('statsPage.beautyByCategory')}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={stats.beauty.categoryDistribution}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                      <XAxis 
+                        dataKey="category" 
+                        stroke="hsl(var(--muted-foreground))" 
+                        fontSize={11}
+                        angle={-45}
+                        textAnchor="end"
+                        height={80}
+                      />
+                      <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                        }}
+                      />
+                      <Bar 
+                        dataKey="count" 
+                        fill={COLORS.primary} 
+                        radius={[8, 8, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          {/* Health Tab */}
+          <TabsContent value="health" className="space-y-4">
+            {/* Fasting Qada */}
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Moon className="h-5 w-5 text-primary" />
+                  {t('fastingQada.title')}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-muted/50 rounded-lg">
+                      <p className="text-2xl font-bold text-success">{stats.fasting.completed}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{t('statsPage.completed')}</p>
+                    </div>
+                    <div className="text-center p-4 bg-muted/50 rounded-lg">
+                      <p className="text-2xl font-bold text-warning">{stats.fasting.remaining}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{t('statsPage.remaining')}</p>
+                    </div>
+                  </div>
+                  
+                  {stats.fasting.totalDays > 0 && (
+                    <div>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span>{t('statsPage.progress')}</span>
+                        <span className="font-semibold">
+                          {Math.round((stats.fasting.completed / stats.fasting.totalDays) * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full h-3 bg-secondary rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full transition-all"
+                          style={{ width: `${(stats.fasting.completed / stats.fasting.totalDays) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Additional Health Stats */}
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="text-lg">{t('statsPage.healthSummary')}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Activity className="h-5 w-5 text-primary" />
+                      <span className="text-sm">{t('statsPage.symptomsTracked')}</span>
+                    </div>
+                    <Badge variant="secondary">{stats.symptoms.total}</Badge>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-success" />
+                      <span className="text-sm">{t('statsPage.trackedDays')}</span>
+                    </div>
+                    <Badge variant="secondary">{stats.cycles.total * stats.cycles.avgLength}</Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
       <BottomNav />
