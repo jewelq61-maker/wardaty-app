@@ -21,6 +21,7 @@ import WaterTrackerWidget from '@/components/WaterTrackerWidget';
 import AchievementsBadges from '@/components/AchievementsBadges';
 import DailyAffirmation from '@/components/DailyAffirmation';
 import FastingQadaWidget from '@/components/FastingQadaWidget';
+import DaughtersCycleStatus from '@/components/DaughtersCycleStatus';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Article {
@@ -401,6 +402,7 @@ export default function Home() {
         <div>
           <h3 className="text-base font-bold text-foreground mb-4">{t('overview')}</h3>
           <div className="space-y-3">
+            <DaughtersCycleStatus />
             <FastingQadaWidget />
             <StatsPreviewWidget />
             <CyclePredictionsWidget />

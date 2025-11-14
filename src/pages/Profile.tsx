@@ -45,12 +45,17 @@ import {
 } from '@/components/ui/select';
 import BottomNav from '@/components/BottomNav';
 import { useToast } from '@/hooks/use-toast';
+import PregnancyModeToggle from '@/components/PregnancyModeToggle';
 
 interface ProfileData {
   name: string;
   persona: string;
   locale: string;
   theme: string;
+  is_pregnant?: boolean;
+  pregnancy_lmp?: string | null;
+  pregnancy_edd?: string | null;
+  pregnancy_calculation_method?: string | null;
 }
 
 interface Statistics {
@@ -128,6 +133,10 @@ export default function Profile() {
         persona: data.persona || 'single',
         locale: data.locale || 'ar',
         theme: data.theme || 'light',
+        is_pregnant: data.is_pregnant || false,
+        pregnancy_lmp: data.pregnancy_lmp || null,
+        pregnancy_edd: data.pregnancy_edd || null,
+        pregnancy_calculation_method: data.pregnancy_calculation_method || null,
       });
       setTempName(data.name || '');
       // No need to set theme here as ThemeContext handles it
