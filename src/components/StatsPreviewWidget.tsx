@@ -47,7 +47,7 @@ export default function StatsPreviewWidget() {
   if (stats.totalCycles === 0) return null;
 
   return (
-    <Card className="glass shadow-elegant animate-fade-in">
+    <Card className="bg-card border border-border animate-fade-in">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <Activity className="w-5 h-5 text-primary" />
@@ -63,8 +63,8 @@ export default function StatsPreviewWidget() {
         </Button>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="text-center p-3 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5">
+        <div className="grid grid-cols-3 gap-3">
+          <div className="text-center p-3 rounded-lg bg-primary/5">
             <div className="text-2xl font-bold text-primary">
               {stats.avgCycleLength}
             </div>
@@ -72,7 +72,7 @@ export default function StatsPreviewWidget() {
               {t('statsPage.avgCycleLength')}
             </div>
           </div>
-          <div className="text-center p-3 rounded-xl bg-gradient-to-br from-secondary/10 to-secondary/5">
+          <div className="text-center p-3 rounded-lg bg-secondary/5">
             <div className="text-2xl font-bold text-secondary">
               {stats.avgPeriodDuration}
             </div>
@@ -80,7 +80,7 @@ export default function StatsPreviewWidget() {
               {t('statsPage.avgPeriodDuration')}
             </div>
           </div>
-          <div className="text-center p-3 rounded-xl bg-gradient-to-br from-success/10 to-success/5">
+          <div className="text-center p-3 rounded-lg bg-success/5">
             <div className="text-2xl font-bold text-success">
               {stats.totalCycles}
             </div>

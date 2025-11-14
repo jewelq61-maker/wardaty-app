@@ -67,7 +67,7 @@ export default function UpcomingBeautyWidget() {
 
   if (loading) {
     return (
-      <Card className="glass shadow-elegant">
+      <Card className="bg-card border border-border">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
@@ -83,7 +83,7 @@ export default function UpcomingBeautyWidget() {
 
   if (actions.length === 0) {
     return (
-      <Card className="glass shadow-elegant">
+      <Card className="bg-card border border-border">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
@@ -109,7 +109,7 @@ export default function UpcomingBeautyWidget() {
   }
 
   return (
-    <Card className="glass shadow-elegant">
+    <Card className="bg-card border border-border">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />
@@ -123,16 +123,16 @@ export default function UpcomingBeautyWidget() {
           <ChevronRight className="h-4 w-4" />
         </Button>
       </CardHeader>
-      <CardContent className="space-y-3">
+      <CardContent className="space-y-2">
         {actions.map((action) => (
           <div
             key={action.id}
-            className="flex items-center justify-between p-3 rounded-lg bg-background/50 hover:bg-background/80 transition-colors cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border hover:bg-muted/70 transition-colors cursor-pointer"
             onClick={() => navigate('/beauty')}
           >
             <div className="flex-1">
-              <div className="font-medium">{action.title}</div>
-              <div className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+              <div className="font-medium text-sm">{action.title}</div>
+              <div className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
                 <Calendar className="h-3 w-3" />
                 {format(parseISO(action.scheduled_at), 'PPP', {
                   locale: i18n.language === 'ar' ? ar : undefined,
