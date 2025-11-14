@@ -30,18 +30,16 @@ export default function Persona() {
   const navigate = useNavigate();
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
 
-  useEffect(() => {
-    // Remove persona theme for onboarding - use default theme
-    const root = document.documentElement;
-    root.removeAttribute('data-persona');
-  }, []);
-
   const personas: Persona[] = ['single', 'married', 'mother', 'partner'];
+
+  const handlePersonaSelect = (persona: Persona) => {
+    setSelectedPersona(persona);
+    // Apply persona theme immediately when selected
+    setPersona(persona);
+  };
 
   const handleNext = () => {
     if (selectedPersona) {
-      // Apply persona selection immediately
-      setPersona(selectedPersona);
       navigate('/onboarding/language');
     }
   };
@@ -84,7 +82,7 @@ export default function Persona() {
             return (
               <Card
                 key={persona}
-                onClick={() => setSelectedPersona(persona)}
+                onClick={() => handlePersonaSelect(persona)}
                 className={`cursor-pointer transition-all hover:scale-105 glass ${
                   isSelected ? 'ring-2 ring-primary shadow-elegant' : ''
                 }`}
