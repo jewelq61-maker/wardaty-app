@@ -107,6 +107,8 @@ export default function Profile() {
   const [partnerProfile, setPartnerProfile] = useState<PartnerProfile | null>(null);
   const [connectCode, setConnectCode] = useState('');
   const [showConnectDialog, setShowConnectDialog] = useState(false);
+  const [showPersonaPreview, setShowPersonaPreview] = useState(false);
+  const [previewPersona, setPreviewPersona] = useState<string>('');
   const { isAvailable: isHealthAvailable, isConnected: isHealthConnected, connectToHealth, syncHealthData } = useAppleHealth();
 
   useEffect(() => {
@@ -791,21 +793,22 @@ export default function Profile() {
             {/* Persona */}
             <div className="space-y-2">
               <Label className="text-xs text-muted-foreground">{t('onboarding.choosePersona')}</Label>
-              <Select
-                value={profile.persona}
-                onValueChange={(value) => updateProfile('persona', value)}
-                disabled={loading}
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setPreviewPersona(profile.persona);
+                  setShowPersonaPreview(true);
+                }}
+                className="w-full h-11 justify-between"
               >
-                <SelectTrigger className="h-11">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="single">{t('personas.single')}</SelectItem>
-                  <SelectItem value="married">{t('personas.married')}</SelectItem>
-                  <SelectItem value="mother">{t('personas.mother')}</SelectItem>
-                  <SelectItem value="partner">{t('personas.partner')}</SelectItem>
-                </SelectContent>
-              </Select>
+                <span>
+                  {profile.persona === 'single' && t('personas.single')}
+                  {profile.persona === 'married' && t('personas.married')}
+                  {profile.persona === 'mother' && t('personas.mother')}
+                  {profile.persona === 'partner' && t('personas.partner')}
+                </span>
+                <ChevronRight className="w-4 h-4" />
+              </Button>
             </div>
 
             <Separator />
@@ -973,6 +976,139 @@ export default function Profile() {
               className="w-full h-12"
             >
               {t('profilePage.connect')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Persona Preview Dialog */}
+      <Dialog open={showPersonaPreview} onOpenChange={setShowPersonaPreview}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t('onboarding.choosePersona')}</DialogTitle>
+            <DialogDescription>
+              اختاري الشخصية المناسبة لكِ وشاهدي كيف سيظهر الثيم
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+            {/* Single Persona */}
+            <div
+              onClick={() => setPreviewPersona('single')}
+              className={`cursor-pointer rounded-xl border-2 transition-all hover:scale-105 ${
+                previewPersona === 'single' ? 'border-[hsl(0,100%,91%)] shadow-lg' : 'border-border'
+              }`}
+            >
+              <div className="p-4 bg-gradient-to-br from-[hsl(0,100%,98%)] to-[hsl(0,100%,95%)]">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-[hsl(0,0%,18%)]">{t('personas.single')}</h3>
+                  {previewPersona === 'single' && (
+                    <Check className="w-5 h-5 text-[hsl(0,100%,91%)]" />
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <div className="h-8 rounded-lg bg-[hsl(0,100%,91%)]" />
+                  <div className="h-6 rounded-lg bg-[hsl(0,100%,87%)]" />
+                  <div className="flex gap-2">
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(0,100%,96%)]" />
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(0,73%,53%)]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Married Persona */}
+            <div
+              onClick={() => setPreviewPersona('married')}
+              className={`cursor-pointer rounded-xl border-2 transition-all hover:scale-105 ${
+                previewPersona === 'married' ? 'border-[hsl(351,100%,86%)] shadow-lg' : 'border-border'
+              }`}
+            >
+              <div className="p-4 bg-gradient-to-br from-[hsl(350,100%,98%)] to-[hsl(0,100%,95%)]">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-[hsl(0,0%,18%)]">{t('personas.married')}</h3>
+                  {previewPersona === 'married' && (
+                    <Check className="w-5 h-5 text-[hsl(351,100%,86%)]" />
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <div className="h-8 rounded-lg bg-[hsl(351,100%,86%)]" />
+                  <div className="h-6 rounded-lg bg-[hsl(330,100%,71%)]" />
+                  <div className="flex gap-2">
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(350,100%,96%)]" />
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(0,73%,53%)]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mother Persona */}
+            <div
+              onClick={() => setPreviewPersona('mother')}
+              className={`cursor-pointer rounded-xl border-2 transition-all hover:scale-105 ${
+                previewPersona === 'mother' ? 'border-[hsl(274,65%,74%)] shadow-lg' : 'border-border'
+              }`}
+            >
+              <div className="p-4 bg-gradient-to-br from-[hsl(270,100%,98%)] to-[hsl(270,100%,95%)]">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-[hsl(0,0%,18%)]">{t('personas.mother')}</h3>
+                  {previewPersona === 'mother' && (
+                    <Check className="w-5 h-5 text-[hsl(274,65%,74%)]" />
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <div className="h-8 rounded-lg bg-[hsl(274,65%,74%)]" />
+                  <div className="h-6 rounded-lg bg-[hsl(223,100%,88%)]" />
+                  <div className="flex gap-2">
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(270,100%,96%)]" />
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(0,73%,53%)]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Partner Persona */}
+            <div
+              onClick={() => setPreviewPersona('partner')}
+              className={`cursor-pointer rounded-xl border-2 transition-all hover:scale-105 ${
+                previewPersona === 'partner' ? 'border-[hsl(340,89%,82%)] shadow-lg' : 'border-border'
+              }`}
+            >
+              <div className="p-4 bg-gradient-to-br from-[hsl(340,100%,98%)] to-[hsl(340,100%,95%)]">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-[hsl(0,0%,18%)]">{t('personas.partner')}</h3>
+                  {previewPersona === 'partner' && (
+                    <Check className="w-5 h-5 text-[hsl(340,89%,82%)]" />
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <div className="h-8 rounded-lg bg-[hsl(340,89%,82%)]" />
+                  <div className="h-6 rounded-lg bg-[hsl(0,84%,60%)]" />
+                  <div className="flex gap-2">
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(340,100%,96%)]" />
+                    <div className="h-6 w-16 rounded-lg bg-[hsl(0,73%,53%)]" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowPersonaPreview(false)}
+              className="flex-1"
+            >
+              إلغاء
+            </Button>
+            <Button
+              onClick={async () => {
+                await updateProfile('persona', previewPersona);
+                setShowPersonaPreview(false);
+              }}
+              disabled={loading || !previewPersona}
+              className="flex-1"
+            >
+              تطبيق
             </Button>
           </div>
         </DialogContent>
