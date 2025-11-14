@@ -28,6 +28,7 @@ serve(async (req: Request) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     console.log('Starting cleanup job...');
+    const startTime = Date.now();
 
     const now = new Date();
     const stats = {
@@ -122,13 +123,31 @@ serve(async (req: Request) => {
     }
 
     const totalDeleted = Object.values(stats).reduce((a, b) => a + b, 0);
+    const executionTime = Date.now() - startTime;
     console.log(`Cleanup complete. Total records deleted: ${totalDeleted}`);
+    console.log(`Execution time: ${executionTime}ms`);
+
+    // Save cleanup log to database
+    const { error: logError } = await supabase
+      .from('cleanup_logs')
+      .insert({
+        executed_at: now.toISOString(),
+        status: 'success',
+        stats: stats,
+        total_deleted: totalDeleted,
+        execution_time_ms: executionTime,
+      });
+
+    if (logError) {
+      console.error('Failed to save cleanup log:', logError);
+    }
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         stats,
         totalDeleted,
+        executionTime,
         timestamp: now.toISOString(),
         message: 'Cleanup completed successfully'
       }),
@@ -139,6 +158,24 @@ serve(async (req: Request) => {
     );
   } catch (error) {
     console.error('Error in cleanup-old-data:', error);
+    
+    // Try to save error log
+    try {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      
+      await supabase.from('cleanup_logs').insert({
+        executed_at: new Date().toISOString(),
+        status: 'error',
+        stats: {},
+        total_deleted: 0,
+        error_message: (error as Error).message,
+      });
+    } catch (logError) {
+      console.error('Failed to save error log:', logError);
+    }
+    
     return new Response(
       JSON.stringify({ 
         error: (error as Error).message,

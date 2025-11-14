@@ -375,6 +375,39 @@ export type Database = {
           },
         ]
       }
+      cleanup_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          executed_at: string
+          execution_time_ms: number | null
+          id: string
+          stats: Json
+          status: string
+          total_deleted: number
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          stats?: Json
+          status?: string
+          total_deleted?: number
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          executed_at?: string
+          execution_time_ms?: number | null
+          id?: string
+          stats?: Json
+          status?: string
+          total_deleted?: number
+        }
+        Relationships: []
+      }
       cycle_days: {
         Row: {
           created_at: string

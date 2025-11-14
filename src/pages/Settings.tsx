@@ -271,6 +271,20 @@ export default function Settings() {
                   </div>
                   <ChevronLeft className={`w-4 h-4 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
                 </button>
+                
+                <button
+                  onClick={() => navigate('/admin')}
+                  className="w-full flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <Database className="w-5 h-5 text-primary" />
+                    <div className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+                      <p className="text-sm font-medium">لوحة تحكم الصيانة</p>
+                      <p className="text-xs text-muted-foreground">إحصائيات التنظيف التلقائي</p>
+                    </div>
+                  </div>
+                  <ChevronLeft className={`w-4 h-4 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+                </button>
               </CardContent>
             </Card>
           </TabsContent>
