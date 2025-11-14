@@ -165,6 +165,81 @@ export type Database = {
           },
         ]
       }
+      beauty_categories: {
+        Row: {
+          color: string
+          created_at: string | null
+          icon: string
+          id: string
+          is_system: boolean | null
+          name: string
+          name_en: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string | null
+          icon?: string
+          id?: string
+          is_system?: boolean | null
+          name: string
+          name_en?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string | null
+          icon?: string
+          id?: string
+          is_system?: boolean | null
+          name?: string
+          name_en?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      beauty_routines: {
+        Row: {
+          category_id: string
+          created_at: string | null
+          description: string | null
+          frequency: string
+          id: string
+          reminder_enabled: boolean | null
+          reminder_time: string | null
+          time_of_day: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category_id: string
+          created_at?: string | null
+          description?: string | null
+          frequency: string
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
+          time_of_day?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category_id?: string
+          created_at?: string | null
+          description?: string | null
+          frequency?: string
+          id?: string
+          reminder_enabled?: boolean | null
+          reminder_time?: string | null
+          time_of_day?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       bookmarks: {
         Row: {
           article_id: string
@@ -613,6 +688,69 @@ export type Database = {
           pregnancy_weeks?: number | null
           theme?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      routine_logs: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          log_date: string
+          notes: string | null
+          routine_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          log_date: string
+          notes?: string | null
+          routine_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          routine_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      routine_products: {
+        Row: {
+          created_at: string | null
+          id: string
+          image_url: string | null
+          name: string
+          notes: string | null
+          routine_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          notes?: string | null
+          routine_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          notes?: string | null
+          routine_id?: string
         }
         Relationships: []
       }

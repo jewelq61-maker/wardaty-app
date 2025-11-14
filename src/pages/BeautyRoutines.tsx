@@ -73,6 +73,8 @@ export default function BeautyRoutines() {
     description: '',
     frequency: 'daily' as 'daily' | 'weekly' | 'monthly',
     time_of_day: 'morning' as 'morning' | 'evening' | 'both',
+    reminder_enabled: false,
+    reminder_time: '09:00',
   });
 
   const [newProduct, setNewProduct] = useState({
@@ -138,6 +140,8 @@ export default function BeautyRoutines() {
       description: '',
       frequency: 'daily',
       time_of_day: 'morning',
+      reminder_enabled: false,
+      reminder_time: '09:00',
     });
     setProducts([]);
     setShowDialog(true);
@@ -151,6 +155,8 @@ export default function BeautyRoutines() {
       description: routine.description || '',
       frequency: routine.frequency,
       time_of_day: routine.time_of_day || 'morning',
+      reminder_enabled: (routine as any).reminder_enabled || false,
+      reminder_time: (routine as any).reminder_time || '09:00',
     });
     setProducts(routine.products || []);
     setShowDialog(true);
@@ -228,6 +234,8 @@ export default function BeautyRoutines() {
       description: formData.description || null,
       frequency: formData.frequency,
       time_of_day: formData.time_of_day,
+      reminder_enabled: formData.reminder_enabled,
+      reminder_time: formData.reminder_time,
     };
 
     try {
@@ -528,6 +536,28 @@ export default function BeautyRoutines() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between mb-2">
+                <Label>{t('beautyRoutines.reminder')}</Label>
+                <input
+                  type="checkbox"
+                  checked={formData.reminder_enabled}
+                  onChange={(e) => setFormData({ ...formData, reminder_enabled: e.target.checked })}
+                  className="h-4 w-4 rounded border-border"
+                />
+              </div>
+              {formData.reminder_enabled && (
+                <div>
+                  <Label>{t('beautyRoutines.reminderTime')}</Label>
+                  <Input
+                    type="time"
+                    value={formData.reminder_time}
+                    onChange={(e) => setFormData({ ...formData, reminder_time: e.target.value })}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="border-t pt-4">
