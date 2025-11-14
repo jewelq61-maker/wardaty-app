@@ -469,9 +469,9 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      {/* Compact Header */}
-      <header className="sticky top-0 z-40 backdrop-blur-xl bg-gradient-to-br from-primary/10 to-secondary/10 border-b border-border/50">
+    <div className="min-h-screen gradient-bg pb-24">
+      {/* Header */}
+      <div className="sticky top-0 bg-card/80 backdrop-blur-lg z-10 border-b border-border/50">
         <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
           <div className="flex items-center gap-3">
             <Avatar className="w-12 h-12 border-2 border-primary/20 ring-2 ring-primary/10">

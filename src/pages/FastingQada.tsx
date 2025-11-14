@@ -353,20 +353,20 @@ export default function FastingQada() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
+    <div className="min-h-screen gradient-bg pb-24">
       {/* Header */}
-      <div className="sticky top-0 bg-background/95 backdrop-blur-lg z-10 border-b border-border">
-        <div className="flex items-center justify-between p-4">
-          <button
+      <div className="sticky top-0 bg-card/80 backdrop-blur-lg z-10 border-b border-border/50">
+        <div className="p-4 flex items-center justify-between max-w-7xl mx-auto">
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => navigate('/')}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
+            className="h-10 w-10 hover:bg-primary/10"
           >
-            <BackIcon className="w-6 h-6" />
-          </button>
-          
-          <h1 className="text-xl font-bold">{t('fastingQada.title')}</h1>
-          
-          <div className="w-10"></div>
+            <BackIcon className="h-5 w-5" />
+          </Button>
+          <h1 className="text-lg font-bold text-foreground">{t('fastingQada.title')}</h1>
+          <div className="w-10" />
         </div>
       </div>
 
