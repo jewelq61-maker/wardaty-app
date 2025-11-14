@@ -289,6 +289,85 @@ export type Database = {
           },
         ]
       }
+      daughter_cycles: {
+        Row: {
+          created_at: string
+          daughter_id: string
+          duration: number | null
+          end_date: string | null
+          id: string
+          length: number | null
+          notes: string | null
+          start_date: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          daughter_id: string
+          duration?: number | null
+          end_date?: string | null
+          id?: string
+          length?: number | null
+          notes?: string | null
+          start_date: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          daughter_id?: string
+          duration?: number | null
+          end_date?: string | null
+          id?: string
+          length?: number | null
+          notes?: string | null
+          start_date?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daughter_cycles_daughter_id_fkey"
+            columns: ["daughter_id"]
+            isOneToOne: false
+            referencedRelation: "daughters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daughter_fasting_entries: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          date: string
+          daughter_id: string
+          id: string
+          is_completed: boolean
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          date: string
+          daughter_id: string
+          id?: string
+          is_completed?: boolean
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          date?: string
+          daughter_id?: string
+          id?: string
+          is_completed?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "daughter_fasting_entries_daughter_id_fkey"
+            columns: ["daughter_id"]
+            isOneToOne: false
+            referencedRelation: "daughters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       daughters: {
         Row: {
           birth_date: string | null
