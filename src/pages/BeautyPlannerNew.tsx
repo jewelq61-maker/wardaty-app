@@ -205,15 +205,32 @@ export default function BeautyPlannerNew() {
   const fetchCustomActions = async () => {
     if (!user) return;
     
-    const { data } = await supabase
-      .from('beauty_actions')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('action_type', 'custom')
-      .order('scheduled_at', { ascending: true });
-    
-    if (data) {
-      setCustomActions(data as BeautyAction[]);
+    try {
+      // @ts-ignore - Temporary fix for type instantiation depth
+      const response = await supabase
+        .from('beauty_actions')
+        .select('id, title, beauty_category, action_type, scheduled_at, notes, phase, goal')
+        .eq('user_id', user.id)
+        .eq('action_type', 'custom')
+        .order('scheduled_at', { ascending: true });
+      
+      if (response.error) throw response.error;
+      
+      if (response.data) {
+        const actions: BeautyAction[] = response.data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          beauty_category: (item.beauty_category || 'haircut') as BeautyCategory,
+          action_type: 'custom' as const,
+          scheduled_at: item.scheduled_at || undefined,
+          notes: item.notes || undefined,
+          phase: (item.phase || 'follicular') as CyclePhase,
+          goal: item.goal || undefined
+        }));
+        setCustomActions(actions);
+      }
+    } catch (error) {
+      console.error('Error fetching custom actions:', error);
     }
   };
 
@@ -384,14 +401,14 @@ export default function BeautyPlannerNew() {
         {/* Haircut Goal Selector */}
         <Card className="glass shadow-elegant">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base">
               <TrendingUp className="h-5 w-5 text-primary" />
               هدفك من قص الشعر
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Select value={selectedGoal} onValueChange={setSelectedGoal}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-background/50">
                 <SelectValue placeholder="اختاري هدفك" />
               </SelectTrigger>
               <SelectContent>
@@ -414,7 +431,7 @@ export default function BeautyPlannerNew() {
             </h2>
             <Sheet open={isAddingAction} onOpenChange={setIsAddingAction}>
               <SheetTrigger asChild>
-                <Button size="sm" className="gap-2">
+                <Button size="sm" className="gap-2 shadow-elegant">
                   <Plus className="h-4 w-4" />
                   إضافة موعد
                 </Button>
@@ -510,13 +527,13 @@ export default function BeautyPlannerNew() {
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map(i => (
-                <div key={i} className="h-32 glass rounded-2xl animate-pulse" />
+                <div key={i} className="h-32 glass rounded-2xl animate-pulse shadow-elegant" />
               ))}
             </div>
           ) : (
             <div className="grid gap-4">
               {systemRecommendations.map(rec => (
-                <Card key={rec.id} className={`glass shadow-elegant border-2 ${getScoreBg(rec.score || 0)}`}>
+                <Card key={rec.id} className={`glass shadow-elegant border-2 transition-all hover:scale-[1.02] ${getScoreBg(rec.score || 0)}`}>
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-4xl">{getCategoryIcon(rec.beauty_category)}</div>
@@ -528,7 +545,7 @@ export default function BeautyPlannerNew() {
                               {rec.scheduled_at && format(parseISO(rec.scheduled_at), 'EEEE، d MMMM', { locale: ar })}
                             </p>
                           </div>
-                          <Badge className={`${getScoreBg(rec.score || 0)} ${getScoreColor(rec.score || 0)}`}>
+                          <Badge className={`${getScoreBg(rec.score || 0)} ${getScoreColor(rec.score || 0)} shadow-sm`}>
                             {rec.score}%
                           </Badge>
                         </div>
@@ -563,7 +580,7 @@ export default function BeautyPlannerNew() {
             </h2>
             <div className="grid gap-4">
               {customActions.map(action => (
-                <Card key={action.id} className="glass shadow-elegant">
+                <Card key={action.id} className="glass shadow-elegant transition-all hover:scale-[1.02]">
                   <CardContent className="p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-4xl">{getCategoryIcon(action.beauty_category)}</div>
@@ -573,7 +590,7 @@ export default function BeautyPlannerNew() {
                           {action.scheduled_at && format(parseISO(action.scheduled_at), 'EEEE، d MMMM', { locale: ar })}
                         </p>
                         {action.notes && (
-                          <p className="text-sm text-muted-foreground mt-2">{action.notes}</p>
+                          <p className="text-sm text-muted-foreground mt-2 bg-muted/30 p-2 rounded-lg">{action.notes}</p>
                         )}
                       </div>
                     </div>
