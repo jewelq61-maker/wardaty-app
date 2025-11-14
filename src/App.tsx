@@ -23,6 +23,7 @@ import Subscription from "./pages/Subscription";
 import PregnancyCalendar from "./pages/PregnancyCalendar";
 import BeautyCategories from './pages/BeautyCategories';
 import BeautyRoutines from './pages/BeautyRoutines';
+import AppleHealthSettings from './pages/AppleHealthSettings';
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
@@ -77,6 +78,7 @@ const App = () => (
                 <Route path="/pregnancy-calendar" element={<ProtectedRoute><PregnancyCalendar /></ProtectedRoute>} />
                 <Route path="/beauty-categories" element={<ProtectedRoute><BeautyCategories /></ProtectedRoute>} />
                 <Route path="/beauty-routines" element={<ProtectedRoute><BeautyRoutines /></ProtectedRoute>} />
+                <Route path="/apple-health-settings" element={<ProtectedRoute><AppleHealthSettings /></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

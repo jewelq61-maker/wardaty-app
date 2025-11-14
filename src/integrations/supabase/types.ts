@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      apple_health_settings: {
+        Row: {
+          auto_sync_enabled: boolean | null
+          auto_sync_time: string | null
+          created_at: string | null
+          id: string
+          last_sync_at: string | null
+          sync_heart_rate: boolean | null
+          sync_sleep: boolean | null
+          sync_steps: boolean | null
+          sync_weight: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          auto_sync_enabled?: boolean | null
+          auto_sync_time?: string | null
+          created_at?: string | null
+          id?: string
+          last_sync_at?: string | null
+          sync_heart_rate?: boolean | null
+          sync_sleep?: boolean | null
+          sync_steps?: boolean | null
+          sync_weight?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          auto_sync_enabled?: boolean | null
+          auto_sync_time?: string | null
+          created_at?: string | null
+          id?: string
+          last_sync_at?: string | null
+          sync_heart_rate?: boolean | null
+          sync_sleep?: boolean | null
+          sync_steps?: boolean | null
+          sync_weight?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       articles: {
         Row: {
           author: string | null
