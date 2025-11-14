@@ -318,6 +318,15 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {/* Log Today Button */}
+            <button
+              onClick={() => navigate('/calendar')}
+              className="mt-4 w-full bg-primary text-primary-foreground rounded-xl py-3 px-4 font-semibold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
+            >
+              <CalendarDays className="w-4 h-4" />
+              {t('logToday')}
+            </button>
           </div>
         )}
 
@@ -330,16 +339,6 @@ export default function Home() {
           
           <div className="grid grid-cols-2 gap-3">
             <button
-              onClick={() => navigate('/calendar')}
-              className="bg-card rounded-2xl p-5 border border-border hover:bg-accent transition-colors text-start"
-            >
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-                <CalendarDays className="w-5 h-5 text-primary" />
-              </div>
-              <p className="text-sm font-semibold text-foreground">{t('logToday')}</p>
-            </button>
-            
-            <button
               onClick={() => navigate('/beauty')}
               className="bg-card rounded-2xl p-5 border border-border hover:bg-accent transition-colors text-start"
             >
@@ -350,13 +349,13 @@ export default function Home() {
             </button>
             
             <button
-              onClick={() => navigate('/fasting-qada')}
+              onClick={() => navigate('/calendar')}
               className="bg-card rounded-2xl p-5 border border-border hover:bg-accent transition-colors text-start"
             >
-              <div className="w-10 h-10 rounded-xl bg-period/10 flex items-center justify-center mb-3">
-                <Moon className="w-5 h-5 text-period" />
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+                <CalendarDays className="w-5 h-5 text-primary" />
               </div>
-              <p className="text-sm font-semibold text-foreground">{t('fastingQada.title')}</p>
+              <p className="text-sm font-semibold text-foreground">{t('calendar')}</p>
             </button>
 
             <button
@@ -367,6 +366,16 @@ export default function Home() {
                 <TrendingUp className="w-5 h-5 text-info" />
               </div>
               <p className="text-sm font-semibold text-foreground">{t('stats')}</p>
+            </button>
+            
+            <button
+              onClick={() => navigate('/fasting-qada')}
+              className="bg-card rounded-2xl p-5 border border-border hover:bg-accent transition-colors text-start"
+            >
+              <div className="w-10 h-10 rounded-xl bg-period/10 flex items-center justify-center mb-3">
+                <Moon className="w-5 h-5 text-period" />
+              </div>
+              <p className="text-sm font-semibold text-foreground">{t('fastingQada.title')}</p>
             </button>
 
             <button
