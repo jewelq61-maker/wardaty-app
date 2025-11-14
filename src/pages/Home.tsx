@@ -227,7 +227,7 @@ export default function Home() {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen pb-32 bg-background overflow-y-auto"
+      className="min-h-screen pb-32 gradient-bg overflow-y-auto"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

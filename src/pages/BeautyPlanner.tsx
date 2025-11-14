@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Switch } from '@/components/ui/switch';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { toast } from '@/hooks/use-toast';
 import { format, differenceInDays, startOfDay } from 'date-fns';
 import { CalendarIcon, Plus, Sparkles, Trash2, Droplets, Wind, Zap, Heart, Scissors, Eye, Flower2, Leaf, FlaskConical, Palette, CheckCircle2, Circle, TrendingUp, Bell, BellOff } from 'lucide-react';
@@ -317,7 +318,26 @@ export default function BeautyPlanner() {
   const filteredActions = beautyActions;
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen gradient-bg pb-32">
+      {/* Header */}
+      <div className="sticky top-0 bg-card/80 backdrop-blur-lg z-10 border-b border-border/50">
+        <div className="p-4 flex items-center justify-between max-w-7xl mx-auto">
+          <div className="flex items-center gap-3">
+            <Avatar className="h-10 w-10 ring-2 ring-primary/20 shadow-elegant">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
+                {user?.email?.[0].toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{t('beautyPlanner.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t(`phases.${currentPhase}`)}</p>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-primary/10">
+            <Bell className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
       {/* Compact Header */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/80 border-b border-border/50">
         <div className="flex items-center justify-between p-4 max-w-lg mx-auto">

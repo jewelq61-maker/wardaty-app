@@ -173,15 +173,32 @@ export default function Articles() {
   const regularArticles = filteredArticles.slice(1);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pb-24" dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* Compact Header */}
-      <div className="sticky top-0 bg-background/80 backdrop-blur-xl z-10 border-b border-border/50">
-        <div className="flex items-center justify-between px-4 py-3">
+    <div className="min-h-screen gradient-bg pb-24" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* Header */}
+      <div className="sticky top-0 bg-card/80 backdrop-blur-lg z-10 border-b border-border/50">
+        <div className="p-4 flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
-            <Avatar className="w-9 h-9 ring-2 ring-primary/10">
-              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/70 text-primary-foreground text-sm">
-                {user?.email?.[0].toUpperCase() || 'U'}
+            <Avatar className="h-10 w-10 ring-2 ring-primary/20 shadow-elegant">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
+                {user?.email?.[0].toUpperCase()}
               </AvatarFallback>
+            </Avatar>
+            <div>
+              <h1 className="text-lg font-bold text-foreground">{t('articlesPage.title')}</h1>
+              <p className="text-sm text-muted-foreground">{t('articlesPage.subtitle')}</p>
+            </div>
+          </div>
+          <Button variant="ghost" size="icon" className="h-10 w-10 hover:bg-primary/10">
+            <Bell className="h-5 w-5" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="p-4 space-y-4">
+        <div className="flex items-center gap-3">
+          {/* Search */}
+          <div className="flex-1 relative">
             </Avatar>
             <div>
               <h1 className="text-lg font-bold flex items-center gap-2">
