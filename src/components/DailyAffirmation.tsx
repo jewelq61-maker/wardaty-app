@@ -74,15 +74,15 @@ export default function DailyAffirmation({ phase }: DailyAffirmationProps) {
   }, [phase, locale]);
 
   return (
-    <Card className="glass shadow-elegant animate-fade-in bg-gradient-to-br from-primary/5 via-secondary/5 to-success/5 border-primary/20">
-      <CardContent className="p-6">
-        <div className="flex items-start gap-4">
-          <div className="p-3 rounded-full bg-gradient-to-br from-primary/20 to-secondary/20">
-            <Sparkles className="w-6 h-6 text-primary" />
+    <Card className="bg-card border border-border animate-fade-in">
+      <CardContent className="p-5">
+        <div className="flex items-start gap-3">
+          <div className="p-2.5 rounded-full bg-primary/10">
+            <Sparkles className="w-5 h-5 text-primary" />
           </div>
           <div className="flex-1">
-            <h3 className="font-semibold text-lg mb-2">{t('home.dailyAffirmation')}</h3>
-            <p className="text-muted-foreground leading-relaxed italic">
+            <h3 className="font-semibold text-base mb-2">{t('home.dailyAffirmation')}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               "{affirmation}"
             </p>
           </div>
