@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Bell, LogOut, User, Settings, BarChart3, Moon, Sun, 
-  Globe, Download, Trash2, ChevronRight, Edit2, Check, X, Share2, Link2, UserPlus, Copy
+  Globe, Download, Trash2, ChevronRight, Edit2, Check, X, Share2, Link2, UserPlus, Copy, Heart
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -584,7 +584,7 @@ export default function Profile() {
                   </div>
                   <UserPlus className="w-5 h-5 text-married-primary" />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 mb-3">
                   <div className="text-center p-2 rounded-lg bg-background/50">
                     <div className="text-lg font-bold text-married-primary">{partnerProfile.stats.totalCycles}</div>
                     <div className="text-xs text-muted-foreground">{t('statsPage.totalCycles')}</div>
@@ -594,6 +594,14 @@ export default function Profile() {
                     <div className="text-xs text-muted-foreground">{t('statsPage.trackedDays')}</div>
                   </div>
                 </div>
+                <Button
+                  onClick={() => navigate('/partner-view')}
+                  variant="outline"
+                  className="w-full h-10 border-2 border-married-primary/30 hover:bg-married-primary/10"
+                >
+                  <Heart className="w-4 h-4 mr-2 text-married-primary" />
+                  {t('profilePage.viewPartnerProfile')}
+                </Button>
               </div>
             )}
 
