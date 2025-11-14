@@ -24,6 +24,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
 import ProgressRing from '@/components/ProgressRing';
+import PremiumPaywall from '@/components/PremiumPaywall';
 import { getRamadanPeriod } from '@/utils/hijri';
 import { cn } from '@/lib/utils';
 
@@ -41,6 +42,8 @@ export default function FastingQada() {
   const navigate = useNavigate();
   const { toast } = useToast();
   
+  const [isPremium, setIsPremium] = useState(false);
+  const [premiumLoading, setPremiumLoading] = useState(true);
   const [missedDays, setMissedDays] = useState(0);
   const [manualAdjustment, setManualAdjustment] = useState(0);
   const [completedEntries, setCompletedEntries] = useState<FastingEntry[]>([]);
@@ -64,11 +67,26 @@ export default function FastingQada() {
 
   useEffect(() => {
     if (user) {
+      checkPremiumStatus();
       loadData();
       checkNotificationPermission();
       checkReminders();
     }
   }, [user]);
+
+  const checkPremiumStatus = async () => {
+    if (!user) return;
+    
+    setPremiumLoading(true);
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_premium')
+      .eq('id', user.id)
+      .single();
+    
+    setIsPremium(data?.is_premium || false);
+    setPremiumLoading(false);
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem('fastingReminderEnabled');
@@ -351,6 +369,16 @@ export default function FastingQada() {
       setClearAllDialogOpen(false);
     }
   };
+
+  if (initialLoading || premiumLoading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="text-lg">جاري التحميل...</div>
+    </div>;
+  }
+
+  if (!isPremium) {
+    return <PremiumPaywall open={true} onClose={() => navigate('/')} feature="fasting-qada" />;
+  }
 
   return (
     <div className="min-h-screen gradient-bg pb-24">

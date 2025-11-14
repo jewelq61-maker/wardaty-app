@@ -87,52 +87,73 @@ export type Database = {
       }
       beauty_actions: {
         Row: {
+          action_type: string | null
+          beauty_category: string | null
           completed: boolean
           completed_at: string | null
           created_at: string
           frequency: string | null
+          goal: string | null
           id: string
+          is_visible: boolean | null
           notes: string | null
           phase: string
+          reason: string | null
           reminder_enabled: boolean
           reminder_hours_before: number | null
           scheduled_at: string | null
+          score: number | null
           time_of_day: string | null
           title: string
           updated_at: string
           user_id: string
+          warnings: string[] | null
         }
         Insert: {
+          action_type?: string | null
+          beauty_category?: string | null
           completed?: boolean
           completed_at?: string | null
           created_at?: string
           frequency?: string | null
+          goal?: string | null
           id?: string
+          is_visible?: boolean | null
           notes?: string | null
           phase: string
+          reason?: string | null
           reminder_enabled?: boolean
           reminder_hours_before?: number | null
           scheduled_at?: string | null
+          score?: number | null
           time_of_day?: string | null
           title: string
           updated_at?: string
           user_id: string
+          warnings?: string[] | null
         }
         Update: {
+          action_type?: string | null
+          beauty_category?: string | null
           completed?: boolean
           completed_at?: string | null
           created_at?: string
           frequency?: string | null
+          goal?: string | null
           id?: string
+          is_visible?: boolean | null
           notes?: string | null
           phase?: string
+          reason?: string | null
           reminder_enabled?: boolean
           reminder_hours_before?: number | null
           scheduled_at?: string | null
+          score?: number | null
           time_of_day?: string | null
           title?: string
           updated_at?: string
           user_id?: string
+          warnings?: string[] | null
         }
         Relationships: [
           {
@@ -268,6 +289,39 @@ export type Database = {
           },
         ]
       }
+      daughters: {
+        Row: {
+          birth_date: string | null
+          created_at: string | null
+          cycle_start_age: number | null
+          id: string
+          mother_id: string
+          name: string
+          notes: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          birth_date?: string | null
+          created_at?: string | null
+          cycle_start_age?: number | null
+          id?: string
+          mother_id: string
+          name: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          birth_date?: string | null
+          created_at?: string | null
+          cycle_start_age?: number | null
+          id?: string
+          mother_id?: string
+          name?: string
+          notes?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       fasting_entries: {
         Row: {
           completed_at: string | null
@@ -305,6 +359,8 @@ export type Database = {
       }
       profiles: {
         Row: {
+          breastfeeding: boolean | null
+          breastfeeding_start_date: string | null
           created_at: string
           email: string | null
           fasting_manual_adjustment: number
@@ -313,10 +369,15 @@ export type Database = {
           locale: string
           name: string | null
           persona: string
+          postpartum_start_date: string | null
+          pregnancy_due_date: string | null
+          pregnancy_weeks: number | null
           theme: string
           updated_at: string
         }
         Insert: {
+          breastfeeding?: boolean | null
+          breastfeeding_start_date?: string | null
           created_at?: string
           email?: string | null
           fasting_manual_adjustment?: number
@@ -325,10 +386,15 @@ export type Database = {
           locale?: string
           name?: string | null
           persona: string
+          postpartum_start_date?: string | null
+          pregnancy_due_date?: string | null
+          pregnancy_weeks?: number | null
           theme?: string
           updated_at?: string
         }
         Update: {
+          breastfeeding?: boolean | null
+          breastfeeding_start_date?: string | null
           created_at?: string
           email?: string | null
           fasting_manual_adjustment?: number
@@ -337,6 +403,9 @@ export type Database = {
           locale?: string
           name?: string | null
           persona?: string
+          postpartum_start_date?: string | null
+          pregnancy_due_date?: string | null
+          pregnancy_weeks?: number | null
           theme?: string
           updated_at?: string
         }
