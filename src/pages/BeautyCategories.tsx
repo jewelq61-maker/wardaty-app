@@ -77,13 +77,13 @@ export default function BeautyCategories() {
     if (!user) return;
 
     const { data } = await supabase
-      .from('beauty_categories')
+      .from('beauty_categories' as any)
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true });
 
     if (data) {
-      setCategories(data as any);
+      setCategories(data as unknown as BeautyCategory[]);
     }
   };
 
@@ -130,8 +130,8 @@ export default function BeautyCategories() {
 
     if (editingCategory) {
       const { error } = await supabase
-        .from('beauty_categories')
-        .update(categoryData as any)
+        .from('beauty_categories' as any)
+        .update(categoryData)
         .eq('id', editingCategory.id);
 
       if (error) {
@@ -144,8 +144,8 @@ export default function BeautyCategories() {
       }
     } else {
       const { error } = await supabase
-        .from('beauty_categories')
-        .insert(categoryData as any);
+        .from('beauty_categories' as any)
+        .insert(categoryData);
 
       if (error) {
         toast({
@@ -168,7 +168,7 @@ export default function BeautyCategories() {
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase
-      .from('beauty_categories')
+      .from('beauty_categories' as any)
       .delete()
       .eq('id', id);
 
