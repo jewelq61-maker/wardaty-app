@@ -170,7 +170,7 @@ export default function Settings() {
             </div>
           </div>
           <Button onClick={saveSettings} disabled={saving}>
-            <Save className="w-4 h-4 mr-2" />
+            <Save className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
             {saving ? 'جاري الحفظ...' : 'حفظ'}
           </Button>
         </div>
@@ -249,7 +249,7 @@ export default function Settings() {
                 >
                   <div className="flex items-center gap-3">
                     <Activity className="w-5 h-5 text-success" />
-                    <div className="text-left">
+                    <div className={dir === 'rtl' ? 'text-right' : 'text-left'}>
                       <p className="text-sm font-medium">Apple Health</p>
                       <p className="text-xs text-muted-foreground">مزامنة بيانات الساعة</p>
                     </div>
@@ -417,7 +417,7 @@ export default function Settings() {
                 >
                   <div className="flex items-center gap-3">
                     <Download className="w-5 h-5 text-info" />
-                    <div className="text-left">
+                    <div className={dir === 'rtl' ? 'text-right' : 'text-left'}>
                       <p className="text-sm font-medium">تصدير البيانات</p>
                       <p className="text-xs text-muted-foreground">تنزيل نسخة من بياناتك</p>
                     </div>
