@@ -6,6 +6,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// In-memory cache for recommendations (6 hour TTL)
+const cache = new Map<string, { recommendations: any; cycleInfo: any; timestamp: number }>();
+const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -82,6 +86,20 @@ serve(async (req) => {
     // Calculate Hijri day (approximation)
     const hijriDay = Math.floor((today.getTime() / (1000 * 60 * 60 * 24)) % 29.5) + 1;
     const isGoodHijamaDay = [17, 19, 21].includes(hijriDay);
+
+    // Check cache first
+    const cacheKey = `${userId}-${phase}-${cycleDay}-${hijriDay}`;
+    const cached = cache.get(cacheKey);
+    if (cached && (Date.now() - cached.timestamp) < CACHE_TTL) {
+      console.log('Returning cached recommendations for user');
+      return new Response(
+        JSON.stringify({
+          recommendations: cached.recommendations,
+          cycleInfo: cached.cycleInfo,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Prepare AI prompt
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
@@ -191,16 +209,22 @@ serve(async (req) => {
       throw new Error('Failed to parse AI recommendations');
     }
 
+    const cycleInfo = {
+      phase,
+      cycleDay,
+      totalDays: lastCycle.length || 28,
+      hijriDay,
+      isGoodHijamaDay,
+    };
+
+    // Cache the result
+    cache.set(cacheKey, { recommendations, cycleInfo, timestamp: Date.now() });
+    console.log('Cached new recommendations for user');
+
     return new Response(
       JSON.stringify({
         recommendations,
-        cycleInfo: {
-          phase,
-          cycleDay,
-          totalDays: lastCycle.length || 28,
-          hijriDay,
-          isGoodHijamaDay,
-        },
+        cycleInfo,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

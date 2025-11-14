@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Sparkles, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useI18n } from '@/contexts/I18nContext';
+import { useCachedQuery } from '@/hooks/useCachedQuery';
 
 interface DailyInsightsCardProps {
   phase: string;
@@ -12,29 +12,18 @@ interface DailyInsightsCardProps {
 export default function DailyInsightsCard({ phase }: DailyInsightsCardProps) {
   const { t } = useTranslation();
   const { locale } = useI18n();
-  const [insights, setInsights] = useState<string>('');
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadInsights();
-  }, [phase, locale]);
-
-  const loadInsights = async () => {
-    try {
-      setLoading(true);
+  const { data, loading } = useCachedQuery({
+    cacheKey: `daily-insights-${phase}-${locale}`,
+    queryFn: async () => {
       const { data, error } = await supabase.functions.invoke('daily-insights', {
         body: { phase, locale },
       });
-
       if (error) throw error;
-      setInsights(data.insights || '');
-    } catch (error) {
-      console.error('Error loading insights:', error);
-      setInsights('');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data.insights || '';
+    },
+    cacheDuration: 24 * 60 * 60 * 1000, // 24 hours
+  });
 
   if (loading) {
     return (
@@ -46,7 +35,7 @@ export default function DailyInsightsCard({ phase }: DailyInsightsCardProps) {
     );
   }
 
-  if (!insights) return null;
+  if (!data) return null;
 
   return (
     <Card className="bg-card border border-border animate-fade-in">
@@ -57,7 +46,7 @@ export default function DailyInsightsCard({ phase }: DailyInsightsCardProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground">{insights}</p>
+        <p className="text-sm leading-relaxed whitespace-pre-line text-muted-foreground">{data}</p>
       </CardContent>
     </Card>
   );
