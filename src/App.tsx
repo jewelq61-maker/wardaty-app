@@ -17,6 +17,7 @@ import FastingQada from "./pages/FastingQada";
 import BeautyPlanner from "./pages/BeautyPlannerNew";
 import DataExport from "./pages/DataExport";
 import MotherFeatures from "./pages/MotherFeatures";
+import PartnerView from "./pages/PartnerView";
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
@@ -65,6 +66,7 @@ const App = () => (
                 <Route path="/beauty" element={<ProtectedRoute><BeautyPlanner /></ProtectedRoute>} />
                 <Route path="/data-export" element={<ProtectedRoute><DataExport /></ProtectedRoute>} />
                 <Route path="/mother-features" element={<ProtectedRoute><MotherFeatures /></ProtectedRoute>} />
+                <Route path="/partner-view" element={<ProtectedRoute><PartnerView /></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

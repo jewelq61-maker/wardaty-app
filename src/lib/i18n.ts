@@ -126,6 +126,15 @@ const resources = {
         codeCopied: 'تم نسخ الكود',
         shareLinkRevoked: 'تم إلغاء رابط المشاركة',
         revokeError: 'حدث خطأ في الإلغاء',
+        noPartnerConnected: 'لا يوجد شريك متصل',
+        loadPartnerError: 'حدث خطأ في تحميل بيانات الشريك',
+        backToProfile: 'العودة للملف الشخصي',
+        viewPartnerProfile: 'عرض ملف الشريك',
+        partnerSupport: 'نصائح لدعم شريكتك',
+        supportTip1: 'كوني متفهمة لتقلبات المزاج حسب مرحلة الدورة',
+        supportTip2: 'قدمي الدعم العاطفي والراحة خلال الأيام الصعبة',
+        supportTip3: 'ساعديها في تذكر مواعيد الجمال والعناية',
+        supportTip4: 'احترمي رغبتها في الراحة أو النشاط حسب مرحلة الدورة',
       },
       
       // Stats
@@ -521,6 +530,15 @@ const resources = {
         },
         shareLinkRevoked: 'Share link revoked',
         revokeError: 'Error revoking link',
+        noPartnerConnected: 'No partner connected',
+        loadPartnerError: 'Error loading partner data',
+        backToProfile: 'Back to Profile',
+        viewPartnerProfile: 'View Partner Profile',
+        partnerSupport: 'Tips to Support Your Partner',
+        supportTip1: 'Be understanding of mood changes during different cycle phases',
+        supportTip2: 'Offer emotional support and comfort during difficult days',
+        supportTip3: 'Help her remember beauty appointments and self-care',
+        supportTip4: 'Respect her need for rest or activity based on cycle phase',
       },
       
       // Stats
