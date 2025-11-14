@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          analytics_enabled: boolean | null
+          auto_backup_enabled: boolean | null
+          backup_frequency: string | null
+          beauty_reminders: boolean | null
+          compact_view: boolean | null
+          created_at: string | null
+          data_sharing: boolean | null
+          fasting_reminders: boolean | null
+          id: string
+          notifications_enabled: boolean | null
+          period_reminders: boolean | null
+          routine_reminders: boolean | null
+          show_hijri_dates: boolean | null
+          show_lunar_calendar: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          analytics_enabled?: boolean | null
+          auto_backup_enabled?: boolean | null
+          backup_frequency?: string | null
+          beauty_reminders?: boolean | null
+          compact_view?: boolean | null
+          created_at?: string | null
+          data_sharing?: boolean | null
+          fasting_reminders?: boolean | null
+          id?: string
+          notifications_enabled?: boolean | null
+          period_reminders?: boolean | null
+          routine_reminders?: boolean | null
+          show_hijri_dates?: boolean | null
+          show_lunar_calendar?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          analytics_enabled?: boolean | null
+          auto_backup_enabled?: boolean | null
+          backup_frequency?: string | null
+          beauty_reminders?: boolean | null
+          compact_view?: boolean | null
+          created_at?: string | null
+          data_sharing?: boolean | null
+          fasting_reminders?: boolean | null
+          id?: string
+          notifications_enabled?: boolean | null
+          period_reminders?: boolean | null
+          routine_reminders?: boolean | null
+          show_hijri_dates?: boolean | null
+          show_lunar_calendar?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       apple_health_settings: {
         Row: {
           auto_sync_enabled: boolean | null

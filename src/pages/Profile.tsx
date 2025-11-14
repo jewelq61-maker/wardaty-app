@@ -826,6 +826,19 @@ export default function Profile() {
           
           <div className="space-y-3">
             <button
+              onClick={() => navigate('/settings')}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-primary/10 hover:bg-primary/20 border border-primary/20 transition-all duration-200 active:scale-95"
+            >
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                <Settings className="w-4 h-4 text-primary" />
+              </div>
+              <span className="flex-1 text-left text-sm font-medium text-foreground">
+                الإعدادات المتقدمة
+              </span>
+              <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+            </button>
+
+            <button
               onClick={() => navigate('/subscription')}
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-yellow-400/10 to-orange-500/10 hover:from-yellow-400/20 hover:to-orange-500/20 border border-yellow-500/20 transition-all duration-200 active:scale-95"
             >
