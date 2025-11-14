@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import BottomNav from '@/components/BottomNav';
 import DayLogSheet from '@/components/DayLogSheet';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';

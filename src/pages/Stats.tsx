@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import BottomNav from '@/components/BottomNav';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { format, differenceInDays } from 'date-fns';
@@ -141,12 +142,8 @@ export default function Stats() {
       </div>
 
       {/* Key Metrics */}
-      <div className="p-4">
-        <div className="grid grid-cols-2 gap-3 mb-6">
-      </div>
-
-      <div className="p-4 space-y-6">
-        <h1 className="text-2xl font-bold">{t('stats')}</h1>
+      <div className="p-4 max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">{t('stats')}</h1>
 
         {loading ? (
           <Card className="glass shadow-elegant">

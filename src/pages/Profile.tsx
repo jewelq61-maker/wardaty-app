@@ -472,28 +472,28 @@ export default function Profile() {
     <div className="min-h-screen gradient-bg pb-24">
       {/* Header */}
       <div className="sticky top-0 bg-card/80 backdrop-blur-lg z-10 border-b border-border/50">
-        <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
+        <div className="p-4 max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Avatar className="w-12 h-12 border-2 border-primary/20 ring-2 ring-primary/10">
-              <AvatarFallback className="bg-gradient-to-br from-primary to-secondary text-primary-foreground text-lg font-bold">
+            <Avatar className="h-10 w-10 ring-2 ring-primary/20 shadow-elegant">
+              <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground font-semibold">
                 {profile.name?.[0]?.toUpperCase() || user?.email?.[0].toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <div>
               <h1 className="text-lg font-bold text-foreground">{t('profile')}</h1>
-              <p className="text-xs text-muted-foreground">{user?.email}</p>
+              <p className="text-sm text-muted-foreground">{user?.email}</p>
             </div>
           </div>
           <Button
             onClick={handleLogout}
             variant="ghost"
             size="icon"
-            className="text-muted-foreground hover:text-destructive"
+            className="h-10 w-10 text-muted-foreground hover:text-destructive"
           >
-            <LogOut className="w-5 h-5" />
+            <LogOut className="h-5 w-5" />
           </Button>
         </div>
-      </header>
+      </div>
 
       <main className="max-w-lg mx-auto px-4 pt-6 space-y-6">
         {/* Profile Card */}
