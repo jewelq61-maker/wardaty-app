@@ -81,11 +81,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   const applyPersona = (newPersona: Persona) => {
     const root = document.documentElement;
-    root.classList.remove('single', 'married', 'mother', 'partner');
-    root.classList.add(newPersona);
-    
-    // Apply persona-specific primary color as CSS variable
-    root.style.setProperty('--primary', `var(--${newPersona}-primary)`);
+    root.setAttribute('data-persona', newPersona);
   };
 
   const setTheme = async (newTheme: Theme) => {

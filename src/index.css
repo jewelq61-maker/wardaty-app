@@ -1,8 +1,356 @@
-@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Persona-based Theme System with Light & Dark modes */
+
+@layer base {
+  /* ============= Single Woman Theme (العزباء) - Light Mode ============= */
+  :root[data-persona="single"] {
+    /* Main Colors */
+    --background: 0 100% 98%;
+    --foreground: 0 0% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+    
+    /* Primary & Secondary */
+    --primary: 0 100% 91%;
+    --primary-foreground: 0 0% 18%;
+    --secondary: 0 100% 87%;
+    --secondary-foreground: 0 0% 18%;
+    
+    /* UI Elements */
+    --muted: 0 100% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 0 100% 96%;
+    --accent-foreground: 0 0% 18%;
+    --border: 0 100% 93%;
+    --input: 0 100% 93%;
+    --ring: 0 100% 91%;
+    
+    /* Gradients */
+    --gradient-start: 0 100% 98%;
+    --gradient-end: 0 100% 95%;
+    
+    /* Functional Colors */
+    --period: 0 73% 53%;
+    --ovulation: 340 89% 82%;
+    --fertile: 142 52% 79%;
+    --fasting: 262 52% 67%;
+    --success: 122 39% 49%;
+    --warning: 36 100% 57%;
+    --error: 4 90% 58%;
+    --info: 207 90% 61%;
+    
+    /* Shadows */
+    --shadow-elegant: 0 4px 20px -2px hsl(0 100% 91% / 0.3);
+    --radius: 1rem;
+  }
+
+  /* ============= Single Woman Theme (العزباء) - Dark Mode ============= */
+  :root[data-persona="single"].dark {
+    --background: 338 26% 8%;
+    --foreground: 0 0% 100%;
+    --card: 338 26% 11%;
+    --card-foreground: 0 0% 100%;
+    --popover: 338 26% 11%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 338 67% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 339 65% 62%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 338 26% 17%;
+    --muted-foreground: 0 0% 72%;
+    --accent: 338 26% 17%;
+    --accent-foreground: 0 0% 100%;
+    --border: 338 26% 17%;
+    --input: 338 26% 17%;
+    --ring: 338 67% 46%;
+    
+    --gradient-start: 338 26% 8%;
+    --gradient-end: 338 26% 15%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(338 67% 46% / 0.2);
+  }
+
+  /* ============= Married Woman Theme (المتزوجة) - Light Mode ============= */
+  :root[data-persona="married"] {
+    --background: 350 100% 98%;
+    --foreground: 0 0% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+    
+    --primary: 351 100% 86%;
+    --primary-foreground: 0 0% 18%;
+    --secondary: 330 100% 71%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 350 100% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 350 100% 96%;
+    --accent-foreground: 0 0% 18%;
+    --border: 350 100% 93%;
+    --input: 350 100% 93%;
+    --ring: 351 100% 86%;
+    
+    --gradient-start: 350 100% 98%;
+    --gradient-end: 0 100% 95%;
+    
+    --period: 0 73% 53%;
+    --ovulation: 340 89% 82%;
+    --fertile: 142 52% 79%;
+    --fasting: 262 52% 67%;
+    --success: 122 39% 49%;
+    --warning: 36 100% 57%;
+    --error: 4 90% 58%;
+    --info: 207 90% 61%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(351 100% 86% / 0.3);
+    --radius: 1rem;
+  }
+
+  /* ============= Married Woman Theme (المتزوجة) - Dark Mode ============= */
+  :root[data-persona="married"].dark {
+    --background: 338 26% 8%;
+    --foreground: 0 0% 100%;
+    --card: 338 26% 10%;
+    --card-foreground: 0 0% 100%;
+    --popover: 338 26% 10%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 338 67% 46%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 330 100% 71%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 338 26% 17%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 338 26% 17%;
+    --accent-foreground: 0 0% 100%;
+    --border: 338 26% 17%;
+    --input: 338 26% 17%;
+    --ring: 338 67% 46%;
+    
+    --gradient-start: 338 26% 8%;
+    --gradient-end: 338 26% 13%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(338 67% 46% / 0.2);
+  }
+
+  /* ============= Mother Theme (الأم) - Light Mode ============= */
+  :root[data-persona="mother"] {
+    --background: 300 100% 99%;
+    --foreground: 0 0% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+    
+    --primary: 250 100% 95%;
+    --primary-foreground: 0 0% 18%;
+    --secondary: 249 53% 58%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 300 100% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 300 100% 96%;
+    --accent-foreground: 0 0% 18%;
+    --border: 300 100% 93%;
+    --input: 300 100% 93%;
+    --ring: 250 100% 95%;
+    
+    --gradient-start: 300 100% 99%;
+    --gradient-end: 270 100% 98%;
+    
+    --period: 0 73% 53%;
+    --ovulation: 340 89% 82%;
+    --fertile: 142 52% 79%;
+    --fasting: 262 52% 67%;
+    --success: 122 39% 49%;
+    --warning: 36 100% 57%;
+    --error: 4 90% 58%;
+    --info: 207 90% 61%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(249 53% 58% / 0.2);
+    --radius: 1rem;
+  }
+
+  /* ============= Mother Theme (الأم) - Dark Mode ============= */
+  :root[data-persona="mother"].dark {
+    --background: 250 31% 10%;
+    --foreground: 0 0% 100%;
+    --card: 250 31% 16%;
+    --card-foreground: 0 0% 100%;
+    --popover: 250 31% 16%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 249 53% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 100% 95%;
+    --secondary-foreground: 0 0% 18%;
+    
+    --muted: 250 31% 21%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 250 31% 21%;
+    --accent-foreground: 0 0% 100%;
+    --border: 250 31% 21%;
+    --input: 250 31% 21%;
+    --ring: 249 53% 58%;
+    
+    --gradient-start: 250 31% 10%;
+    --gradient-end: 250 31% 16%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(249 53% 58% / 0.2);
+  }
+
+  /* ============= Partner Theme (الشريك) - Light Mode ============= */
+  :root[data-persona="partner"] {
+    --background: 202 100% 97%;
+    --foreground: 0 0% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
+    
+    --primary: 197 71% 73%;
+    --primary-foreground: 0 0% 18%;
+    --secondary: 207 90% 61%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 202 100% 94%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 202 100% 94%;
+    --accent-foreground: 0 0% 18%;
+    --border: 202 100% 91%;
+    --input: 202 100% 91%;
+    --ring: 197 71% 73%;
+    
+    --gradient-start: 202 100% 97%;
+    --gradient-end: 195 100% 95%;
+    
+    --period: 0 73% 53%;
+    --ovulation: 340 89% 82%;
+    --fertile: 142 52% 79%;
+    --fasting: 262 52% 67%;
+    --success: 122 39% 49%;
+    --warning: 36 100% 57%;
+    --error: 4 90% 58%;
+    --info: 207 90% 61%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(207 90% 61% / 0.2);
+    --radius: 1rem;
+  }
+
+  /* ============= Partner Theme (الشريك) - Dark Mode ============= */
+  :root[data-persona="partner"].dark {
+    --background: 207 48% 10%;
+    --foreground: 0 0% 100%;
+    --card: 207 48% 16%;
+    --card-foreground: 0 0% 100%;
+    --popover: 207 48% 16%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 207 90% 61%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 197 71% 73%;
+    --secondary-foreground: 0 0% 18%;
+    
+    --muted: 207 48% 20%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 207 48% 20%;
+    --accent-foreground: 0 0% 100%;
+    --border: 207 48% 20%;
+    --input: 207 48% 20%;
+    --ring: 207 90% 61%;
+    
+    --gradient-start: 207 48% 10%;
+    --gradient-end: 207 48% 16%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(207 90% 61% / 0.2);
+  }
+
+  /* ============= Chart Colors ============= */
+  :root {
+    --chart-1: 0 73% 53%;
+    --chart-2: 142 52% 79%;
+    --chart-3: 207 90% 61%;
+    --chart-4: 36 100% 57%;
+    --chart-5: 262 52% 67%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-tajawal;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  [dir="rtl"] {
+    direction: rtl;
+  }
+  
+  [dir="ltr"] {
+    direction: ltr;
+  }
+
+  /* RTL-specific icon rotation */
+  [dir="rtl"] .rtl\:rotate-180 {
+    transform: rotate(180deg);
+  }
+
+  [dir="rtl"] .rtl\:scale-x-[-1] {
+    transform: scaleX(-1);
+  }
+}
+
+/* ============= Utility Classes ============= */
+@layer utilities {
+  .glass {
+    @apply bg-card/70 backdrop-blur-md;
+  }
+
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .gradient-bg {
+    background: linear-gradient(135deg, hsl(var(--gradient-start)), hsl(var(--gradient-end)));
+  }
+
+  /* RTL hover scale animation */
+  .hover-scale {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+
+  /* RTL-aware animations */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+}
+
 
 /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
