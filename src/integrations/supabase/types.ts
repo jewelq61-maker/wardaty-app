@@ -374,9 +374,12 @@ export type Database = {
           created_at: string | null
           cycle_start_age: number | null
           id: string
+          is_pregnant: boolean | null
           mother_id: string
           name: string
           notes: string | null
+          pregnancy_edd: string | null
+          pregnancy_lmp: string | null
           updated_at: string | null
         }
         Insert: {
@@ -384,9 +387,12 @@ export type Database = {
           created_at?: string | null
           cycle_start_age?: number | null
           id?: string
+          is_pregnant?: boolean | null
           mother_id: string
           name: string
           notes?: string | null
+          pregnancy_edd?: string | null
+          pregnancy_lmp?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -394,9 +400,12 @@ export type Database = {
           created_at?: string | null
           cycle_start_age?: number | null
           id?: string
+          is_pregnant?: boolean | null
           mother_id?: string
           name?: string
           notes?: string | null
+          pregnancy_edd?: string | null
+          pregnancy_lmp?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -436,6 +445,111 @@ export type Database = {
           },
         ]
       }
+      pregnancy_appointments: {
+        Row: {
+          appointment_date: string
+          appointment_time: string | null
+          appointment_type: string
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          notes: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          appointment_date: string
+          appointment_time?: string | null
+          appointment_type: string
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          appointment_date?: string
+          appointment_time?: string | null
+          appointment_type?: string
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pregnancy_medicines: {
+        Row: {
+          created_at: string | null
+          dosage: string | null
+          end_date: string | null
+          frequency: string | null
+          id: string
+          medicine_name: string
+          notes: string | null
+          start_date: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          dosage?: string | null
+          end_date?: string | null
+          frequency?: string | null
+          id?: string
+          medicine_name: string
+          notes?: string | null
+          start_date: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          dosage?: string | null
+          end_date?: string | null
+          frequency?: string | null
+          id?: string
+          medicine_name?: string
+          notes?: string | null
+          start_date?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pregnancy_notes: {
+        Row: {
+          created_at: string | null
+          id: string
+          note_date: string
+          note_text: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          note_date: string
+          note_text: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          note_date?: string
+          note_text?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           breastfeeding: boolean | null
@@ -444,12 +558,16 @@ export type Database = {
           email: string | null
           fasting_manual_adjustment: number
           id: string
+          is_pregnant: boolean | null
           is_premium: boolean
           locale: string
           name: string | null
           persona: string
           postpartum_start_date: string | null
+          pregnancy_calculation_method: string | null
           pregnancy_due_date: string | null
+          pregnancy_edd: string | null
+          pregnancy_lmp: string | null
           pregnancy_weeks: number | null
           theme: string
           updated_at: string
@@ -461,12 +579,16 @@ export type Database = {
           email?: string | null
           fasting_manual_adjustment?: number
           id: string
+          is_pregnant?: boolean | null
           is_premium?: boolean
           locale?: string
           name?: string | null
           persona: string
           postpartum_start_date?: string | null
+          pregnancy_calculation_method?: string | null
           pregnancy_due_date?: string | null
+          pregnancy_edd?: string | null
+          pregnancy_lmp?: string | null
           pregnancy_weeks?: number | null
           theme?: string
           updated_at?: string
@@ -478,12 +600,16 @@ export type Database = {
           email?: string | null
           fasting_manual_adjustment?: number
           id?: string
+          is_pregnant?: boolean | null
           is_premium?: boolean
           locale?: string
           name?: string | null
           persona?: string
           postpartum_start_date?: string | null
+          pregnancy_calculation_method?: string | null
           pregnancy_due_date?: string | null
+          pregnancy_edd?: string | null
+          pregnancy_lmp?: string | null
           pregnancy_weeks?: number | null
           theme?: string
           updated_at?: string
