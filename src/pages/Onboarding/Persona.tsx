@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -29,6 +29,12 @@ export default function Persona() {
   const { setPersona } = useTheme();
   const navigate = useNavigate();
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
+
+  useEffect(() => {
+    // Remove persona theme for onboarding - use default theme
+    const root = document.documentElement;
+    root.removeAttribute('data-persona');
+  }, []);
 
   const personas: Persona[] = ['single', 'married', 'mother', 'partner'];
 

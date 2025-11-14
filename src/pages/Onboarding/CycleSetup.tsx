@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -22,6 +22,12 @@ export default function CycleSetup() {
   const [cycleLength, setCycleLength] = useState('28');
   const [periodDuration, setPeriodDuration] = useState('5');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    // Remove persona theme for onboarding - use default theme
+    const root = document.documentElement;
+    root.removeAttribute('data-persona');
+  }, []);
 
   const BackIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
 
