@@ -742,7 +742,7 @@ export default function Profile() {
           
           <div className="space-y-3">
             <button
-              onClick={handleExportData}
+              onClick={() => navigate('/data-export')}
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-background hover:bg-muted/50 border border-border/50 transition-all duration-200 active:scale-95"
             >
               <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
@@ -753,6 +753,21 @@ export default function Profile() {
               </span>
               <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
             </button>
+
+            {profile.persona === 'mother' && (
+              <button
+                onClick={() => navigate('/mother-features')}
+                className="w-full flex items-center gap-3 p-4 rounded-2xl bg-background hover:bg-muted/50 border border-border/50 transition-all duration-200 active:scale-95"
+              >
+                <div className="w-10 h-10 rounded-xl bg-mother-primary/10 flex items-center justify-center">
+                  <User className="w-4 h-4 text-mother-primary" />
+                </div>
+                <span className="flex-1 text-left text-sm font-medium text-foreground">
+                  ميزات الأم
+                </span>
+                <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+              </button>
+            )}
 
             <AlertDialog>
               <AlertDialogTrigger asChild>

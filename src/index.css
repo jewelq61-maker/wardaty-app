@@ -181,32 +181,70 @@
     --radius: 1rem;
   }
 
-  /* ============= Mother Theme (الأم) - Dark Mode ============= */
-  :root[data-persona="mother"].dark {
-    --background: 250 31% 10%;
-    --foreground: 0 0% 100%;
-    --card: 250 31% 16%;
-    --card-foreground: 0 0% 100%;
-    --popover: 250 31% 16%;
-    --popover-foreground: 0 0% 100%;
+  /* ============= Mother Theme (الأم) - Light Mode ============= */
+  :root[data-persona="mother"] {
+    --background: 270 65% 98%;
+    --foreground: 0 0% 18%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 18%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 18%;
     
-    --primary: 249 53% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 250 100% 95%;
+    --primary: 270 80% 88%;
+    --primary-foreground: 0 0% 18%;
+    --secondary: 280 70% 82%;
     --secondary-foreground: 0 0% 18%;
     
-    --muted: 250 31% 21%;
+    --muted: 270 60% 96%;
+    --muted-foreground: 0 0% 40%;
+    --accent: 270 60% 96%;
+    --accent-foreground: 0 0% 18%;
+    --border: 270 50% 93%;
+    --input: 270 50% 93%;
+    --ring: 270 80% 88%;
+    
+    --gradient-start: 270 65% 98%;
+    --gradient-end: 280 70% 96%;
+    
+    --period: 0 73% 53%;
+    --ovulation: 340 89% 82%;
+    --fertile: 142 52% 79%;
+    --fasting: 262 52% 67%;
+    --success: 122 39% 49%;
+    --warning: 36 100% 57%;
+    --error: 4 90% 58%;
+    --info: 207 90% 61%;
+    
+    --shadow-elegant: 0 4px 20px -2px hsl(270 80% 88% / 0.3);
+    --radius: 1rem;
+  }
+
+  /* ============= Mother Theme (الأم) - Dark Mode ============= */
+  :root[data-persona="mother"].dark {
+    --background: 270 25% 10%;
+    --foreground: 0 0% 100%;
+    --card: 270 25% 14%;
+    --card-foreground: 0 0% 100%;
+    --popover: 270 25% 14%;
+    --popover-foreground: 0 0% 100%;
+    
+    --primary: 270 70% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 280 60% 72%;
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 270 25% 20%;
     --muted-foreground: 0 0% 80%;
-    --accent: 250 31% 21%;
+    --accent: 270 25% 20%;
     --accent-foreground: 0 0% 100%;
-    --border: 250 31% 21%;
-    --input: 250 31% 21%;
-    --ring: 249 53% 58%;
+    --border: 270 25% 20%;
+    --input: 270 25% 20%;
+    --ring: 270 70% 65%;
     
-    --gradient-start: 250 31% 10%;
-    --gradient-end: 250 31% 16%;
+    --gradient-start: 270 25% 10%;
+    --gradient-end: 270 25% 16%;
     
-    --shadow-elegant: 0 4px 20px -2px hsl(249 53% 58% / 0.2);
+    --shadow-elegant: 0 4px 20px -2px hsl(270 70% 65% / 0.3);
   }
 
   /* ============= Partner Theme (الشريك) - Light Mode ============= */

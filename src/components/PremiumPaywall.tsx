@@ -15,12 +15,13 @@ interface PremiumPaywallProps {
   open: boolean;
   onClose: () => void;
   feature?: string;
+  persona?: 'single' | 'married' | 'mother';
 }
 
-export default function PremiumPaywall({ open, onClose, feature = 'beauty-planner' }: PremiumPaywallProps) {
+export default function PremiumPaywall({ open, onClose, feature = 'beauty-planner', persona = 'single' }: PremiumPaywallProps) {
   const { t } = useTranslation();
 
-  const features = [
+  const baseFeatures = [
     {
       icon: <Sparkles className="h-5 w-5" />,
       title: 'مخطط الجمال الذكي',
@@ -43,6 +44,33 @@ export default function PremiumPaywall({ open, onClose, feature = 'beauty-planne
     }
   ];
 
+  const marriedFeatures = [
+    {
+      icon: <Crown className="h-5 w-5" />,
+      title: 'مشاركة الشريك',
+      description: 'شاركي الدورة والمود مع شريكك عبر كود خاص'
+    }
+  ];
+
+  const motherFeatures = [
+    {
+      icon: <Crown className="h-5 w-5" />,
+      title: 'متابعة البنات',
+      description: 'إضافة بناتك ومتابعة دوراتهن'
+    },
+    {
+      icon: <Crown className="h-5 w-5" />,
+      title: 'تتبع الحمل والنفاس',
+      description: 'متابعة الحمل والنفاس والرضاعة'
+    }
+  ];
+
+  const allFeatures = [
+    ...baseFeatures,
+    ...(persona === 'married' ? marriedFeatures : []),
+    ...(persona === 'mother' ? motherFeatures : [])
+  ];
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl bg-gradient-to-br from-card via-card to-primary/5 border-primary/20 shadow-elegant">
@@ -63,7 +91,7 @@ export default function PremiumPaywall({ open, onClose, feature = 'beauty-planne
         <div className="space-y-6 py-6">
           {/* Features Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {features.map((feature, index) => (
+            {allFeatures.map((feature, index) => (
               <Card key={index} className="glass border-primary/10 hover:border-primary/30 transition-all">
                 <CardContent className="p-4 flex items-start gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
