@@ -20,6 +20,7 @@ import MotherFeatures from "./pages/MotherFeatures";
 import PartnerView from "./pages/PartnerView";
 import SharedStats from "./pages/SharedStats";
 import Subscription from "./pages/Subscription";
+import PregnancyCalendar from "./pages/PregnancyCalendar";
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
@@ -71,6 +72,7 @@ const App = () => (
                 <Route path="/partner-view" element={<ProtectedRoute><PartnerView /></ProtectedRoute>} />
                 <Route path="/shared-stats" element={<ProtectedRoute><SharedStats /></ProtectedRoute>} />
                 <Route path="/subscription" element={<ProtectedRoute><Subscription /></ProtectedRoute>} />
+                <Route path="/pregnancy-calendar" element={<ProtectedRoute><PregnancyCalendar /></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
