@@ -12,6 +12,11 @@ import { Button } from '@/components/ui/button';
 import BottomNav from '@/components/BottomNav';
 import DayLogSheet from '@/components/DayLogSheet';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { 
+  calculateBeautyRecommendation,
+  type BeautyCategory,
+  type CyclePhase as BeautyCyclePhase
+} from '@/utils/beautyCalculations';
 
 interface CycleDay {
   date: string;
@@ -38,6 +43,8 @@ export default function Calendar() {
   const [lastCycle, setLastCycle] = useState<Cycle | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
+  const [beautyRecommendations, setBeautyRecommendations] = useState<Map<string, number>>(new Map());
 
   const dateLocale = locale === 'ar' ? ar : enUS;
   const BackIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
@@ -46,7 +53,58 @@ export default function Calendar() {
   useEffect(() => {
     fetchCycleDays();
     fetchLastCycle();
+    checkPremiumStatus();
   }, [currentMonth, user]);
+
+  useEffect(() => {
+    if (isPremium && lastCycle) {
+      calculateBeautyScores();
+    }
+  }, [isPremium, lastCycle, currentMonth]);
+
+  const checkPremiumStatus = async () => {
+    if (!user) return;
+    
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_premium')
+      .eq('id', user.id)
+      .single();
+    
+    setIsPremium(data?.is_premium || false);
+  };
+
+  const calculateBeautyScores = async () => {
+    if (!lastCycle) return;
+    
+    const scores = new Map<string, number>();
+    const categories: BeautyCategory[] = ['haircut', 'waxing', 'facial', 'microneedling'];
+    
+    calendarDays.forEach(day => {
+      if (!isSameMonth(day, currentMonth)) return;
+      
+      const phase = getPhaseForDate(day) as BeautyCyclePhase;
+      if (!phase) return;
+      
+      let maxScore = 0;
+      categories.forEach(category => {
+        const recommendation = calculateBeautyRecommendation(
+          category,
+          phase,
+          day
+        );
+        if (recommendation.score > maxScore) {
+          maxScore = recommendation.score;
+        }
+      });
+      
+      if (maxScore >= 70) {
+        scores.set(format(day, 'yyyy-MM-dd'), maxScore);
+      }
+    });
+    
+    setBeautyRecommendations(scores);
+  };
 
   const fetchLastCycle = async () => {
     if (!user) return;
@@ -223,6 +281,9 @@ export default function Calendar() {
               const phaseColor = getPhaseColor(phase);
               const phaseDot = getPhaseDot(phase);
               const hasLog = cycleDays.some((cd) => isSameDay(new Date(cd.date), day));
+              const dateKey = format(day, 'yyyy-MM-dd');
+              const beautyScore = beautyRecommendations.get(dateKey);
+              const hasHighBeautyScore = isPremium && beautyScore && beautyScore >= 70;
 
               return (
                 <button
@@ -239,9 +300,18 @@ export default function Calendar() {
                   disabled={!isCurrentMonth}
                 >
                   <span className="text-sm">{format(day, 'd')}</span>
-                  {isCurrentMonth && phaseDot && (
-                    <div className={`w-1.5 h-1.5 rounded-full ${phaseDot} mt-1`}></div>
-                  )}
+                  <div className="flex items-center gap-1 mt-1">
+                    {isCurrentMonth && phaseDot && (
+                      <div className={`w-1.5 h-1.5 rounded-full ${phaseDot}`}></div>
+                    )}
+                    {hasHighBeautyScore && (
+                      <div className={`w-1.5 h-1.5 rounded-full ${
+                        beautyScore >= 90 ? 'bg-warning animate-pulse' : 
+                        beautyScore >= 80 ? 'bg-primary' : 
+                        'bg-info'
+                      }`}></div>
+                    )}
+                  </div>
                 </button>
               );
             })}
