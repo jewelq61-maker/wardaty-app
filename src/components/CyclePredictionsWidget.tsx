@@ -96,7 +96,7 @@ export default function CyclePredictionsWidget() {
 
   if (loading) {
     return (
-      <Card className="glass shadow-elegant">
+      <Card className="bg-card border border-border">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-primary" />
@@ -112,7 +112,7 @@ export default function CyclePredictionsWidget() {
 
   if (!predictions) {
     return (
-      <Card className="glass shadow-elegant">
+      <Card className="bg-card border border-border">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <CalendarDays className="h-5 w-5 text-primary" />
@@ -131,24 +131,24 @@ export default function CyclePredictionsWidget() {
   const locale = i18n.language === 'ar' ? ar : undefined;
 
   return (
-    <Card className="glass shadow-elegant">
+    <Card className="bg-card border border-border">
       <CardHeader>
         <CardTitle className="text-lg flex items-center gap-2">
           <CalendarDays className="h-5 w-5 text-primary" />
           {t('cycle.predictions')}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3">
         {/* Next Period */}
-        <div className="flex items-start gap-3 p-3 rounded-lg bg-period/10">
-          <div className="p-2 rounded-full bg-period/20">
+        <div className="flex items-start gap-3 p-3 rounded-lg bg-period/5 border border-period/20">
+          <div className="p-2 rounded-full bg-period/10">
             <Droplet className="h-4 w-4 text-period" />
           </div>
           <div className="flex-1">
             <div className="text-sm font-medium text-period">
               {t('cycle.nextPeriod')}
             </div>
-            <div className="text-lg font-bold mt-1">
+            <div className="text-base font-semibold mt-1">
               {format(predictions.nextPeriodDate, 'PPP', { locale })}
             </div>
             <div className="text-sm text-muted-foreground mt-1">
@@ -160,10 +160,10 @@ export default function CyclePredictionsWidget() {
         </div>
 
         {/* Fertile Window */}
-        <div className={`flex items-start gap-3 p-3 rounded-lg ${
-          predictions.isInFertileWindow ? 'bg-fertile/20 border-2 border-fertile' : 'bg-fertile/10'
+        <div className={`flex items-start gap-3 p-3 rounded-lg border ${
+          predictions.isInFertileWindow ? 'bg-fertile/10 border-fertile' : 'bg-fertile/5 border-fertile/20'
         }`}>
-          <div className="p-2 rounded-full bg-fertile/20">
+          <div className="p-2 rounded-full bg-fertile/10">
             <Heart className="h-4 w-4 text-fertile" />
           </div>
           <div className="flex-1">
