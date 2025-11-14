@@ -8,6 +8,7 @@ import { Button } from './ui/button';
 import { Card, CardContent } from './ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from './ui/badge';
+import BeautyRecommendations from './BeautyRecommendations';
 
 interface Routine {
   id: string;
@@ -164,10 +165,19 @@ export default function BeautyRoutineTracker({ date }: BeautyRoutineTrackerProps
     }
   };
 
-  if (routines.length === 0) return null;
+  if (routines.length === 0) {
+    return (
+      <div className="space-y-4">
+        <BeautyRecommendations />
+      </div>
+    );
+  }
 
   return (
-    <Card className="glass-card">
+    <div className="space-y-4">
+      <BeautyRecommendations />
+      
+      <Card className="glass-card">
       <CardContent className="pt-6">
         <h3 className="font-semibold mb-4">{t('beautyRoutines.todayRoutines')}</h3>
         <div className="space-y-2">
@@ -220,5 +230,6 @@ export default function BeautyRoutineTracker({ date }: BeautyRoutineTrackerProps
         </div>
       </CardContent>
     </Card>
+    </div>
   );
 }
