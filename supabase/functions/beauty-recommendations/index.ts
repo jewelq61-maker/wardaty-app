@@ -12,22 +12,44 @@ serve(async (req) => {
   }
 
   try {
-    const { userId, currentDate } = await req.json();
-
-    if (!userId) {
+    // CRITICAL SECURITY: Verify authentication
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: 'User ID is required' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        JSON.stringify({ error: 'Unauthorized - Authentication required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
       );
     }
 
+    // Extract and verify JWT token
     const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+    );
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+
+    if (authError || !user) {
+      console.error('Authentication failed:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+      );
+    }
+
+    // Use authenticated user's ID only - ignore any userId from request body
+    const userId = user.id;
+    const { currentDate } = await req.json();
+
+    // Use service role for database operations
+    const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Get user's last cycle
-    const { data: cycles } = await supabaseClient
+    // Get user's last cycle (using authenticated user's ID only)
+    const { data: cycles } = await supabaseAdmin
       .from('cycles')
       .select('*')
       .eq('user_id', userId)
