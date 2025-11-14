@@ -180,7 +180,7 @@ export default function AppleHealthSettings() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 p-4">
+    <div className="min-h-screen bg-background pb-24 p-4 animate-fade-in">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -209,7 +209,7 @@ export default function AppleHealthSettings() {
 
         {/* Connection Status */}
         {!isConnected && (
-          <Card className="border-warning bg-warning/5">
+          <Card className="border-warning bg-warning/5 animate-scale-in">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
                 <Activity className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
@@ -228,7 +228,7 @@ export default function AppleHealthSettings() {
         )}
 
         {/* Data Types */}
-        <Card>
+        <Card className="animate-scale-in">
           <CardHeader>
             <CardTitle className="text-lg">نوع البيانات المراد مزامنتها</CardTitle>
           </CardHeader>
@@ -308,7 +308,7 @@ export default function AppleHealthSettings() {
         </Card>
 
         {/* Auto Sync */}
-        <Card>
+        <Card className="animate-scale-in" style={{ animationDelay: '0.1s' }}>
           <CardHeader>
             <CardTitle className="text-lg">المزامنة التلقائية</CardTitle>
           </CardHeader>
@@ -356,31 +356,42 @@ export default function AppleHealthSettings() {
           </CardContent>
         </Card>
 
-        {/* Actions */}
-        <div className="flex gap-3">
-          <Button
-            onClick={saveSettings}
-            disabled={saving}
-            className="flex-1 h-12"
-          >
-            <Save className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-            {saving ? 'جاري الحفظ...' : 'حفظ الإعدادات'}
-          </Button>
-          
-          {isConnected && (
+        {/* Actions - iOS Style */}
+        <div className="fixed bottom-20 left-0 right-0 p-4 bg-background/95 backdrop-blur-sm border-t border-border/50 z-20 animate-fade-in">
+          <div className="max-w-7xl mx-auto flex gap-3">
             <Button
-              onClick={handleSync}
-              variant="outline"
-              className="flex-1 h-12"
+              onClick={saveSettings}
+              disabled={saving}
+              className="flex-1 h-12 text-base font-semibold transition-all duration-200 active:scale-95"
             >
-              <Activity className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
-              مزامنة الآن
+              {saving ? (
+                <>
+                  <div className={`animate-spin rounded-full h-4 w-4 border-b-2 border-white ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`}></div>
+                  جاري الحفظ...
+                </>
+              ) : (
+                <>
+                  <Save className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                  حفظ الإعدادات
+                </>
+              )}
             </Button>
-          )}
+            
+            {isConnected && (
+              <Button
+                onClick={handleSync}
+                variant="outline"
+                className="flex-1 h-12 text-base font-semibold transition-all duration-200 active:scale-95"
+              >
+                <Activity className={`w-4 h-4 ${dir === 'rtl' ? 'ml-2' : 'mr-2'}`} />
+                مزامنة الآن
+              </Button>
+            )}
+          </div>
         </div>
 
         {/* Info */}
-        <Card className="bg-info/5 border-info/20">
+        <Card className="bg-info/5 border-info/20 mb-24 animate-fade-in">
           <CardContent className="p-4">
             <div className="flex gap-3">
               <span className="text-2xl">💡</span>
