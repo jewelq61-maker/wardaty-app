@@ -14,7 +14,7 @@ import Stats from "./pages/Stats";
 import Articles from "./pages/Articles";
 import Profile from "./pages/Profile";
 import FastingQada from "./pages/FastingQada";
-import BeautyPlanner from "./pages/BeautyPlanner";
+import BeautyPlanner from "./pages/BeautyPlannerNew";
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
