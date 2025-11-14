@@ -24,6 +24,7 @@ import PregnancyCalendar from "./pages/PregnancyCalendar";
 import BeautyCategories from './pages/BeautyCategories';
 import BeautyRoutines from './pages/BeautyRoutines';
 import AppleHealthSettings from './pages/AppleHealthSettings';
+import Settings from './pages/Settings';
 import Welcome from "./pages/Onboarding/Welcome";
 import Persona from "./pages/Onboarding/Persona";
 import Language from "./pages/Onboarding/Language";
@@ -79,6 +80,7 @@ const App = () => (
                 <Route path="/beauty-categories" element={<ProtectedRoute><BeautyCategories /></ProtectedRoute>} />
                 <Route path="/beauty-routines" element={<ProtectedRoute><BeautyRoutines /></ProtectedRoute>} />
                 <Route path="/apple-health-settings" element={<ProtectedRoute><AppleHealthSettings /></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
