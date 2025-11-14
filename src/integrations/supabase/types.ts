@@ -861,6 +861,7 @@ export type Database = {
           expires_at: string | null
           id: string
           owner_id: string
+          privacy_settings: Json | null
           scope: Json
           status: string
           type: string
@@ -873,6 +874,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           owner_id: string
+          privacy_settings?: Json | null
           scope?: Json
           status?: string
           type: string
@@ -885,6 +887,7 @@ export type Database = {
           expires_at?: string | null
           id?: string
           owner_id?: string
+          privacy_settings?: Json | null
           scope?: Json
           status?: string
           type?: string
