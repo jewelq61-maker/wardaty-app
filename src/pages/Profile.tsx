@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Bell, LogOut, User, Settings, BarChart3, Moon, Sun, 
-  Globe, Download, Trash2, ChevronRight, Edit2, Check, X, Share2, Link2, UserPlus, Copy, Heart
+  Globe, Download, Trash2, ChevronRight, Edit2, Check, X, Share2, Link2, UserPlus, Copy, Heart, Crown
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -749,6 +749,19 @@ export default function Profile() {
           </h3>
           
           <div className="space-y-3">
+            <button
+              onClick={() => navigate('/subscription')}
+              className="w-full flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-yellow-400/10 to-orange-500/10 hover:from-yellow-400/20 hover:to-orange-500/20 border border-yellow-500/20 transition-all duration-200 active:scale-95"
+            >
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center">
+                <Crown className="w-4 h-4 text-white" />
+              </div>
+              <span className="flex-1 text-left text-sm font-medium text-foreground">
+                {t('profilePage.manageSubscription')}
+              </span>
+              <ChevronRight className={`w-4 h-4 text-muted-foreground ${dir === 'rtl' ? 'rotate-180' : ''}`} />
+            </button>
+
             <button
               onClick={() => navigate('/data-export')}
               className="w-full flex items-center gap-3 p-4 rounded-2xl bg-background hover:bg-muted/50 border border-border/50 transition-all duration-200 active:scale-95"
