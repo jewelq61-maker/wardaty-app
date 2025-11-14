@@ -245,7 +245,7 @@ export default function Home() {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen pb-32 gradient-bg overflow-y-auto"
+      className="min-h-screen pb-24 gradient-bg overflow-y-auto"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -271,7 +271,7 @@ export default function Home() {
 
       {/* Compact Header */}
       <header className="sticky top-0 z-40 backdrop-blur-xl bg-background/80 border-b border-border/50">
-        <div className="flex items-center justify-between p-4 max-w-lg mx-auto">
+        <div className="flex items-center justify-between p-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-3">
             <Avatar className="w-10 h-10 hover-scale cursor-pointer ring-2 ring-primary/20" onClick={() => navigate('/profile')}>
               <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-foreground font-semibold">

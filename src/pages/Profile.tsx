@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Bell, LogOut, User, Settings, BarChart3, Moon, Sun, 
-  Globe, Download, Trash2, ChevronRight, Edit2, Check, X, Share2, Link2, UserPlus, Copy, Heart, Crown
+  Globe, Download, Trash2, ChevronRight, Edit2, Check, X, Share2, Link2, UserPlus, Copy, Heart, Crown, Activity
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -46,6 +46,7 @@ import {
 import BottomNav from '@/components/BottomNav';
 import { useToast } from '@/hooks/use-toast';
 import PregnancyModeToggle from '@/components/PregnancyModeToggle';
+import { useAppleHealth } from '@/hooks/use-apple-health';
 
 interface ProfileData {
   name: string;
@@ -106,6 +107,7 @@ export default function Profile() {
   const [partnerProfile, setPartnerProfile] = useState<PartnerProfile | null>(null);
   const [connectCode, setConnectCode] = useState('');
   const [showConnectDialog, setShowConnectDialog] = useState(false);
+  const { isAvailable: isHealthAvailable, isConnected: isHealthConnected, connectToHealth, syncHealthData } = useAppleHealth();
 
   useEffect(() => {
     if (user) {
@@ -504,7 +506,7 @@ export default function Profile() {
         </div>
       </div>
 
-      <main className="max-w-lg mx-auto px-4 pt-6 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 pt-6 pb-6 space-y-6">
         {/* Profile Card */}
         <div className="rounded-3xl bg-gradient-to-br from-card to-muted/20 p-6 border border-border/50 shadow-lg animate-fade-in">
           <div className="flex items-start justify-between mb-4">
@@ -675,6 +677,56 @@ export default function Profile() {
                 <SyncedCycleInsights partnerId={shareLink.connected_user_id} />
               </div>
             )}
+          </div>
+        )}
+
+        {/* Apple Health Integration */}
+        {isHealthAvailable && (
+          <div className="rounded-3xl bg-gradient-to-br from-success/10 to-info/10 p-6 border border-border/50 shadow-md animate-fade-in">
+            <h3 className="text-sm font-semibold text-foreground mb-4 flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              ربط Apple Health
+            </h3>
+            
+            <div className="space-y-4">
+              <p className="text-xs text-muted-foreground">
+                اربط Apple Health لمزامنة بيانات الصحة من ساعة Apple Watch (الخطوات، النوم، معدل النبض)
+              </p>
+
+              <div className="flex items-center gap-3">
+                <Badge 
+                  variant={isHealthConnected ? "default" : "secondary"}
+                  className="text-xs"
+                >
+                  {isHealthConnected ? '✓ متصل' : 'غير متصل'}
+                </Badge>
+              </div>
+
+              <div className="flex gap-2">
+                {!isHealthConnected ? (
+                  <Button
+                    onClick={connectToHealth}
+                    variant="default"
+                    className="flex-1 h-10"
+                  >
+                    <Activity className="w-4 h-4 mr-2" />
+                    ربط Apple Health
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={syncHealthData}
+                    variant="outline"
+                    className="flex-1 h-10"
+                  >
+                    مزامنة البيانات
+                  </Button>
+                )}
+              </div>
+
+              <div className="text-xs text-muted-foreground bg-background/50 p-3 rounded-lg">
+                💡 <strong>ملاحظة:</strong> هذه الميزة تعمل فقط على أجهزة iOS بعد تثبيت التطبيق من خلال Xcode
+              </div>
+            </div>
           </div>
         )}
 

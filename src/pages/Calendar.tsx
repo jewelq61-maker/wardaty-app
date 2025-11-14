@@ -238,7 +238,7 @@ export default function Calendar() {
         </div>
       </div>
 
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-6 max-w-7xl mx-auto">
         {/* Month Navigation */}
         <Card className="glass shadow-elegant p-4">
           <div className="flex items-center justify-between mb-6">

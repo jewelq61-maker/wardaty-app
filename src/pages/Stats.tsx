@@ -206,7 +206,7 @@ export default function Stats() {
     <div className="min-h-screen gradient-bg pb-24">
       {/* Header */}
       <div className="sticky top-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border z-10 px-6 py-4">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-w-7xl mx-auto">
           <BarChart3 className="h-6 w-6 text-primary" />
           <div>
             <h1 className="text-xl font-bold">{t('stats')}</h1>
@@ -215,7 +215,7 @@ export default function Stats() {
         </div>
       </div>
 
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 max-w-7xl mx-auto">
         {/* Overview Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="glass-card">
