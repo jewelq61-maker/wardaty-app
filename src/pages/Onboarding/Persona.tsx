@@ -16,11 +16,11 @@ const personaIcons = {
   partner: HeartHandshake,
 };
 
-const personaColors = {
-  single: 'from-single-primary to-single-secondary',
-  married: 'from-married-primary to-married-secondary',
-  mother: 'from-mother-primary to-mother-secondary',
-  partner: 'from-partner-primary to-partner-secondary',
+const personaColors: Record<Persona, string> = {
+  single: 'bg-primary',
+  married: 'bg-primary',
+  mother: 'bg-primary',
+  partner: 'bg-primary',
 };
 
 export default function Persona() {
@@ -85,9 +85,9 @@ export default function Persona() {
               >
                 <CardContent className="p-6 flex flex-col items-center text-center space-y-4">
                   <div
-                    className={`w-16 h-16 rounded-full bg-gradient-to-br ${personaColors[persona]} flex items-center justify-center`}
+                    className={`w-16 h-16 rounded-full ${personaColors[persona]} flex items-center justify-center`}
                   >
-                    <Icon className="w-8 h-8 text-white" strokeWidth={1.5} />
+                    <Icon className="w-8 h-8 text-primary-foreground" strokeWidth={1.5} />
                   </div>
                   <div className="space-y-1">
                     <h3 className="font-bold">{t(`personas.${persona}`)}</h3>
@@ -104,7 +104,7 @@ export default function Persona() {
         {/* Pagination Dots */}
         <div className="flex justify-center gap-2">
           <div className="w-2 h-2 rounded-full bg-muted"></div>
-          <div className="w-6 h-2 rounded-full bg-single-primary"></div>
+          <div className="w-6 h-2 rounded-full bg-primary"></div>
           <div className="w-2 h-2 rounded-full bg-muted"></div>
         </div>
       </div>

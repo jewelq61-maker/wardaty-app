@@ -64,7 +64,7 @@ export default function Language() {
               </div>
               {selectedLocale === 'ar' && (
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <Check className="w-5 h-5 text-white" />
+                  <Check className="w-5 h-5 text-primary-foreground" />
                 </div>
               )}
             </CardContent>
@@ -86,7 +86,7 @@ export default function Language() {
               </div>
               {selectedLocale === 'en' && (
                 <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                  <Check className="w-5 h-5 text-white" />
+                  <Check className="w-5 h-5 text-primary-foreground" />
                 </div>
               )}
             </CardContent>
@@ -97,7 +97,7 @@ export default function Language() {
         <div className="flex justify-center gap-2">
           <div className="w-2 h-2 rounded-full bg-muted"></div>
           <div className="w-2 h-2 rounded-full bg-muted"></div>
-          <div className="w-6 h-2 rounded-full bg-single-primary"></div>
+          <div className="w-6 h-2 rounded-full bg-primary"></div>
         </div>
       </div>
 
