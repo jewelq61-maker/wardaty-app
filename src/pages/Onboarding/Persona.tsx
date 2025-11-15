@@ -30,6 +30,12 @@ export default function Persona() {
   const navigate = useNavigate();
   const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
 
+  useEffect(() => {
+    // Start with default theme, then apply persona theme on selection
+    const root = document.documentElement;
+    root.removeAttribute('data-persona');
+  }, []);
+
   const personas: Persona[] = ['single', 'married', 'mother', 'partner'];
 
   const handlePersonaSelect = (persona: Persona) => {
