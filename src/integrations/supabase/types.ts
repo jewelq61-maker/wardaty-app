@@ -796,6 +796,36 @@ export type Database = {
         }
         Relationships: []
       }
+      pregnancy_weight_logs: {
+        Row: {
+          created_at: string | null
+          id: string
+          log_date: string
+          notes: string | null
+          updated_at: string | null
+          user_id: string
+          weight_kg: number
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          log_date: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id: string
+          weight_kg: number
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          log_date?: string
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string
+          weight_kg?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           breastfeeding: boolean | null
