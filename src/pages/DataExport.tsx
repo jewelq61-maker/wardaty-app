@@ -114,6 +114,16 @@ export default function DataExport() {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
+      // Log the export action for audit
+      await supabase.from('audit_logs').insert({
+        user_id: user?.id,
+        action_type: 'data_exported',
+        new_data: {
+          categories: Object.keys(selectedData).filter(key => selectedData[key as keyof typeof selectedData]),
+          timestamp: new Date().toISOString(),
+        },
+      });
+
       toast({
         title: 'تم التصدير بنجاح',
         description: 'تم تحميل بياناتك بنجاح',

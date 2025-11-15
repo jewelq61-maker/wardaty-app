@@ -132,6 +132,16 @@ export default function AdminDashboard() {
 
       if (error) throw error;
 
+      // Log the admin cleanup action for audit
+      await supabase.from('audit_logs').insert({
+        user_id: user?.id,
+        action_type: 'admin_cleanup_executed',
+        new_data: {
+          manual_trigger: true,
+          timestamp: new Date().toISOString(),
+        },
+      });
+
       toast({
         title: 'اكتمل التنظيف',
         description: 'تم تشغيل عملية التنظيف بنجاح',
