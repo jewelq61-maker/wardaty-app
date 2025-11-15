@@ -15,7 +15,7 @@ export default function Welcome() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background p-6">
+    <div className="min-h-screen flex flex-col bg-background p-6 animate-fade-in">
       {/* Skip Button */}
       <div className="flex justify-end">
         <button
