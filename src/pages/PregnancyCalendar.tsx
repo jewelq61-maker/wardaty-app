@@ -54,6 +54,13 @@ interface Medicine {
   notes: string | null;
 }
 
+interface WeightLog {
+  id: string;
+  log_date: string;
+  weight_kg: number;
+  notes: string | null;
+}
+
 export default function PregnancyCalendar() {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -68,9 +75,10 @@ export default function PregnancyCalendar() {
   }>({ lmp: null, edd: null, is_pregnant: false });
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [weightLogs, setWeightLogs] = useState<WeightLog[]>([]);
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [dialogType, setDialogType] = useState<'appointment' | 'medicine'>('appointment');
-  const [editingItem, setEditingItem] = useState<Appointment | Medicine | null>(null);
+  const [dialogType, setDialogType] = useState<'appointment' | 'medicine' | 'weight'>('appointment');
+  const [editingItem, setEditingItem] = useState<Appointment | Medicine | WeightLog | null>(null);
   const [isPremium, setIsPremium] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -93,6 +101,12 @@ export default function PregnancyCalendar() {
     notes: '',
   });
 
+  const [weightForm, setWeightForm] = useState({
+    date: new Date(),
+    weight: '',
+    notes: '',
+  });
+
   useEffect(() => {
     if (user) {
       loadData();
@@ -105,6 +119,7 @@ export default function PregnancyCalendar() {
       loadPremiumStatus(),
       loadAppointments(),
       loadMedicines(),
+      loadWeightLogs(),
     ]);
     setLoading(false);
   };
@@ -523,9 +538,10 @@ export default function PregnancyCalendar() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="appointments" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="appointments">{t('pregnancy.appointments')}</TabsTrigger>
                 <TabsTrigger value="medicines">{t('pregnancy.medicines')}</TabsTrigger>
+                <TabsTrigger value="weight">{t('pregnancy.weight')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="appointments" className="space-y-4 mt-4">
