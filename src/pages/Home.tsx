@@ -23,6 +23,7 @@ import DailyAffirmation from '@/components/DailyAffirmation';
 import FastingQadaWidget from '@/components/FastingQadaWidget';
 import DaughtersCycleStatus from '@/components/DaughtersCycleStatus';
 import HealthOverview from '@/components/HealthOverview';
+import PregnancyStatusWidget from '@/components/PregnancyStatusWidget';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface Article {
@@ -351,6 +352,9 @@ export default function Home() {
 
         {/* Daily Affirmation */}
         {!loading && <DailyAffirmation phase={currentPhase} />}
+
+        {/* Pregnancy/Postpartum/Breastfeeding Status */}
+        {!loading && <PregnancyStatusWidget />}
 
         {/* Health Overview */}
         {!loading && <HealthOverview />}

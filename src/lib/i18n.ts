@@ -518,6 +518,9 @@ const resources = {
         cycleDay: 'يوم الدورة',
         daysToNext: 'أيام للقادمة',
         noCycleData: 'لا توجد بيانات دورة',
+        tracking: 'متابعة الحمل',
+        tip: 'احرصي على الراحة وتناول الفيتامينات المهمة',
+        viewDetails: 'عرض التفاصيل',
         calendar: 'تقويم الحمل',
         gestationalAge: 'العمر الحملي',
         daysUntilDue: 'أيام حتى الولادة',
@@ -552,6 +555,26 @@ const resources = {
         errorUpdating: 'حدث خطأ في التحديث',
         fillRequired: 'الرجاء ملء الحقول المطلوبة',
         viewCalendar: 'عرض تقويم الحمل'
+      },
+
+      // Postpartum
+      postpartum: {
+        tracking: 'متابعة النفاس',
+        daysPostpartum: 'أيام النفاس',
+        tip: 'النفاس فترة تحتاج للراحة والرعاية الخاصة'
+      },
+
+      // Breastfeeding
+      breastfeeding: {
+        tracking: 'متابعة الرضاعة',
+        duration: 'مدة الرضاعة',
+        months: 'أشهر',
+        tip: 'الرضاعة الطبيعية مفيدة لك ولطفلك'
+      },
+
+      // Common
+      common: {
+        days: 'أيام'
       },
       
       // Subscription
@@ -1184,6 +1207,9 @@ const resources = {
         cycleDay: 'Cycle Day',
         daysToNext: 'Days to Next',
         noCycleData: 'No cycle data',
+        tracking: 'Pregnancy Tracking',
+        tip: 'Make sure to rest and take important vitamins',
+        viewDetails: 'View Details',
         calendar: 'Pregnancy Calendar',
         gestationalAge: 'Gestational Age',
         daysUntilDue: 'Days Until Due',
@@ -1218,6 +1244,26 @@ const resources = {
         errorUpdating: 'Error updating',
         fillRequired: 'Please fill required fields',
         viewCalendar: 'View Pregnancy Calendar'
+      },
+
+      // Postpartum
+      postpartum: {
+        tracking: 'Postpartum Tracking',
+        daysPostpartum: 'Days postpartum',
+        tip: 'Postpartum period needs rest and special care'
+      },
+
+      // Breastfeeding
+      breastfeeding: {
+        tracking: 'Breastfeeding Tracking',
+        duration: 'Breastfeeding duration',
+        months: 'months',
+        tip: 'Breastfeeding is beneficial for you and your baby'
+      },
+
+      // Common
+      common: {
+        days: 'days'
       },
       
       // Subscription
