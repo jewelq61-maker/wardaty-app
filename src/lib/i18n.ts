@@ -507,6 +507,16 @@ const resources = {
         errorDisabling: 'حدث خطأ في إيقاف وضع الحمل',
         week: 'الأسبوع',
         weeks: 'أسابيع',
+        calculator: 'حاسبة الحمل',
+        lastMenstrualPeriod: 'تاريخ آخر دورة شهرية',
+        currentWeek: 'الأسبوع الحالي من الحمل',
+        currentMonth: 'الشهر الحالي من الحمل',
+        selectDate: 'اختر التاريخ',
+        enterWeeks: 'أدخل عدد الأسابيع',
+        weeksPlaceholder: 'مثال: 12',
+        enterMonths: 'أدخل عدد الأشهر',
+        monthsPlaceholder: 'مثال: 3',
+        calculate: 'احسب',
         trimester: 'الثلث',
         firstTrimester: 'الثلث الأول',
         secondTrimester: 'الثلث الثاني',
@@ -561,7 +571,15 @@ const resources = {
       postpartum: {
         tracking: 'متابعة النفاس',
         daysPostpartum: 'أيام النفاس',
-        tip: 'النفاس فترة تحتاج للراحة والرعاية الخاصة'
+        tip: 'النفاس فترة تحتاج للراحة والرعاية الخاصة',
+        calculator: 'حاسبة النفاس',
+        birthDate: 'تاريخ الولادة',
+        selectDate: 'اختر التاريخ',
+        daysPassed: 'الأيام المنقضية',
+        remainingDays: 'الأيام المتبقية',
+        progress: 'التقدم',
+        endDate: 'تاريخ نهاية النفاس',
+        completed: 'اكتملت فترة النفاس',
       },
 
       // Breastfeeding
@@ -574,7 +592,45 @@ const resources = {
 
       // Common
       common: {
-        days: 'أيام'
+        days: 'أيام',
+        save: 'حفظ',
+      },
+
+      // Mother
+      mother: {
+        features: 'ميزات الأمهات',
+        myInfo: 'معلوماتي',
+        myDaughters: 'بناتي',
+        addDaughter: 'إضافة ابنة',
+        daughterName: 'اسم الابنة',
+        birthDate: 'تاريخ الميلاد',
+        cycleStartAge: 'عمر بداية الدورة',
+        notes: 'ملاحظات',
+        age: 'العمر',
+        years: 'سنة',
+        viewDetails: 'عرض التفاصيل',
+        editDaughter: 'تعديل بيانات الابنة',
+        deleteDaughter: 'حذف الابنة',
+        confirmDelete: 'هل أنت متأكد من حذف هذه الابنة؟',
+        deleteWarning: 'سيتم حذف جميع البيانات المرتبطة بها.',
+        cycleTracking: 'متابعة الدورة',
+        addCycle: 'إضافة دورة',
+        fastingTracking: 'قضاء الصيام',
+        totalDays: 'إجمالي الأيام',
+        completedDays: 'الأيام المكتملة',
+        addFastingDay: 'إضافة يوم صيام',
+        markComplete: 'تعليم كمكتمل',
+        lastCycle: 'آخر دورة',
+        nextCycle: 'الدورة القادمة',
+        day: 'اليوم',
+        statusSettings: 'إعدادات الحالة',
+        selectStatus: 'اختر حالتك الحالية',
+        statusNone: 'لا شيء',
+        statusPregnant: 'حامل',
+        statusPostpartum: 'نفاس',
+        statusBreastfeeding: 'رضاعة',
+        breastfeedingStartDate: 'تاريخ بدء الرضاعة',
+        selectDate: 'اختر التاريخ',
       },
       
       // Subscription
@@ -1196,6 +1252,16 @@ const resources = {
         errorDisabling: 'Error disabling pregnancy mode',
         week: 'Week',
         weeks: 'weeks',
+        calculator: 'Pregnancy Calculator',
+        lastMenstrualPeriod: 'Last Menstrual Period',
+        currentWeek: 'Current Week of Pregnancy',
+        currentMonth: 'Current Month of Pregnancy',
+        selectDate: 'Select Date',
+        enterWeeks: 'Enter Number of Weeks',
+        weeksPlaceholder: 'Example: 12',
+        enterMonths: 'Enter Number of Months',
+        monthsPlaceholder: 'Example: 3',
+        calculate: 'Calculate',
         trimester: 'Trimester',
         firstTrimester: 'First Trimester',
         secondTrimester: 'Second Trimester',
@@ -1250,7 +1316,15 @@ const resources = {
       postpartum: {
         tracking: 'Postpartum Tracking',
         daysPostpartum: 'Days postpartum',
-        tip: 'Postpartum period needs rest and special care'
+        tip: 'Postpartum period needs rest and special care',
+        calculator: 'Postpartum Calculator',
+        birthDate: 'Birth Date',
+        selectDate: 'Select Date',
+        daysPassed: 'Days Passed',
+        remainingDays: 'Remaining Days',
+        progress: 'Progress',
+        endDate: 'Postpartum End Date',
+        completed: 'Postpartum Period Completed',
       },
 
       // Breastfeeding
@@ -1263,7 +1337,45 @@ const resources = {
 
       // Common
       common: {
-        days: 'days'
+        days: 'days',
+        save: 'Save',
+      },
+
+      // Mother
+      mother: {
+        features: 'Mother Features',
+        myInfo: 'My Information',
+        myDaughters: 'My Daughters',
+        addDaughter: 'Add Daughter',
+        daughterName: 'Daughter Name',
+        birthDate: 'Birth Date',
+        cycleStartAge: 'Cycle Start Age',
+        notes: 'Notes',
+        age: 'Age',
+        years: 'Years',
+        viewDetails: 'View Details',
+        editDaughter: 'Edit Daughter',
+        deleteDaughter: 'Delete Daughter',
+        confirmDelete: 'Are you sure you want to delete this daughter?',
+        deleteWarning: 'All related data will be deleted.',
+        cycleTracking: 'Cycle Tracking',
+        addCycle: 'Add Cycle',
+        fastingTracking: 'Fasting Tracking',
+        totalDays: 'Total Days',
+        completedDays: 'Completed Days',
+        addFastingDay: 'Add Fasting Day',
+        markComplete: 'Mark as Complete',
+        lastCycle: 'Last Cycle',
+        nextCycle: 'Next Cycle',
+        day: 'Day',
+        statusSettings: 'Status Settings',
+        selectStatus: 'Select Your Current Status',
+        statusNone: 'None',
+        statusPregnant: 'Pregnant',
+        statusPostpartum: 'Postpartum',
+        statusBreastfeeding: 'Breastfeeding',
+        breastfeedingStartDate: 'Breastfeeding Start Date',
+        selectDate: 'Select Date',
       },
       
       // Subscription
