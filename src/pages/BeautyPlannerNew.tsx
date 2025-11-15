@@ -40,6 +40,7 @@ import {
   type BeautyCategory,
   type CyclePhase
 } from '@/utils/beautyCalculations';
+import { beautyActionSchema } from '@/lib/validation';
 
 interface BeautyAction {
   id: string;
@@ -237,15 +238,34 @@ export default function BeautyPlannerNew() {
   const handleAddCustomAction = async () => {
     if (!user || !newAction.scheduled_at) return;
     
+    // Validate input using schema
+    const validationResult = beautyActionSchema.safeParse({
+      title: newAction.title,
+      notes: newAction.notes || '',
+      phase: currentPhase,
+      frequency: undefined,
+      time_of_day: undefined,
+      reminder_hours_before: undefined
+    });
+
+    if (!validationResult.success) {
+      toast({
+        title: 'خطأ في التحقق',
+        description: validationResult.error.errors[0]?.message || 'البيانات غير صالحة',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
     const { error } = await supabase
       .from('beauty_actions')
       .insert({
         user_id: user.id,
-        title: newAction.title,
+        title: validationResult.data.title,
         beauty_category: newAction.beauty_category,
         action_type: 'custom',
         scheduled_at: newAction.scheduled_at.toISOString(),
-        notes: newAction.notes,
+        notes: validationResult.data.notes,
         phase: currentPhase
       });
     

@@ -32,6 +32,7 @@ import { format, differenceInDays, differenceInWeeks, addDays } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import PremiumPaywall from '@/components/PremiumPaywall';
+import { appointmentSchema, medicineSchema } from '@/lib/validation';
 
 interface Appointment {
   id: string;
@@ -231,10 +232,21 @@ export default function PregnancyCalendar() {
   };
 
   const saveAppointment = async () => {
-    if (!user || !appointmentForm.title) {
+    if (!user) return;
+
+    // Validate input using schema
+    const validationResult = appointmentSchema.safeParse({
+      title: appointmentForm.title,
+      appointment_type: appointmentForm.type,
+      appointment_date: appointmentForm.date,
+      appointment_time: appointmentForm.time || '',
+      notes: appointmentForm.notes || ''
+    });
+
+    if (!validationResult.success) {
       toast({
         title: t('common.error'),
-        description: t('pregnancy.fillRequired'),
+        description: validationResult.error.errors[0]?.message || t('pregnancy.fillRequired'),
         variant: 'destructive',
       });
       return;
@@ -242,11 +254,11 @@ export default function PregnancyCalendar() {
 
     const appointmentData = {
       user_id: user.id,
-      appointment_date: format(appointmentForm.date, 'yyyy-MM-dd'),
-      appointment_time: appointmentForm.time || null,
-      appointment_type: appointmentForm.type,
-      title: appointmentForm.title,
-      notes: appointmentForm.notes || null,
+      appointment_date: format(validationResult.data.appointment_date, 'yyyy-MM-dd'),
+      appointment_time: validationResult.data.appointment_time || null,
+      appointment_type: validationResult.data.appointment_type,
+      title: validationResult.data.title,
+      notes: validationResult.data.notes || null,
       completed: false,
     };
 
@@ -289,10 +301,22 @@ export default function PregnancyCalendar() {
   };
 
   const saveMedicine = async () => {
-    if (!user || !medicineForm.name) {
+    if (!user) return;
+
+    // Validate input using schema
+    const validationResult = medicineSchema.safeParse({
+      medicine_name: medicineForm.name,
+      dosage: medicineForm.dosage || '',
+      frequency: medicineForm.frequency || '',
+      start_date: medicineForm.startDate,
+      end_date: medicineForm.endDate || undefined,
+      notes: medicineForm.notes || ''
+    });
+
+    if (!validationResult.success) {
       toast({
         title: t('common.error'),
-        description: t('pregnancy.fillRequired'),
+        description: validationResult.error.errors[0]?.message || t('pregnancy.fillRequired'),
         variant: 'destructive',
       });
       return;
@@ -300,12 +324,12 @@ export default function PregnancyCalendar() {
 
     const medicineData = {
       user_id: user.id,
-      medicine_name: medicineForm.name,
-      dosage: medicineForm.dosage || null,
-      frequency: medicineForm.frequency || null,
-      start_date: format(medicineForm.startDate, 'yyyy-MM-dd'),
-      end_date: medicineForm.endDate ? format(medicineForm.endDate, 'yyyy-MM-dd') : null,
-      notes: medicineForm.notes || null,
+      medicine_name: validationResult.data.medicine_name,
+      dosage: validationResult.data.dosage || null,
+      frequency: validationResult.data.frequency || null,
+      start_date: format(validationResult.data.start_date, 'yyyy-MM-dd'),
+      end_date: validationResult.data.end_date ? format(validationResult.data.end_date, 'yyyy-MM-dd') : null,
+      notes: validationResult.data.notes || null,
     };
 
     if (editingItem && 'medicine_name' in editingItem) {
