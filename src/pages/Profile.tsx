@@ -83,7 +83,7 @@ interface PartnerProfile {
 
 export default function Profile() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { locale, setLocale, dir } = useI18n();
   const { theme, setTheme, setPersona } = useTheme();
   const navigate = useNavigate();
@@ -509,7 +509,7 @@ export default function Profile() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    logout();
     toast({
       title: t('success'),
       description: t('logout'),

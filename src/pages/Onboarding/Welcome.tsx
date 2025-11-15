@@ -19,7 +19,7 @@ export default function Welcome() {
       {/* Skip Button */}
       <div className="flex justify-end">
         <button
-          onClick={() => navigate('/auth')}
+          onClick={() => navigate('/onboarding/cycle-setup')}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           {t('onboarding.skip')}

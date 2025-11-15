@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '@/integrations/supabase/client';
+import { login, signup } from '@/services/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,29 +44,17 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        
-        if (error) throw error;
+        await login(email.trim(), password);
         
         toast({
           title: t('welcome'),
           description: t('loginSuccess'),
         });
         
-        navigate('/');
+        // Reload to trigger auth context update
+        window.location.href = '/';
       } else {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-          },
-        });
-        
-        if (error) throw error;
+        await signup(email.trim(), password);
         
         toast({
           title: t('accountCreated'),
@@ -87,13 +75,16 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-single-primary via-background to-married-primary">
-      <Card className="w-full max-w-md glass shadow-elegant">
-        <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-married-secondary bg-clip-text text-transparent">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <Card className="w-full max-w-md border-border/50 shadow-lg">
+        <CardHeader className="text-center space-y-4">
+          <div className="mx-auto w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+            <span className="text-4xl">🌸</span>
+          </div>
+          <CardTitle className="text-3xl font-bold text-foreground">
             Wardiya | وردية
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-muted-foreground">
             {isLogin ? t('login') : t('signup')}
           </CardDescription>
         </CardHeader>
@@ -126,7 +117,7 @@ export default function Auth() {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full h-12 rounded-full"
               disabled={loading}
             >
               {loading ? t('loading') : isLogin ? t('login') : t('signup')}

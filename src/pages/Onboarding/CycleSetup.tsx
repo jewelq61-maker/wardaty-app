@@ -99,7 +99,7 @@ export default function CycleSetup() {
           description: t('onboarding.complete'),
         });
 
-        navigate('/');
+        navigate('/auth');
       }
     } catch (error: any) {
       toast({
