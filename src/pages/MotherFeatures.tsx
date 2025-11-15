@@ -49,6 +49,7 @@ import { ar } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import PremiumPaywall from '@/components/PremiumPaywall';
 import { daughterSchema } from '@/lib/validation';
+import MotherStatusSettings from '@/components/MotherStatusSettings';
 
 interface Daughter {
   id: string;
@@ -67,6 +68,8 @@ interface DaughterStats {
 }
 
 interface MotherProfile {
+  pregnancy_lmp: string | null;
+  pregnancy_edd: string | null;
   pregnancy_due_date: string | null;
   pregnancy_weeks: number | null;
   postpartum_start_date: string | null;
@@ -86,6 +89,8 @@ export default function MotherFeatures() {
   const [daughters, setDaughters] = useState<Daughter[]>([]);
   const [daughterStats, setDaughterStats] = useState<Record<string, DaughterStats>>({});
   const [motherProfile, setMotherProfile] = useState<MotherProfile>({
+    pregnancy_lmp: null,
+    pregnancy_edd: null,
     pregnancy_due_date: null,
     pregnancy_weeks: null,
     postpartum_start_date: null,
@@ -117,7 +122,7 @@ export default function MotherFeatures() {
 
     const { data } = await supabase
       .from('profiles')
-      .select('is_premium, persona, pregnancy_due_date, pregnancy_weeks, postpartum_start_date, breastfeeding, breastfeeding_start_date')
+      .select('is_premium, persona, pregnancy_lmp, pregnancy_edd, pregnancy_due_date, pregnancy_weeks, postpartum_start_date, breastfeeding, breastfeeding_start_date')
       .eq('id', user.id)
       .single();
 
@@ -135,6 +140,8 @@ export default function MotherFeatures() {
     }
 
     setMotherProfile({
+      pregnancy_lmp: data?.pregnancy_lmp,
+      pregnancy_edd: data?.pregnancy_edd,
       pregnancy_due_date: data?.pregnancy_due_date,
       pregnancy_weeks: data?.pregnancy_weeks,
       postpartum_start_date: data?.postpartum_start_date,
@@ -401,25 +408,45 @@ export default function MotherFeatures() {
       </div>
 
       <div className="container mx-auto px-4 py-6 space-y-6">
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Baby className="h-5 w-5 text-primary" />
-              الحمل والنفاس والرضاعة
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>الرضاعة الطبيعية</Label>
-              <Switch
-                checked={motherProfile.breastfeeding}
-                onCheckedChange={(checked) =>
-                  handleUpdateMotherProfile({ breastfeeding: checked })
-                }
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <MotherStatusSettings
+          initialStatus={
+            motherProfile.pregnancy_due_date || motherProfile.pregnancy_edd ? 'pregnant' :
+            motherProfile.postpartum_start_date ? 'postpartum' :
+            motherProfile.breastfeeding ? 'breastfeeding' : 'none'
+          }
+          initialData={{
+            status: motherProfile.pregnancy_due_date || motherProfile.pregnancy_edd ? 'pregnant' :
+                    motherProfile.postpartum_start_date ? 'postpartum' :
+                    motherProfile.breastfeeding ? 'breastfeeding' : 'none',
+            pregnancy_lmp: motherProfile.pregnancy_lmp ? new Date(motherProfile.pregnancy_lmp) : null,
+            pregnancy_edd: (motherProfile.pregnancy_edd || motherProfile.pregnancy_due_date) ? new Date(motherProfile.pregnancy_edd || motherProfile.pregnancy_due_date!) : null,
+            pregnancy_weeks: motherProfile.pregnancy_weeks,
+            postpartum_start_date: motherProfile.postpartum_start_date ? new Date(motherProfile.postpartum_start_date) : null,
+            breastfeeding_start_date: motherProfile.breastfeeding_start_date ? new Date(motherProfile.breastfeeding_start_date) : null,
+          }}
+          onSave={async (data) => {
+            await handleUpdateMotherProfile({
+              pregnancy_lmp: data.pregnancy_lmp ? data.pregnancy_lmp.toISOString().split('T')[0] : null,
+              pregnancy_edd: data.pregnancy_edd ? data.pregnancy_edd.toISOString().split('T')[0] : null,
+              pregnancy_due_date: data.pregnancy_edd ? data.pregnancy_edd.toISOString().split('T')[0] : null,
+              pregnancy_weeks: data.pregnancy_weeks,
+              postpartum_start_date: data.postpartum_start_date ? data.postpartum_start_date.toISOString().split('T')[0] : null,
+              breastfeeding: data.status === 'breastfeeding',
+              breastfeeding_start_date: data.breastfeeding_start_date ? data.breastfeeding_start_date.toISOString().split('T')[0] : null,
+            });
+            
+            // Update local state
+            setMotherProfile({
+              pregnancy_lmp: data.pregnancy_lmp ? data.pregnancy_lmp.toISOString().split('T')[0] : null,
+              pregnancy_edd: data.pregnancy_edd ? data.pregnancy_edd.toISOString().split('T')[0] : null,
+              pregnancy_due_date: data.pregnancy_edd ? data.pregnancy_edd.toISOString().split('T')[0] : null,
+              pregnancy_weeks: data.pregnancy_weeks,
+              postpartum_start_date: data.postpartum_start_date ? data.postpartum_start_date.toISOString().split('T')[0] : null,
+              breastfeeding: data.status === 'breastfeeding',
+              breastfeeding_start_date: data.breastfeeding_start_date ? data.breastfeeding_start_date.toISOString().split('T')[0] : null,
+            });
+          }}
+        />
 
         <Card className="glass-card">
           <CardHeader>
