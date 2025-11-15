@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => ({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'robots.txt'],
       manifest: {
-        name: 'Wardiya | وردية',
-        short_name: 'Wardiya',
+        name: 'Wardaty | وردتي',
+        short_name: 'Wardaty',
         description: 'Women\'s wellness and cycle tracking app',
         theme_color: '#E91E63',
         background_color: '#ffffff',
