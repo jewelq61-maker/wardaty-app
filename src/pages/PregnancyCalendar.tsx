@@ -13,6 +13,7 @@ import {
   FileText,
   Edit,
   Trash2,
+  Weight,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,6 +27,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
 import { format, differenceInDays, differenceInWeeks, addDays } from 'date-fns';
@@ -188,6 +190,20 @@ export default function PregnancyCalendar() {
     }
   };
 
+  const loadWeightLogs = async () => {
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('pregnancy_weight_logs')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('log_date', { ascending: false });
+
+    if (data) {
+      setWeightLogs(data);
+    }
+  };
+
   const calculateGestationalAge = () => {
     if (!pregnancyData.lmp) return { weeks: 0, days: 0 };
     
@@ -241,6 +257,21 @@ export default function PregnancyCalendar() {
       frequency: '',
       startDate: selectedDate,
       endDate: null,
+      notes: '',
+    });
+    setShowAddDialog(true);
+  };
+
+  const handleAddWeight = () => {
+    if (!isPremium) {
+      setShowPaywall(true);
+      return;
+    }
+    setDialogType('weight');
+    setEditingItem(null);
+    setWeightForm({
+      date: selectedDate,
+      weight: '',
       notes: '',
     });
     setShowAddDialog(true);
@@ -385,6 +416,48 @@ export default function PregnancyCalendar() {
     loadMedicines();
   };
 
+  const saveWeight = async () => {
+    if (!user) return;
+
+    const weight = parseFloat(weightForm.weight);
+    if (!weight || weight <= 0 || weight >= 500) {
+      toast({
+        title: t('common.error'),
+        description: t('pregnancy.invalidWeight'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const weightData = {
+      user_id: user.id,
+      log_date: format(weightForm.date, 'yyyy-MM-dd'),
+      weight_kg: weight,
+      notes: weightForm.notes || null,
+    };
+
+    const { error } = await supabase
+      .from('pregnancy_weight_logs')
+      .insert(weightData);
+
+    if (error) {
+      toast({
+        title: t('common.error'),
+        description: error.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({
+      title: t('common.success'),
+      description: t('pregnancy.weightAdded'),
+    });
+
+    setShowAddDialog(false);
+    loadWeightLogs();
+  };
+
   const deleteAppointment = async (id: string) => {
     const { error } = await supabase
       .from('pregnancy_appointments')
@@ -412,6 +485,21 @@ export default function PregnancyCalendar() {
         description: t('pregnancy.deleted'),
       });
       loadMedicines();
+    }
+  };
+
+  const deleteWeight = async (id: string) => {
+    const { error } = await supabase
+      .from('pregnancy_weight_logs')
+      .delete()
+      .eq('id', id);
+
+    if (!error) {
+      toast({
+        title: t('common.success'),
+        description: t('pregnancy.weightDeleted'),
+      });
+      loadWeightLogs();
     }
   };
 
@@ -633,6 +721,47 @@ export default function PregnancyCalendar() {
                   </p>
                 )}
               </TabsContent>
+
+              <TabsContent value="weight" className="space-y-4 mt-4">
+                <Button onClick={handleAddWeight} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t('pregnancy.addWeight')}
+                </Button>
+
+                {weightLogs.length > 0 ? (
+                  <div className="space-y-3">
+                    {weightLogs.slice(0, 5).map((log) => (
+                      <div
+                        key={log.id}
+                        className="p-4 bg-muted/50 rounded-lg border space-y-2"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="font-semibold">{log.weight_kg} كغ</p>
+                            <p className="text-sm text-muted-foreground">
+                              {format(new Date(log.log_date), 'PPP', { locale: ar })}
+                            </p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteWeight(log.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        {log.notes && (
+                          <p className="text-sm text-muted-foreground">{log.notes}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-sm text-muted-foreground py-8">
+                    {t('pregnancy.noWeight')}
+                  </p>
+                )}
+              </TabsContent>
             </Tabs>
           </CardContent>
         </Card>
@@ -645,7 +774,9 @@ export default function PregnancyCalendar() {
             <DialogTitle>
               {dialogType === 'appointment'
                 ? t('pregnancy.addAppointment')
-                : t('pregnancy.addMedicine')}
+                : dialogType === 'medicine'
+                ? t('pregnancy.addMedicine')
+                : t('pregnancy.addWeight')}
             </DialogTitle>
           </DialogHeader>
 
@@ -705,11 +836,11 @@ export default function PregnancyCalendar() {
                 />
               </div>
 
-              <Button onClick={saveAppointment} className="w-full">
+              <Button onClick={saveMedicine} className="w-full">
                 {t('common.save')}
               </Button>
             </div>
-          ) : (
+          ) : dialogType === 'medicine' ? (
             <div className="space-y-4">
               <div>
                 <Label>{t('pregnancy.medicineName')}</Label>
@@ -756,6 +887,36 @@ export default function PregnancyCalendar() {
               </div>
 
               <Button onClick={saveMedicine} className="w-full">
+                {t('common.save')}
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <Label>{t('pregnancy.weightKg')}</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={weightForm.weight}
+                  onChange={(e) =>
+                    setWeightForm({ ...weightForm, weight: e.target.value })
+                  }
+                  placeholder={t('pregnancy.weightPlaceholder')}
+                />
+              </div>
+
+              <div>
+                <Label>{t('pregnancy.notes')}</Label>
+                <Textarea
+                  value={weightForm.notes}
+                  onChange={(e) =>
+                    setWeightForm({ ...weightForm, notes: e.target.value })
+                  }
+                  placeholder={t('pregnancy.notesPlaceholder')}
+                />
+              </div>
+
+              <Button onClick={saveWeight} className="w-full">
                 {t('common.save')}
               </Button>
             </div>
