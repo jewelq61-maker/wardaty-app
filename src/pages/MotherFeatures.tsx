@@ -48,6 +48,7 @@ import { format, differenceInDays } from 'date-fns';
 import { ar } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import PremiumPaywall from '@/components/PremiumPaywall';
+import { daughterSchema } from '@/lib/validation';
 
 interface Daughter {
   id: string;
@@ -208,10 +209,20 @@ export default function MotherFeatures() {
   };
 
   const handleAddDaughter = async () => {
-    if (!user || !newDaughter.name) {
+    if (!user) return;
+
+    // Validate input using schema
+    const validationResult = daughterSchema.safeParse({
+      name: newDaughter.name,
+      birth_date: newDaughter.birth_date || undefined,
+      cycle_start_age: newDaughter.cycle_start_age ? parseInt(newDaughter.cycle_start_age) : undefined,
+      notes: newDaughter.notes || ''
+    });
+
+    if (!validationResult.success) {
       toast({
         title: t('error'),
-        description: 'الرجاء إدخال اسم البنت',
+        description: validationResult.error.errors[0]?.message || 'البيانات غير صالحة',
         variant: 'destructive',
       });
       return;
@@ -228,10 +239,10 @@ export default function MotherFeatures() {
 
     const { error } = await supabase.from('daughters').insert({
       mother_id: user.id,
-      name: newDaughter.name,
-      birth_date: newDaughter.birth_date?.toISOString().split('T')[0],
-      cycle_start_age: newDaughter.cycle_start_age ? parseInt(newDaughter.cycle_start_age) : null,
-      notes: newDaughter.notes,
+      name: validationResult.data.name,
+      birth_date: validationResult.data.birth_date?.toISOString().split('T')[0],
+      cycle_start_age: validationResult.data.cycle_start_age || null,
+      notes: validationResult.data.notes,
     });
 
     if (error) {

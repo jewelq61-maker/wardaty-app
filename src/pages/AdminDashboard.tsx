@@ -38,6 +38,8 @@ export default function AdminDashboard() {
   const [logs, setLogs] = useState<CleanupLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [isRunning, setIsRunning] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [checkingAdmin, setCheckingAdmin] = useState(true);
   const [stats, setStats] = useState({
     totalDeleted: 0,
     avgExecutionTime: 0,
@@ -47,9 +49,34 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (user) {
-      loadCleanupLogs();
+      checkAdminStatus();
     }
   }, [user]);
+
+  const checkAdminStatus = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .rpc('has_role', { 
+          _user_id: user.id, 
+          _role: 'admin' 
+        });
+
+      if (error) throw error;
+      
+      setIsAdmin(data || false);
+      
+      if (data) {
+        loadCleanupLogs();
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+      setIsAdmin(false);
+    } finally {
+      setCheckingAdmin(false);
+    }
+  };
 
   const loadCleanupLogs = async () => {
     try {
@@ -133,6 +160,42 @@ export default function AdminDashboard() {
     const mb = (kb / 1024).toFixed(2);
     return `${mb} MB`;
   };
+
+  if (checkingAdmin || loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto p-4 pb-24">
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <RefreshCw className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto p-4 pb-24">
+          <Card className="border-destructive">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-destructive">
+                <XCircle className="h-5 w-5" />
+                غير مصرح
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                ليس لديك صلاحيات للوصول إلى لوحة تحكم المسؤول.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+        <BottomNav />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20" dir="rtl">

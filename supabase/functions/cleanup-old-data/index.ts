@@ -11,25 +11,74 @@ serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const startTime = Date.now();
+
   try {
-    // SECURITY: This function is designed for cron jobs only
+    // Get authentication headers
     const apiKey = req.headers.get('apikey');
+    const authHeader = req.headers.get('authorization');
     
-    if (!apiKey || apiKey !== Deno.env.get('SUPABASE_ANON_KEY')) {
-      console.error('Unauthorized: Invalid API key');
+    let isAuthorized = false;
+    let userId: string | null = null;
+
+    // Check cron job authentication (API key)
+    if (apiKey && apiKey === Deno.env.get('SUPABASE_ANON_KEY')) {
+      isAuthorized = true;
+      console.log('Authenticated via API key (cron job)');
+    }
+    // Check admin user authentication (JWT)
+    else if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      
+      const tempClient = createClient(supabaseUrl, supabaseKey, {
+        global: { headers: { Authorization: authHeader } }
+      });
+      
+      const { data: { user }, error: userError } = await tempClient.auth.getUser(token);
+      
+      if (userError || !user) {
+        console.error('Invalid JWT token:', userError);
+        return new Response(
+          JSON.stringify({ error: 'Unauthorized: Invalid token' }),
+          { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      userId = user.id;
+      
+      // Verify admin role
+      const { data: isAdmin, error: roleError } = await tempClient.rpc('has_role', {
+        _user_id: user.id,
+        _role: 'admin'
+      });
+      
+      if (roleError || !isAdmin) {
+        console.error('User is not admin:', roleError);
+        return new Response(
+          JSON.stringify({ error: 'Forbidden: Admin role required' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      isAuthorized = true;
+      console.log('Authenticated via JWT (admin user):', userId);
+    }
+
+    if (!isAuthorized) {
       return new Response(
-        JSON.stringify({ error: 'Unauthorized - This endpoint is for internal use only' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        JSON.stringify({ error: 'Unauthorized: Missing or invalid authentication' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
+    // Initialize Supabase client with service role for cleanup operations
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     console.log('Starting cleanup job...');
-    const startTime = Date.now();
-
     const now = new Date();
     const stats = {
       beautyActions: 0,
@@ -37,6 +86,7 @@ serve(async (req: Request) => {
       fastingEntries: 0,
       routineLogs: 0,
       sharedEvents: 0,
+      shareLinks: 0,
     };
 
     // 1. Delete completed beauty actions older than 90 days
@@ -119,7 +169,8 @@ serve(async (req: Request) => {
       .select('id');
     
     if (!shareLinksError && oldShareLinks) {
-      console.log(`Deleted ${oldShareLinks.length} old inactive share links`);
+      stats.shareLinks = oldShareLinks.length;
+      console.log(`Deleted ${stats.shareLinks} old inactive share links`);
     }
 
     const totalDeleted = Object.values(stats).reduce((a, b) => a + b, 0);
@@ -143,47 +194,48 @@ serve(async (req: Request) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         stats,
         totalDeleted,
         executionTime,
-        timestamp: now.toISOString(),
-        message: 'Cleanup completed successfully'
+        triggeredBy: userId ? 'admin_user' : 'cron_job'
       }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
-      }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error in cleanup-old-data:', error);
+    console.error('Cleanup error:', error);
     
-    // Try to save error log
+    const executionTime = Date.now() - startTime;
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+
+    // Try to log the error
     try {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
-      
       await supabase.from('cleanup_logs').insert({
-        executed_at: new Date().toISOString(),
         status: 'error',
-        stats: {},
         total_deleted: 0,
-        error_message: (error as Error).message,
+        stats: {},
+        error_message: errorMessage,
+        execution_time_ms: executionTime,
+        executed_at: new Date().toISOString(),
       });
     } catch (logError) {
-      console.error('Failed to save error log:', logError);
+      console.error('Error logging failure:', logError);
     }
-    
+
     return new Response(
-      JSON.stringify({ 
-        error: (error as Error).message,
-        timestamp: new Date().toISOString()
+      JSON.stringify({
+        success: false,
+        error: errorMessage,
+        executionTime
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
   }
