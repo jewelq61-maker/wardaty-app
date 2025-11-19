@@ -320,6 +320,14 @@ const resources = {
       ovulation: 'الإباضة',
       luteal: 'الصفراء',
       
+      // Phase translations for components
+      phases: {
+        menstruation: 'مرحلة الحيض',
+        follicular: 'المرحلة الجريبية',
+        ovulation: 'مرحلة التبويض',
+        luteal: 'المرحلة الصفراء'
+      },
+      
       // Symptoms
       cramps: 'تقلصات',
       bloating: 'انتفاخ',
@@ -1067,6 +1075,14 @@ const resources = {
       follicular: 'Follicular',
       ovulation: 'Ovulation',
       luteal: 'Luteal',
+      
+      // Phase translations for components
+      phases: {
+        menstruation: 'Menstrual Phase',
+        follicular: 'Follicular Phase',
+        ovulation: 'Ovulation Phase',
+        luteal: 'Luteal Phase'
+      },
       
       // Symptoms
       cramps: 'Cramps',

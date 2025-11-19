@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import BottomNav from '@/components/BottomNav';
+import PartnerTipsCard from '@/components/PartnerTipsCard';
 import { useToast } from '@/hooks/use-toast';
 import { format, parseISO, differenceInDays, addDays } from 'date-fns';
 import { ar } from 'date-fns/locale';
@@ -171,6 +172,22 @@ export default function PartnerView() {
     }
   };
 
+  const getCyclePhase = (): string => {
+    if (!partnerData) return 'follicular';
+    
+    const { currentDay, periodDuration, cycleLength } = partnerData;
+    
+    if (currentDay <= periodDuration) {
+      return 'menstruation';
+    } else if (currentDay <= Math.floor(cycleLength / 2)) {
+      return 'follicular';
+    } else if (currentDay >= 12 && currentDay <= 16) {
+      return 'ovulation';
+    } else {
+      return 'luteal';
+    }
+  };
+
   const getMoodSuggestion = () => {
     if (!partnerData) return '';
     
@@ -184,42 +201,6 @@ export default function PartnerView() {
       return '💚 طاقة عالية وحيوية';
     } else {
       return '💙 حالة طبيعية';
-    }
-  };
-
-  const getPartnerTips = () => {
-    if (!partnerData) return [];
-    
-    const { currentDay, periodDuration, daysUntilPeriod } = partnerData;
-    
-    if (currentDay <= periodDuration) {
-      return [
-        'قدّم لها مشروبًا دافئًا يساعد على الاسترخاء',
-        'كن متفهمًا لحاجتها للراحة والهدوء',
-        'ساعدها في الأعمال المنزلية دون أن تطلب',
-        'تجنب النقاشات الجادة أو المواضيع المرهقة',
-      ];
-    } else if (daysUntilPeriod <= 5) {
-      return [
-        'قد تشعر بتقلبات مزاجية - كن صبورًا',
-        'جهز وجبتها المفضلة كمفاجأة لطيفة',
-        'استمع لها بانتباه دون تقديم حلول فورية',
-        'امنحها مساحة شخصية إذا احتاجت ذلك',
-      ];
-    } else if (currentDay >= 11 && currentDay <= 17) {
-      return [
-        'هذه فترة طاقة عالية - خططوا لنشاط ممتع معًا',
-        'وقت مناسب للحوارات المهمة والقرارات',
-        'شاركها في نشاط رياضي أو نزهة خارجية',
-        'استغل هذه الفترة لتقوية التواصل بينكما',
-      ];
-    } else {
-      return [
-        'حافظ على التواصل اليومي الإيجابي',
-        'شاركها في التخطيط للأنشطة القادمة',
-        'قدّم الدعم والتقدير بشكل مستمر',
-        'اهتم بصحتك أنت أيضًا لتكون داعمًا أفضل',
-      ];
     }
   };
 
@@ -395,30 +376,8 @@ export default function PartnerView() {
           </Card>
         )}
 
-        {!partnerData.isPregnant && (
-          <Card className="animate-fade-in bg-gradient-to-br from-primary/5 to-secondary/5">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Heart className="w-5 h-5 text-primary" />
-                نصائح مخصصة لك
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {getPartnerTips().map((tip, index) => (
-                  <div 
-                    key={index}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-card/50 backdrop-blur border border-border/50 hover:bg-card/80 transition-colors"
-                  >
-                    <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0 mt-0.5">
-                      {index + 1}
-                    </div>
-                    <p className="text-sm leading-relaxed">{tip}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+        {!partnerData.isPregnant && privacySettings.show_period_days && (
+          <PartnerTipsCard phase={getCyclePhase()} />
         )}
 
         <Card className="bg-muted/30 border-dashed animate-fade-in">
