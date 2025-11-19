@@ -278,6 +278,9 @@ const resources = {
         pullToRefresh: 'اسحبي للتحديث',
         releaseToRefresh: 'اتركي للتحديث',
         dataRefreshed: 'تم تحديث البيانات',
+        partnerMode: 'وضع الشريك',
+        partnerModeDesc: 'أنت في وضع الشريك. يمكنك متابعة دورة شريكتك ودعمها.',
+        viewPartnerCycle: 'عرض دورة الشريكة',
       },
       
       achievements: {
@@ -1023,6 +1026,9 @@ const resources = {
         pullToRefresh: 'Pull to Refresh',
         releaseToRefresh: 'Release to Refresh',
         dataRefreshed: 'Data Refreshed',
+        partnerMode: 'Partner Mode',
+        partnerModeDesc: 'You are in partner mode. You can track and support your partner\'s cycle.',
+        viewPartnerCycle: 'View Partner\'s Cycle',
       },
       
       achievements: {
