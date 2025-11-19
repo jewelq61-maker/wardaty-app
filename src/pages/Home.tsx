@@ -5,7 +5,7 @@ import { format, differenceInDays, parseISO } from 'date-fns';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { CalendarDays, Sparkles, Moon, Bell, TrendingUp, RefreshCw, BookOpen, ChevronRight, Shield } from 'lucide-react';
+import { CalendarDays, Sparkles, Moon, Bell, TrendingUp, RefreshCw, BookOpen, ChevronRight, Shield, Heart } from 'lucide-react';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -77,6 +77,12 @@ export default function Home() {
 
   const loadCycleData = async () => {
     if (!user) return;
+    
+    // Partners don't have their own cycle - they view partner's cycle
+    if (persona === 'partner') {
+      setLoading(false);
+      return;
+    }
     
     setLoading(true);
     try {
@@ -302,8 +308,35 @@ export default function Home() {
       </header>
 
       <main className="max-w-lg mx-auto px-4 pt-4 space-y-6">
-        {/* Phase Status Card */}
-        {!loading && (
+        {/* Partner View - Show partner's info card */}
+        {persona === 'partner' && (
+          <div className="bg-card rounded-3xl p-6 shadow-sm border border-border animate-fade-in">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-partner/10 flex items-center justify-center text-2xl">
+                💙
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">{t('personas.partner')}</p>
+                <p className="text-lg font-bold text-foreground">{t('home.partnerMode')}</p>
+              </div>
+            </div>
+            
+            <p className="text-sm text-muted-foreground mb-4">
+              {t('home.partnerModeDesc')}
+            </p>
+
+            <button
+              onClick={() => navigate('/partner-view')}
+              className="w-full bg-partner text-white rounded-xl py-3 px-4 font-semibold text-sm hover:bg-partner/90 transition-colors flex items-center justify-center gap-2"
+            >
+              <Heart className="w-4 h-4" />
+              {t('home.viewPartnerCycle')}
+            </button>
+          </div>
+        )}
+
+        {/* Phase Status Card - Not for partners */}
+        {!loading && persona !== 'partner' && (
           <div className="bg-card rounded-3xl p-6 shadow-sm border border-border animate-fade-in">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
@@ -350,11 +383,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* Daily Affirmation */}
-        {!loading && <DailyAffirmation phase={currentPhase} />}
+        {/* Daily Affirmation - Not for partners */}
+        {!loading && persona !== 'partner' && <DailyAffirmation phase={currentPhase} />}
 
-        {/* Pregnancy/Postpartum/Breastfeeding Status */}
-        {!loading && <PregnancyStatusWidget />}
+        {/* Pregnancy/Postpartum/Breastfeeding Status - Not for partners */}
+        {!loading && persona !== 'partner' && <PregnancyStatusWidget />}
 
         {/* Health Overview */}
         {!loading && <HealthOverview />}
@@ -418,7 +451,7 @@ export default function Home() {
 
         {/* Insights & Achievements */}
         <div className="space-y-3">
-          {!loading && <DailyInsightsCard phase={currentPhase} />}
+          {!loading && persona !== 'partner' && <DailyInsightsCard phase={currentPhase} />}
           <AchievementsBadges />
         </div>
 
@@ -428,9 +461,9 @@ export default function Home() {
           <div className="space-y-3">
             {persona === 'mother' && <DaughtersCycleStatus />}
             <FastingQadaWidget />
-            <StatsPreviewWidget />
-            <CyclePredictionsWidget />
-            <UpcomingBeautyWidget />
+            {persona !== 'partner' && <StatsPreviewWidget />}
+            {persona !== 'partner' && <CyclePredictionsWidget />}
+            {persona !== 'partner' && <UpcomingBeautyWidget />}
           </div>
         </div>
 
