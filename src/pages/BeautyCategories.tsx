@@ -110,7 +110,17 @@ export default function BeautyCategories() {
   };
 
   const handleSave = async () => {
-    if (!user || !formData.name) {
+    if (!user) {
+      toast({
+        title: t('common.error'),
+        description: t('auth.pleaseLogin'),
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate input length and format
+    if (!formData.name || formData.name.trim().length === 0) {
       toast({
         title: t('common.error'),
         description: t('beautyRoutines.fillRequired'),
@@ -119,10 +129,28 @@ export default function BeautyCategories() {
       return;
     }
 
+    if (formData.name.length > 100) {
+      toast({
+        title: t('common.error'),
+        description: 'اسم التصنيف طويل جداً (الحد الأقصى 100 حرف)',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (formData.name_en && formData.name_en.length > 100) {
+      toast({
+        title: t('common.error'),
+        description: 'الاسم الإنجليزي طويل جداً (الحد الأقصى 100 حرف)',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const categoryData = {
       user_id: user.id,
-      name: formData.name,
-      name_en: formData.name_en || null,
+      name: formData.name.trim(),
+      name_en: formData.name_en?.trim() || null,
       color: formData.color,
       icon: formData.icon,
       is_system: false,

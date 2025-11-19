@@ -13,12 +13,14 @@ export const beautyActionSchema = z.object({
   phase: z.enum(['menstrual', 'follicular', 'ovulation', 'luteal'], {
     errorMap: () => ({ message: 'مرحلة غير صالحة' })
   }),
+  scheduled_at: z.string().optional().nullable(),
   frequency: z.enum(['once', 'daily', 'weekly', 'monthly'], {
     errorMap: () => ({ message: 'تكرار غير صالح' })
   }).optional(),
   time_of_day: z.enum(['morning', 'afternoon', 'evening', 'night'], {
     errorMap: () => ({ message: 'وقت غير صالح' })
   }).optional(),
+  reminder_enabled: z.boolean().optional(),
   reminder_hours_before: z.number()
     .int()
     .min(1)

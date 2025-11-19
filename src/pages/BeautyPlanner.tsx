@@ -15,6 +15,7 @@ import { toast } from '@/hooks/use-toast';
 import { format, differenceInDays, startOfDay } from 'date-fns';
 import { CalendarIcon, Plus, Sparkles, Trash2, Droplets, Wind, Zap, Heart, Scissors, Eye, Flower2, Leaf, FlaskConical, Palette, CheckCircle2, Circle, TrendingUp, Bell, BellOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { beautyActionSchema } from '@/lib/validation';
 import BottomNav from '@/components/BottomNav';
 
 interface CycleDay {
@@ -229,10 +230,31 @@ export default function BeautyPlanner() {
   };
 
   const handleAddAction = async () => {
-    if (!user || !newAction.title.trim()) {
+    if (!user) {
       toast({
         title: t('error'),
-        description: t('beauty.fillTitle'),
+        description: t('auth.pleaseLogin'),
+        variant: 'destructive'
+      });
+      return;
+    }
+
+    // Validate using Zod schema
+    const validationResult = beautyActionSchema.safeParse({
+      title: newAction.title,
+      notes: newAction.notes || null,
+      phase: currentPhase,
+      scheduled_at: newAction.scheduled_at?.toISOString() || null,
+      frequency: newAction.frequency || 'once',
+      time_of_day: newAction.time_of_day || null,
+      reminder_enabled: newAction.reminder_enabled,
+      reminder_hours_before: newAction.reminder_hours_before
+    });
+
+    if (!validationResult.success) {
+      toast({
+        title: t('error'),
+        description: validationResult.error.errors[0].message,
         variant: 'destructive'
       });
       return;
@@ -242,14 +264,14 @@ export default function BeautyPlanner() {
       .from('beauty_actions')
       .insert({
         user_id: user.id,
-        title: newAction.title,
-        notes: newAction.notes || null,
-        phase: currentPhase,
-        scheduled_at: newAction.scheduled_at?.toISOString() || null,
-        frequency: newAction.frequency || 'once',
-        time_of_day: newAction.time_of_day || null,
-        reminder_enabled: newAction.reminder_enabled,
-        reminder_hours_before: newAction.reminder_hours_before
+        title: validationResult.data.title,
+        notes: validationResult.data.notes,
+        phase: validationResult.data.phase,
+        scheduled_at: validationResult.data.scheduled_at,
+        frequency: validationResult.data.frequency,
+        time_of_day: validationResult.data.time_of_day,
+        reminder_enabled: validationResult.data.reminder_enabled,
+        reminder_hours_before: validationResult.data.reminder_hours_before
       });
 
     if (error) {
