@@ -2,3 +2,12 @@ project_id = "xywmuqpdzzmussyfszer"
 
 [functions.cleanup-old-data]
 verify_jwt = false
+
+[functions.send-beauty-reminders]
+verify_jwt = false
+
+[functions.send-routine-reminders]
+verify_jwt = false
+
+[functions.duplicate-recurring-actions]
+verify_jwt = false
