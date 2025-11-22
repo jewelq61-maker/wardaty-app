@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.38193668a92f4b81ad37f226055ff0a0',
+  appId: 'com.wardaty.app',
   appName: 'Wardaty | وردتي',
   webDir: 'dist',
   server: {
