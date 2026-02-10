@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { HealthKitService } from '@/services/healthkit-service';
 
 interface HealthData {
   steps?: number;
@@ -13,6 +13,7 @@ interface HealthData {
 export const useAppleHealth = () => {
   const [isAvailable, setIsAvailable] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -20,10 +21,8 @@ export const useAppleHealth = () => {
   }, []);
 
   const checkAvailability = async () => {
-    // التحقق من أن الجهاز iOS
-    if (Capacitor.getPlatform() === 'ios') {
-      setIsAvailable(true);
-    }
+    const available = await HealthKitService.isAvailable();
+    setIsAvailable(available);
   };
 
   const connectToHealth = async (): Promise<boolean> => {
@@ -37,14 +36,23 @@ export const useAppleHealth = () => {
     }
 
     try {
-      // في المستقبل، سيتم استخدام الكود الأصلي للربط
-      // حالياً نعرض رسالة توضيحية
-      setIsConnected(true);
-      toast({
-        title: 'جاهز للربط',
-        description: 'لربط Apple Health، يجب تثبيت التطبيق على جهاز iOS',
-      });
-      return true;
+      const authorized = await HealthKitService.requestAuthorization();
+
+      if (authorized) {
+        setIsConnected(true);
+        toast({
+          title: 'تم الربط بنجاح',
+          description: 'تم ربط التطبيق مع Apple Health بنجاح',
+        });
+        return true;
+      } else {
+        toast({
+          title: 'لم يتم السماح',
+          description: 'يرجى السماح بالوصول إلى Apple Health من الإعدادات',
+          variant: 'destructive',
+        });
+        return false;
+      }
     } catch (error) {
       console.error('Health connection error:', error);
       toast({
@@ -56,42 +64,58 @@ export const useAppleHealth = () => {
     }
   };
 
-  const syncHealthData = async () => {
+  const syncHealthData = async (): Promise<HealthData | null> => {
     if (!isConnected) {
-      await connectToHealth();
-      return;
+      const connected = await connectToHealth();
+      if (!connected) return null;
     }
 
+    setIsSyncing(true);
+
     try {
-      // هنا سيتم جلب البيانات من Apple Health في المستقبل
-      // حالياً نستخدم بيانات تجريبية
-      const mockData: HealthData = {
-        steps: Math.floor(Math.random() * 10000),
-        weight: 65,
-        sleepMinutes: 420,
-        heartRate: 72,
+      // Fetch real data from HealthKit
+      const [stepsData, weightData, sleepData, heartRateData] = await Promise.all([
+        HealthKitService.getSteps(),
+        HealthKitService.getWeight(),
+        HealthKitService.getSleep(),
+        HealthKitService.getHeartRate(),
+      ]);
+
+      const healthData: HealthData = {
+        steps: stepsData.value,
+        weight: weightData.hasData ? weightData.value : undefined,
+        sleepMinutes: sleepData.hasData ? sleepData.value : undefined,
+        heartRate: heartRateData.hasData ? heartRateData.value : undefined,
       };
 
-      // حفظ البيانات في قاعدة البيانات
+      // Save data to database
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         const today = new Date().toISOString().split('T')[0];
-        
+
+        const notesParts: string[] = [];
+        if (healthData.steps !== undefined) notesParts.push(`الخطوات: ${healthData.steps}`);
+        if (healthData.sleepMinutes !== undefined) notesParts.push(`النوم: ${healthData.sleepMinutes} دقيقة`);
+        if (healthData.heartRate !== undefined) notesParts.push(`النبض: ${healthData.heartRate}`);
+        if (healthData.weight !== undefined) notesParts.push(`الوزن: ${healthData.weight} كجم`);
+
         await supabase
           .from('cycle_days')
           .upsert({
             user_id: user.id,
             date: today,
-            notes: `الخطوات: ${mockData.steps} | النوم: ${mockData.sleepMinutes} دقيقة | النبض: ${mockData.heartRate}`,
+            notes: notesParts.join(' | '),
           }, {
             onConflict: 'user_id,date'
           });
 
         toast({
           title: 'تمت المزامنة',
-          description: `تم مزامنة ${mockData.steps} خطوة و ${mockData.sleepMinutes} دقيقة نوم`,
+          description: `تم مزامنة ${healthData.steps ?? 0} خطوة${healthData.sleepMinutes ? ` و ${healthData.sleepMinutes} دقيقة نوم` : ''}`,
         });
       }
+
+      return healthData;
     } catch (error) {
       console.error('Error syncing health data:', error);
       toast({
@@ -99,12 +123,16 @@ export const useAppleHealth = () => {
         description: 'حدث خطأ أثناء مزامنة البيانات',
         variant: 'destructive',
       });
+      return null;
+    } finally {
+      setIsSyncing(false);
     }
   };
 
   return {
     isAvailable,
     isConnected,
+    isSyncing,
     connectToHealth,
     syncHealthData,
   };

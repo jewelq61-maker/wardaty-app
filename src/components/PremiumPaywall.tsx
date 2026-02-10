@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Crown, Sparkles, Calendar, Moon, Check, X } from 'lucide-react';
+import { Crown, Sparkles, Calendar, Moon, Check, X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
@@ -10,6 +11,11 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { StoreKitService, PRODUCT_IDS } from '@/services/storekit-service';
+import type { StoreKitProduct } from '@/services/storekit-service';
 
 interface PremiumPaywallProps {
   open: boolean;
@@ -20,6 +26,116 @@ interface PremiumPaywallProps {
 
 export default function PremiumPaywall({ open, onClose, feature = 'beauty-planner', persona = 'single' }: PremiumPaywallProps) {
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const { user } = useAuth();
+  const [products, setProducts] = useState<StoreKitProduct[]>([]);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+
+  useEffect(() => {
+    if (open && StoreKitService.isAvailable()) {
+      loadProducts();
+    }
+  }, [open]);
+
+  const loadProducts = async () => {
+    setIsLoadingProducts(true);
+    try {
+      const loadedProducts = await StoreKitService.getProducts();
+      setProducts(loadedProducts);
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    } finally {
+      setIsLoadingProducts(false);
+    }
+  };
+
+  const handlePurchase = async (productId: string) => {
+    if (!StoreKitService.isAvailable()) {
+      toast({
+        title: 'غير متوفر',
+        description: 'الشراء متوفر فقط على أجهزة iOS',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsPurchasing(true);
+    try {
+      const result = await StoreKitService.purchase(productId);
+
+      if (result.success) {
+        // Update premium status in database
+        if (user) {
+          await supabase
+            .from('profiles')
+            .update({ is_premium: true })
+            .eq('id', user.id);
+        }
+
+        toast({
+          title: 'تم الاشتراك بنجاح!',
+          description: 'مرحباً بكِ في وردية بلس ✨',
+        });
+        onClose();
+      } else if (result.cancelled) {
+        // User cancelled - do nothing
+      } else if (result.pending) {
+        toast({
+          title: 'في انتظار الموافقة',
+          description: 'سيتم تفعيل الاشتراك بعد الموافقة',
+        });
+      }
+    } catch (error: any) {
+      console.error('Purchase error:', error);
+      toast({
+        title: 'فشل الشراء',
+        description: error.message || 'حدث خطأ أثناء عملية الشراء',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsPurchasing(false);
+    }
+  };
+
+  const handleRestore = async () => {
+    setIsRestoring(true);
+    try {
+      const result = await StoreKitService.restorePurchases();
+
+      if (result.hasActiveSubscription) {
+        if (user) {
+          await supabase
+            .from('profiles')
+            .update({ is_premium: true })
+            .eq('id', user.id);
+        }
+        toast({
+          title: 'تم الاستعادة',
+          description: 'تم استعادة اشتراكك بنجاح',
+        });
+        onClose();
+      } else {
+        toast({
+          title: 'لا توجد اشتراكات',
+          description: 'لم يتم العثور على اشتراكات سابقة',
+        });
+      }
+    } catch (error) {
+      console.error('Restore error:', error);
+      toast({
+        title: 'فشل الاستعادة',
+        description: 'حدث خطأ أثناء استعادة المشتريات',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
+  const monthlyProduct = products.find(p => p.id === PRODUCT_IDS.MONTHLY);
+  const yearlyProduct = products.find(p => p.id === PRODUCT_IDS.YEARLY);
 
   const baseFeatures = [
     {
@@ -78,11 +194,11 @@ export default function PremiumPaywall({ open, onClose, feature = 'beauty-planne
           <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-elegant">
             <Crown className="h-10 w-10 text-primary-foreground" />
           </div>
-          
+
           <DialogTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-            وردية بلس ✨
+            وردية بلس
           </DialogTitle>
-          
+
           <DialogDescription className="text-lg text-muted-foreground">
             اكتشفي الأيام المناسبة لقص الشعر والحجامة والإجراءات التجميلية حسب دورتك ومراحل القمر
           </DialogDescription>
@@ -136,7 +252,9 @@ export default function PremiumPaywall({ open, onClose, feature = 'beauty-planne
                 <div className="text-center p-4 rounded-2xl border-2 border-primary bg-gradient-to-br from-primary/10 to-secondary/10 relative overflow-hidden">
                   <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">الأفضل</Badge>
                   <h4 className="font-bold text-lg mb-2 text-primary">بلس</h4>
-                  <div className="text-3xl font-bold mb-1">٤٩ ر.س</div>
+                  <div className="text-3xl font-bold mb-1">
+                    {monthlyProduct ? monthlyProduct.displayPrice : '٤٩ ر.س'}
+                  </div>
                   <div className="text-sm text-muted-foreground mb-3">شهرياً</div>
                   <div className="space-y-2 text-sm">
                     <div className="flex items-center justify-center gap-2">
@@ -163,17 +281,46 @@ export default function PremiumPaywall({ open, onClose, feature = 'beauty-planne
 
           {/* CTA Buttons */}
           <div className="flex flex-col gap-3">
-            <Button 
-              size="lg" 
-              className="w-full h-14 text-lg bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-elegant"
+            {isLoadingProducts ? (
+              <Button size="lg" className="w-full h-14 text-lg" disabled>
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                جاري تحميل الأسعار...
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                className="w-full h-14 text-lg bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-all shadow-elegant"
+                onClick={() => handlePurchase(PRODUCT_IDS.MONTHLY)}
+                disabled={isPurchasing}
+              >
+                {isPurchasing ? (
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                ) : (
+                  <Crown className="mr-2 h-5 w-5" />
+                )}
+                {isPurchasing
+                  ? 'جاري المعالجة...'
+                  : `اشتركي الآن - ${monthlyProduct?.displayPrice || '٤٩ ر.س'} شهرياً`
+                }
+              </Button>
+            )}
+
+            <Button
+              size="lg"
+              variant="ghost"
+              className="w-full text-sm text-muted-foreground"
+              onClick={handleRestore}
+              disabled={isRestoring}
             >
-              <Crown className="mr-2 h-5 w-5" />
-              اشتركي الآن - ٤٩ ر.س شهرياً
+              {isRestoring ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : null}
+              {isRestoring ? 'جاري الاستعادة...' : 'استعادة المشتريات السابقة'}
             </Button>
-            
-            <Button 
-              size="lg" 
-              variant="outline" 
+
+            <Button
+              size="lg"
+              variant="outline"
               className="w-full h-12"
               onClick={onClose}
             >
@@ -182,7 +329,9 @@ export default function PremiumPaywall({ open, onClose, feature = 'beauty-planne
           </div>
 
           <p className="text-center text-xs text-muted-foreground">
-            💝 جربي لمدة 7 أيام مجاناً • ألغي متى شئت
+            {monthlyProduct?.introductoryOffer?.paymentMode === 'freeTrial'
+              ? '💝 جربي مجاناً ثم يتجدد تلقائياً • ألغي متى شئت'
+              : '💝 يتجدد تلقائياً • ألغي متى شئت'}
           </p>
         </div>
       </DialogContent>

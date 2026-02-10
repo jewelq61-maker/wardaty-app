@@ -45,5 +45,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>يحتاج تطبيق وردتي إلى الوصول لبيانات Apple Health لمزامنة الخطوات والنوم والوزن ومعدل ضربات القلب لتتبع صحتك.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>يحتاج تطبيق وردتي إلى إذن الكتابة في Apple Health لحفظ بيانات الدورة الشهرية.</string>
 </dict>
 </plist>

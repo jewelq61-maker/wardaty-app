@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Crown, Calendar, CreditCard, AlertCircle, CheckCircle2, ArrowRight, X, Check } from 'lucide-react';
+import { Crown, Calendar, CreditCard, AlertCircle, CheckCircle2, ArrowRight, X, Check, RefreshCw, Loader2 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,12 +21,15 @@ import {
 } from '@/components/ui/alert-dialog';
 import { useToast } from '@/hooks/use-toast';
 import BottomNav from '@/components/BottomNav';
+import { StoreKitService, PRODUCT_IDS } from '@/services/storekit-service';
+import type { SubscriptionStatus } from '@/services/storekit-service';
 
 interface SubscriptionData {
   is_premium: boolean;
   subscription_start?: string;
   subscription_end?: string;
   subscription_plan?: 'monthly' | 'yearly';
+  productId?: string;
 }
 
 export default function Subscription() {
@@ -34,11 +37,13 @@ export default function Subscription() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
-  
+
   const [subscription, setSubscription] = useState<SubscriptionData>({
     is_premium: false,
   });
   const [loading, setLoading] = useState(true);
+  const [isRestoring, setIsRestoring] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -46,71 +51,144 @@ export default function Subscription() {
     }
   }, [user]);
 
+  // Listen for subscription status changes from native layer
+  useEffect(() => {
+    StoreKitService.onSubscriptionStatusChanged(() => {
+      loadSubscription();
+    });
+  }, []);
+
   const loadSubscription = async () => {
     if (!user) return;
-    
+
     setLoading(true);
-    const { data } = await supabase
+
+    // Load from database
+    const { data: profileData } = await supabase
       .from('profiles')
       .select('is_premium')
       .eq('id', user.id)
       .single();
 
-    if (data) {
-      setSubscription({
-        is_premium: data.is_premium,
-        // For demo purposes, set mock dates
-        subscription_start: data.is_premium ? new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString() : undefined,
-        subscription_end: data.is_premium ? new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString() : undefined,
-        subscription_plan: 'monthly',
-      });
+    // Also check StoreKit for real subscription status
+    let storeKitStatus: SubscriptionStatus = { isActive: false };
+    if (StoreKitService.isAvailable()) {
+      storeKitStatus = await StoreKitService.getSubscriptionStatus();
+
+      // Sync StoreKit status with database
+      if (storeKitStatus.isActive && profileData && !profileData.is_premium) {
+        await supabase
+          .from('profiles')
+          .update({ is_premium: true })
+          .eq('id', user.id);
+      } else if (!storeKitStatus.isActive && profileData?.is_premium) {
+        await supabase
+          .from('profiles')
+          .update({ is_premium: false })
+          .eq('id', user.id);
+      }
     }
+
+    const isPremium = storeKitStatus.isActive || (profileData?.is_premium ?? false);
+
+    setSubscription({
+      is_premium: isPremium,
+      subscription_start: storeKitStatus.subscription
+        ? new Date(storeKitStatus.subscription.expirationDate * 1000 - 30 * 24 * 60 * 60 * 1000).toISOString()
+        : undefined,
+      subscription_end: storeKitStatus.subscription
+        ? new Date(storeKitStatus.subscription.expirationDate * 1000).toISOString()
+        : undefined,
+      subscription_plan: 'monthly',
+      productId: storeKitStatus.subscription?.productId,
+    });
+
     setLoading(false);
   };
 
-  const handleCancelSubscription = async () => {
-    if (!user) return;
+  const handleCancelSubscription = () => {
+    toast({
+      title: 'إلغاء الاشتراك',
+      description: 'لإلغاء الاشتراك، انتقلي إلى الإعدادات > Apple ID > الاشتراكات',
+    });
+  };
 
-    const { error } = await supabase
-      .from('profiles')
-      .update({ is_premium: false })
-      .eq('id', user.id);
+  const handleRestorePurchases = async () => {
+    setIsRestoring(true);
+    try {
+      const result = await StoreKitService.restorePurchases();
 
-    if (error) {
+      if (result.hasActiveSubscription) {
+        if (user) {
+          await supabase
+            .from('profiles')
+            .update({ is_premium: true })
+            .eq('id', user.id);
+        }
+        toast({
+          title: 'تم الاستعادة',
+          description: 'تم استعادة اشتراكك بنجاح',
+        });
+        loadSubscription();
+      } else {
+        toast({
+          title: 'لا توجد اشتراكات',
+          description: 'لم يتم العثور على اشتراكات سابقة',
+        });
+      }
+    } catch (error) {
       toast({
-        title: t('subscription.error'),
-        description: t('subscription.cancelError'),
+        title: 'خطأ',
+        description: 'حدث خطأ أثناء استعادة المشتريات',
         variant: 'destructive',
       });
-    } else {
-      toast({
-        title: t('subscription.cancelled'),
-        description: t('subscription.cancelSuccess'),
-      });
-      loadSubscription();
+    } finally {
+      setIsRestoring(false);
     }
   };
 
-  const handleRenewSubscription = async () => {
-    if (!user) return;
-
-    const { error } = await supabase
-      .from('profiles')
-      .update({ is_premium: true })
-      .eq('id', user.id);
-
-    if (error) {
+  const handleSubscribe = async () => {
+    if (!StoreKitService.isAvailable()) {
       toast({
-        title: t('subscription.error'),
-        description: t('subscription.renewError'),
+        title: 'غير متوفر',
+        description: 'الاشتراك متوفر فقط على أجهزة iOS',
         variant: 'destructive',
       });
-    } else {
+      return;
+    }
+
+    setIsPurchasing(true);
+    try {
+      const result = await StoreKitService.purchase(PRODUCT_IDS.MONTHLY);
+
+      if (result.success) {
+        if (user) {
+          await supabase
+            .from('profiles')
+            .update({ is_premium: true })
+            .eq('id', user.id);
+        }
+        toast({
+          title: 'تم الاشتراك بنجاح!',
+          description: 'مرحباً بكِ في وردية بلس',
+        });
+        loadSubscription();
+      } else if (result.cancelled) {
+        // User cancelled, do nothing
+      } else if (result.pending) {
+        toast({
+          title: 'في انتظار الموافقة',
+          description: 'سيتم تفعيل الاشتراك بعد الموافقة',
+        });
+      }
+    } catch (error: any) {
       toast({
-        title: t('subscription.renewed'),
-        description: t('subscription.renewSuccess'),
+        title: 'فشل الاشتراك',
+        description: error.message || 'حدث خطأ أثناء الاشتراك',
+        variant: 'destructive',
       });
-      loadSubscription();
+    } finally {
+      setIsPurchasing(false);
     }
   };
 
@@ -174,7 +252,7 @@ export default function Subscription() {
             </div>
           </CardHeader>
 
-          {subscription.is_premium && (
+          {subscription.is_premium && subscription.subscription_end && (
             <>
               <Separator />
               <CardContent className="pt-6 space-y-4">
@@ -184,7 +262,7 @@ export default function Subscription() {
                     <div>
                       <p className="text-sm text-muted-foreground">{t('subscription.startDate')}</p>
                       <p className="font-semibold">
-                        {subscription.subscription_start 
+                        {subscription.subscription_start
                           ? new Date(subscription.subscription_start).toLocaleDateString('ar-SA')
                           : '-'}
                       </p>
@@ -196,7 +274,7 @@ export default function Subscription() {
                     <div>
                       <p className="text-sm text-muted-foreground">{t('subscription.endDate')}</p>
                       <p className="font-semibold">
-                        {subscription.subscription_end 
+                        {subscription.subscription_end
                           ? new Date(subscription.subscription_end).toLocaleDateString('ar-SA')
                           : '-'}
                       </p>
@@ -208,8 +286,8 @@ export default function Subscription() {
                     <div>
                       <p className="text-sm text-muted-foreground">{t('subscription.plan')}</p>
                       <p className="font-semibold">
-                        {subscription.subscription_plan === 'monthly' 
-                          ? t('subscription.monthly') 
+                        {subscription.subscription_plan === 'monthly'
+                          ? t('subscription.monthly')
                           : t('subscription.yearly')}
                       </p>
                     </div>
@@ -228,15 +306,15 @@ export default function Subscription() {
               {subscription.is_premium ? t('subscription.yourFeatures') : t('subscription.availableFeatures')}
             </CardTitle>
             <CardDescription>
-              {subscription.is_premium 
-                ? t('subscription.enjoyFeatures') 
+              {subscription.is_premium
+                ? t('subscription.enjoyFeatures')
                 : t('subscription.upgradeToAccess')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {premiumFeatures.map((feature) => (
-                <div 
+                <div
                   key={feature.key}
                   className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
                 >
@@ -268,33 +346,20 @@ export default function Subscription() {
                       {t('subscription.cancelWarning')}
                     </p>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {t('subscription.cancelWarningDesc')}
+                      لإلغاء الاشتراك، انتقلي إلى الإعدادات > Apple ID > الاشتراكات
                     </p>
                   </div>
                 </div>
 
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" className="w-full" size="lg">
-                      <X className="h-5 w-5 mr-2" />
-                      {t('subscription.cancelButton')}
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{t('subscription.confirmCancel')}</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        {t('subscription.confirmCancelDesc')}
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                      <AlertDialogAction onClick={handleCancelSubscription} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                        {t('subscription.confirmCancelButton')}
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  size="lg"
+                  onClick={handleCancelSubscription}
+                >
+                  <AlertCircle className="h-5 w-5 mr-2" />
+                  كيفية إلغاء الاشتراك
+                </Button>
               </>
             ) : (
               <>
@@ -310,16 +375,36 @@ export default function Subscription() {
                   </div>
                 </div>
 
-                <Button 
-                  onClick={handleRenewSubscription}
-                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0" 
+                <Button
+                  onClick={handleSubscribe}
+                  className="w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-white border-0"
                   size="lg"
+                  disabled={isPurchasing}
                 >
-                  <Crown className="h-5 w-5 mr-2" />
-                  {t('subscription.upgradeButton')}
+                  {isPurchasing ? (
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  ) : (
+                    <Crown className="h-5 w-5 mr-2" />
+                  )}
+                  {isPurchasing ? 'جاري المعالجة...' : t('subscription.upgradeButton')}
                 </Button>
               </>
             )}
+
+            {/* Restore Purchases - Always visible */}
+            <Button
+              variant="ghost"
+              className="w-full text-sm text-muted-foreground"
+              onClick={handleRestorePurchases}
+              disabled={isRestoring}
+            >
+              {isRestoring ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              {isRestoring ? 'جاري الاستعادة...' : 'استعادة المشتريات السابقة'}
+            </Button>
           </CardContent>
         </Card>
 
