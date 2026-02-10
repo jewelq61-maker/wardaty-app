@@ -52,8 +52,8 @@ interface StoreKitPluginInterface {
 
 // Product IDs - must match App Store Connect configuration
 export const PRODUCT_IDS = {
-  MONTHLY: 'com.wardaty.app.premium.monthly',
-  YEARLY: 'com.wardaty.app.premium.yearly',
+  MONTHLY: 'wardaty_plus_monthly_v2',
+  YEARLY: 'wardaty_plus_yearly_v2',
 };
 
 const isNativeIOS = Capacitor.getPlatform() === 'ios';
